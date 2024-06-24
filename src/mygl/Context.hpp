@@ -47,10 +47,11 @@ namespace mygl
             {
                 if (current_scene == nullptr)
                 {
-                    // std::cout << "Must assign a current scene" << std::endl; //ASSIGN DEFAULT SCENE
-                    // return;
-                    current_scene = &default_scene;
+                    // current_scene = &default_scene;
+                    std::cout << "Must assign a current scene" << std::endl; //ASSIGN DEFAULT SCENE
+                    return;
                 }
+
                 while (!glfwWindowShouldClose(window))
                 {
                     current_scene->scene_clear();
@@ -71,7 +72,7 @@ namespace mygl
 
             Scene *current_scene = nullptr;
             std::vector<Scene*> scenes;
-            DefaultScene default_scene; // IN CASE NO SCENE
+            //DefaultScene default_scene; // IN CASE NO SCENE
             // Sound sound_manager;
         
         private:

@@ -2,7 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
-namespace mygl{
+namespace mygl 
+{
     class Clock
     {
         public:

@@ -12,6 +12,7 @@
 #include "camera_3D.hpp"
 #include "Skybox.hpp"
 #include "Clock.hpp"
+#include "Context.hpp"
 
 namespace mygl {
     class Scene {
@@ -31,12 +32,13 @@ namespace mygl {
 
     class DefaultScene : public Scene {
         public:
+            // DefaultScene() = default;
             Context &ctx;
-
             DefaultScene(Context &ctx) : ctx(ctx)
             {
-                store_scene_in_ctx();
+                // store_scene_in_ctx();
             }
+            
 
             void store_scene_in_ctx() override 
             {

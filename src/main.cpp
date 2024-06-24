@@ -6,8 +6,8 @@
 
 int main()
 {
-    // Context ctx;
-    // glfwSwapInterval(1); //vsync
+    mygl::Context ctx;
+    glfwSwapInterval(1); //vsync
 
     // YCubeScene splashscreen(ctx); // idx 0
     // InstructionsScene instructions(ctx); //idx 1
