@@ -18,6 +18,7 @@ add_subdirectory(include/glfw)
 set(SRC_FILES
     ${MYGL}/glad.c
     ${SRC}/main.cpp
+    ${MYGL}/Context.cpp
 )
 
 set(LINK_LIB
