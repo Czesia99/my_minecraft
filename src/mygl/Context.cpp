@@ -11,33 +11,33 @@ namespace mygl
         win_width = width;
         win_height = height;
         win_name = name;
-        window = create_window();
-        load_glad();
-        set_callbacks();
+        window = createWindow();
+        loadGlad();
+        setCallbacks();
         default_scene = new DefaultScene(*this);
     };
 
-    void Context::set_callbacks()
+    void Context::setCallbacks()
     {
         glfwSetWindowUserPointer(window, this); //set windowindow pointer
-        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback_wrapper);
-        glfwSetCursorPosCallback(window, mouse_callback_wrapper);
-        glfwSetMouseButtonCallback(window, left_click_callback_wrapper);
-        glfwSetScrollCallback(window, scroll_callback_wrapper);  
+        glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackWrapper);
+        glfwSetCursorPosCallback(window, mouseCallbackWrapper);
+        glfwSetMouseButtonCallback(window, leftClickCallbackWrapper);
+        glfwSetScrollCallback(window, scrollCallbackWrapper);  
     }
 
-    void Context::load_scene(Scene *scene)
+    void Context::loadScene(Scene *scene)
     {
         if (current_scene != nullptr)
             current_scene->close_scene();
         current_scene = scene;
         current_scene->open_scene();
-        framebuffer_size_callback_wrapper(window, win_width, win_height); //because
+        framebufferSizeCallbackWrapper(window, win_width, win_height); //because
     }
 
-    void Context::load_scene_id(int id)
+    void Context::loadSceneId(int id)
     {
-        load_scene(scenes[id]);
+        loadScene(scenes[id]);
     }
 
     void Context::run()
@@ -61,7 +61,7 @@ namespace mygl
         // ma_engine_uninit(&sound_manager.engine);
     }
 
-    GLFWwindow *Context::create_window() {
+    GLFWwindow *Context::createWindow() {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -78,7 +78,7 @@ namespace mygl
         return window;
     };
 
-    int Context::load_glad() 
+    int Context::loadGlad() 
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
@@ -89,7 +89,7 @@ namespace mygl
         return 0;
     };
 
-    void Context::framebuffer_size_callback_wrapper(GLFWwindow* window, int width, int height) 
+    void Context::framebufferSizeCallbackWrapper(GLFWwindow* window, int width, int height) 
     {
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
         ctx->win_width = width;
@@ -100,7 +100,7 @@ namespace mygl
         }   
     }
 
-    void Context::mouse_callback_wrapper(GLFWwindow* window, double xpos, double ypos)
+    void Context::mouseCallbackWrapper(GLFWwindow* window, double xpos, double ypos)
     {
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
 
@@ -109,7 +109,7 @@ namespace mygl
         }
     }
 
-    void Context::scroll_callback_wrapper(GLFWwindow* window, double xoffset, double yoffset)
+    void Context::scrollCallbackWrapper(GLFWwindow* window, double xoffset, double yoffset)
     {
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
 
@@ -118,7 +118,7 @@ namespace mygl
         }
     }
 
-    void Context::left_click_callback_wrapper(GLFWwindow* window, int button, int action, int mods) 
+    void Context::leftClickCallbackWrapper(GLFWwindow* window, int button, int action, int mods) 
     {
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
 
