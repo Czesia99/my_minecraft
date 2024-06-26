@@ -29,9 +29,9 @@ namespace mygl
     void Context::loadScene(Scene *scene)
     {
         if (current_scene != nullptr)
-            current_scene->close_scene();
+            current_scene->closeScene();
         current_scene = scene;
-        current_scene->open_scene();
+        current_scene->openScene();
         framebufferSizeCallbackWrapper(window, win_width, win_height); //because
     }
 
@@ -51,8 +51,8 @@ namespace mygl
 
         while (!glfwWindowShouldClose(window))
         {
-            current_scene->scene_clear();
-            current_scene->process_input();
+            current_scene->sceneClear();
+            current_scene->processInput();
             current_scene->update();
 
             glfwSwapBuffers(window);
@@ -96,7 +96,7 @@ namespace mygl
         ctx->win_height = height;
         ctx->aspect_ratio = width / height;
         if (ctx->current_scene != nullptr) {
-            ctx->current_scene->framebuffer_size_callback(window, width, height);
+            ctx->current_scene->framebufferSizeCallback(window, width, height);
         }   
     }
 
@@ -105,7 +105,7 @@ namespace mygl
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
 
         if (ctx->current_scene != nullptr) {
-            ctx->current_scene->mouse_callback(window, xpos, ypos);
+            ctx->current_scene->mouseCallback(window, xpos, ypos);
         }
     }
 
@@ -114,7 +114,7 @@ namespace mygl
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
 
         if (ctx->current_scene != nullptr) {
-            ctx->current_scene->scroll_callback(window, xoffset, yoffset);
+            ctx->current_scene->scrollCallback(window, xoffset, yoffset);
         }
     }
 
@@ -123,7 +123,7 @@ namespace mygl
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
 
         if (ctx->current_scene != nullptr) {
-            ctx->current_scene->left_click_callback(window, button, action, mods);
+            ctx->current_scene->leftClickCallback(window, button, action, mods);
         }
 
     }

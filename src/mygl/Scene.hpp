@@ -19,42 +19,36 @@ namespace mygl
     class Scene {
         public:
             virtual ~Scene(){}
-            virtual void store_scene_in_ctx() = 0;
-            virtual void open_scene() = 0;
-            virtual void close_scene() = 0;
+            virtual void storeSceneInCtx() = 0;
+            virtual void openScene() = 0;
+            virtual void closeScene() = 0;
             virtual void update() = 0;
-            virtual void scene_clear() = 0;
-            virtual void process_input() = 0;
-            virtual void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) = 0;
-            virtual void left_click_callback(GLFWwindow* window, int button, int action, int mods) = 0;
-            virtual void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) = 0;
-            virtual void framebuffer_size_callback(GLFWwindow* window, int width, int height) = 0;
+            virtual void sceneClear() = 0;
+            virtual void processInput() = 0;
+            virtual void mouseCallback(GLFWwindow* window, double xposIn, double yposIn) = 0;
+            virtual void leftClickCallback(GLFWwindow* window, int button, int action, int mods) = 0;
+            virtual void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) = 0;
+            virtual void framebufferSizeCallback(GLFWwindow* window, int width, int height) = 0;
     };
 
     class DefaultScene : public Scene {
         public:
             Context &ctx;
         public:
-            DefaultScene() = default;
+            DefaultScene(Context &ctx) : ctx(ctx) {}
             
-            DefaultScene(Context &ctx) : ctx(ctx)
-            {
-                // store_scene_in_ctx();
-            }
-            
-
-            void store_scene_in_ctx() override 
+            void storeSceneInCtx() override 
             {
                 // ctx.scenes.push_back(*this);
             }
 
-            void open_scene() override
+            void openScene() override
             {
                 glEnable(GL_DEPTH_TEST);
                 glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             }
 
-            void close_scene() override
+            void closeScene() override
             {
                 return;
             }
@@ -65,12 +59,12 @@ namespace mygl
                 sky.render(camera);
             }
 
-            void scene_clear() override
+            void sceneClear() override
             {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
-            void process_input() override
+            void processInput() override
             {
                 if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
                 glfwSetWindowShouldClose(ctx.window, true);
@@ -84,7 +78,7 @@ namespace mygl
                 if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
                     camera.process_keyboard(RIGHT, clock.delta_time);
             }
-            void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) override
+            void mouseCallback(GLFWwindow* window, double xposIn, double yposIn) override
             {
                 float xpos = static_cast<float>(xposIn);
                 float ypos = static_cast<float>(yposIn);
@@ -105,7 +99,7 @@ namespace mygl
                 camera.process_mouse_movement(xoffset, yoffset);
             }
 
-            void left_click_callback(GLFWwindow* window, int button, int action, int mods) override
+            void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override
             {
                 double xpos, ypos;
                 glfwGetCursorPos(window, &xpos, &ypos);
@@ -113,12 +107,12 @@ namespace mygl
                 std::cout << "ypos = " << ypos << std::endl;
             }
 
-            void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) override
+            void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override
             {
                 camera.process_mouse_scroll(static_cast<float>(yoffset));
             }
 
-            void framebuffer_size_callback(GLFWwindow* window, int width, int height) override
+            void framebufferSizeCallback(GLFWwindow* window, int width, int height) override
             {
                 glViewport(0, 0, width, height);
                 camera.width = width;
