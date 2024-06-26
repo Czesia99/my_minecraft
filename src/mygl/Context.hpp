@@ -9,6 +9,7 @@
 namespace mygl
 {
     class Scene;
+    class DefaultScene;
     class Context {
         public:
             Context(float width = 1280, float height = 720, const char *name = "MYGL");
@@ -29,7 +30,7 @@ namespace mygl
 
             Scene *current_scene = nullptr;
             std::vector<Scene*> scenes;
-            // DefaultScene default_scene; // IN CASE NO SCENE
+            DefaultScene *default_scene; // IN CASE NO SCENE
             // Sound sound_manager;
         
         private:

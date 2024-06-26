@@ -14,7 +14,7 @@ namespace mygl
         window = create_window();
         load_glad();
         set_callbacks();
-        // default_scene = new DefaultScene(*this);
+        default_scene = new DefaultScene(*this);
     };
 
     void Context::set_callbacks()
@@ -44,9 +44,9 @@ namespace mygl
     {
         if (current_scene == nullptr)
         {
-            // current_scene = &default_scene;
-            std::cout << "Must assign a current scene" << std::endl; //ASSIGN DEFAULT SCENE
-            return;
+            current_scene = default_scene;
+            // std::cout << "Must assign a current scene" << std::endl; //ASSIGN DEFAULT SCENE
+            // return;
         }
 
         while (!glfwWindowShouldClose(window))
@@ -60,9 +60,6 @@ namespace mygl
         }
         // ma_engine_uninit(&sound_manager.engine);
     }
-
-    // DefaultScene default_scene; // IN CASE NO SCENE
-    // Sound sound_manager;
 
     GLFWwindow *Context::create_window() {
         glfwInit();

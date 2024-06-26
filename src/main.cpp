@@ -16,7 +16,7 @@ int main()
     // CreditsScene credits(ctx); //idx 4
 
     // ctx.load_scene(ctx.scenes[0]);
-    // ctx.run();
+    ctx.run();
 
     glfwTerminate();
     return 0;
