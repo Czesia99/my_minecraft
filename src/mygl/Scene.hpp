@@ -70,13 +70,13 @@ namespace mygl
                 glfwSetWindowShouldClose(ctx.window, true);
 
                 if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
-                    camera.process_keyboard(FORWARD, clock.delta_time);
+                    camera.processKeyboard(FORWARD, clock.delta_time);
                 if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
-                    camera.process_keyboard(BACKWARD, clock.delta_time);
+                    camera.processKeyboard(BACKWARD, clock.delta_time);
                 if (glfwGetKey(ctx.window, GLFW_KEY_A) == GLFW_PRESS)
-                    camera.process_keyboard(LEFT, clock.delta_time);
+                    camera.processKeyboard(LEFT, clock.delta_time);
                 if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
-                    camera.process_keyboard(RIGHT, clock.delta_time);
+                    camera.processKeyboard(RIGHT, clock.delta_time);
             }
             void mouseCallback(GLFWwindow* window, double xposIn, double yposIn) override
             {
@@ -96,7 +96,7 @@ namespace mygl
                 lastX = xpos;
                 lastY = ypos;
 
-                camera.process_mouse_movement(xoffset, yoffset);
+                camera.processMouseMovement(xoffset, yoffset);
             }
 
             void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override
@@ -109,7 +109,7 @@ namespace mygl
 
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override
             {
-                camera.process_mouse_scroll(static_cast<float>(yoffset));
+                camera.processMouseScroll(static_cast<float>(yoffset));
             }
 
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override

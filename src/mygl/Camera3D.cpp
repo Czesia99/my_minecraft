@@ -3,7 +3,7 @@
 namespace mygl
 {
     Camera3D::Camera3D(glm::vec3 pos, float cam_width, float cam_height, float speed, bool is_fps) 
-    :   front(glm::vec3(0.0f, 0.0f, -1.0f)), world_up(UP), mouse_sensitivity(SENSITIVITY), fov(FOV), pitch(PITCH), yaw(YAW)
+    : front(glm::vec3(0.0f, 0.0f, -1.0f)), world_up(UP), mouse_sensitivity(SENSITIVITY), fov(FOV), pitch(PITCH), yaw(YAW)
     {
         initial_pos = pos;
         position = pos;
@@ -11,20 +11,20 @@ namespace mygl
         height = cam_height;
         fps = is_fps;
         movement_speed = speed;
-        update_camera_vectors();
+        updateCameraVectors();
     }
 
-    glm::mat4 Camera3D::get_view_matrix() const
+    glm::mat4 Camera3D::getViewMatrix() const
     {
         return glm::lookAt(position, position + front, up);
     }
 
-    glm::mat4 Camera3D::get_projection_matrix() const
+    glm::mat4 Camera3D::getProjectionMatrix() const
     {
         return glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
     }
 
-    void Camera3D::process_keyboard(Camera3D_Movement direction, float delta_time)
+    void Camera3D::processKeyboard(Camera3D_Movement direction, float delta_time)
     {
         float velocity = movement_speed * delta_time;
         if (direction == FORWARD)
@@ -39,7 +39,7 @@ namespace mygl
             position.y = initial_pos.y;
     }
 
-    void Camera3D::process_mouse_movement(float xoffset, float yoffset, GLboolean constrainPitch)
+    void Camera3D::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
     {
         xoffset *= mouse_sensitivity;
         yoffset *= mouse_sensitivity;
@@ -55,10 +55,10 @@ namespace mygl
                 pitch = -89.0f;
         }
 
-        update_camera_vectors();
+        updateCameraVectors();
     }
 
-    void Camera3D::process_mouse_scroll(float yoffset)
+    void Camera3D::processMouseScroll(float yoffset)
     {
         fov -= (float)yoffset;
         if (fov < 1.0f)
@@ -67,7 +67,7 @@ namespace mygl
             fov = 45.0f;
     }
 
-    void Camera3D::update_camera_vectors()
+    void Camera3D::updateCameraVectors()
     {
         // calculate the new Front vector
         glm::vec3 nfront;

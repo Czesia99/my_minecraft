@@ -11,7 +11,7 @@ namespace mygl
         glm::vec3 rotation = {0, 0, 0};
         glm::vec3 scale = {1, 1, 1};
 
-        glm::mat4 get_model_matrix() {
+        glm::mat4 getModelMatrix() {
             glm::mat4 mat = glm::mat4(1.0f);
             mat = glm::translate(mat, position);
             mat = glm::rotate(mat, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));

@@ -1,6 +1,4 @@
 #include "Skybox.hpp"
-
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 namespace mygl
@@ -29,8 +27,8 @@ namespace mygl
     }
 
     void Skybox::render(const ICamera &camera) {
-        glm::mat4 projection = camera.get_projection_matrix();
-        glm::mat4 view = glm::mat4(glm::mat3(camera.get_view_matrix()));
+        glm::mat4 projection = camera.getProjectionMatrix();
+        glm::mat4 view = glm::mat4(glm::mat3(camera.getViewMatrix()));
         // glDepthMask(GL_FALSE);
         glDepthFunc(GL_LEQUAL);
         skybox_shader.use();

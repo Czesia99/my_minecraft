@@ -10,8 +10,8 @@ namespace mygl
         public:
             ICamera(){} 
             virtual ~ICamera(){}
-            virtual glm::mat4 get_view_matrix() const = 0;
-            virtual glm::mat4 get_projection_matrix() const = 0;
+            virtual glm::mat4 getViewMatrix() const = 0;
+            virtual glm::mat4 getProjectionMatrix() const = 0;
         public:
             // glm::vec3 position;
             // glm::vec3 front;

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "icamera.hpp"
+#include "ICamera.hpp"
 
 namespace mygl
 {
@@ -26,11 +26,11 @@ namespace mygl
     class Camera3D : public ICamera {
         public:
             Camera3D(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), float cam_width = 800, float cam_height = 600, float speed = 2.5f, bool is_fps = false);
-            glm::mat4 get_view_matrix() const;
-            glm::mat4 get_projection_matrix() const;
-            void process_keyboard(Camera3D_Movement direction, float delta_time);
-            void process_mouse_movement(float xoffset, float yoffset, GLboolean constrainPitch = true);
-            void process_mouse_scroll(float yoffset);
+            glm::mat4 getViewMatrix() const;
+            glm::mat4 getProjectionMatrix() const;
+            void processKeyboard(Camera3D_Movement direction, float delta_time);
+            void processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+            void processMouseScroll(float yoffset);
 
         public:
             glm::vec3 position;
@@ -52,6 +52,6 @@ namespace mygl
             bool fps;
 
         private:
-            void update_camera_vectors();
+            void updateCameraVectors();
     };
 }
