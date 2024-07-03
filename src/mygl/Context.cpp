@@ -1,8 +1,5 @@
-#include "Context.hpp"
-
 #include <iostream>
-
-
+#include "Context.hpp"
 #include "Scene.hpp"
 
 namespace mygl
@@ -44,9 +41,7 @@ namespace mygl
     {
         if (current_scene == nullptr)
         {
-            current_scene = default_scene;
-            // std::cout << "Must assign a current scene" << std::endl; //ASSIGN DEFAULT SCENE
-            // return;
+            loadScene(default_scene);
         }
 
         while (!glfwWindowShouldClose(window))

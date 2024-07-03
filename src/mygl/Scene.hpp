@@ -10,7 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Context.hpp"
-#include "camera_3D.hpp"
+#include "Camera3D.hpp"
 #include "Skybox.hpp"
 #include "Clock.hpp"
 
@@ -45,7 +45,7 @@ namespace mygl
             void openScene() override
             {
                 glEnable(GL_DEPTH_TEST);
-                glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
 
             void closeScene() override

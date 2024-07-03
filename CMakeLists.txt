@@ -17,6 +17,7 @@ add_subdirectory(include/glfw)
 
 set(SRC_FILES
     ${MYGL}/glad.c
+    ${MYGL}/Camera3D.cpp
     ${MYGL}/Context.cpp
     ${MYGL}/Skybox.cpp
     ${SRC}/main.cpp
