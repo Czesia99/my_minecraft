@@ -21,6 +21,7 @@ set(SRC_FILES
     ${MYGL}/Context.cpp
     ${MYGL}/Shape.cpp
     ${MYGL}/Skybox.cpp
+    ${MYGL}/Texture.cpp
     ${SRC}/main.cpp
 )
 

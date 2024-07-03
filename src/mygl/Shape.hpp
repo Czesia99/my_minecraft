@@ -122,7 +122,6 @@ namespace mygl {
         public:
             Cube();
             void render(Shader shader, const ICamera &camera);
-            void add_texture(const char *file, unsigned int &texture);
 
         public:
             Transform transform;
