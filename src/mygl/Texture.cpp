@@ -1,7 +1,8 @@
 #include "Texture.hpp"
+
 #include <iostream>
 #include <glad/glad.h>
-#include <stb_image.h>
+#include "stb_image.h"
 
 void load_texture(const char *file, unsigned int &texture)
 {

@@ -19,9 +19,11 @@ set(SRC_FILES
     ${MYGL}/glad.c
     ${MYGL}/Camera3D.cpp
     ${MYGL}/Context.cpp
+    ${MYGL}/Scene.cpp
     ${MYGL}/Shape.cpp
     ${MYGL}/Skybox.cpp
     ${MYGL}/Texture.cpp
+    ${MYGL}/stb_image.cpp
     ${SRC}/main.cpp
 )
 

@@ -1,16 +1,13 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
-
 #include <glad/glad.h>
-#include "ICamera.hpp"
 #include "Transform.hpp"
 #include "Shader.h"
 
-
 namespace mygl
 {
+    class ICamera;
     class Skybox {
         public:
             Skybox();

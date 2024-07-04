@@ -1,5 +1,7 @@
 #include "Camera3D.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace mygl
 {
     Camera3D::Camera3D(glm::vec3 pos, float cam_width, float cam_height, float speed, bool is_fps) 

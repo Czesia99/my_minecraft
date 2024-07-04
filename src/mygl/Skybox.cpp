@@ -1,4 +1,5 @@
 #include "Skybox.hpp"
+#include "ICamera.hpp"
 #include "stb_image.h"
 
 namespace mygl

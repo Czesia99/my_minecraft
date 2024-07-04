@@ -5,17 +5,19 @@
 
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "Context.hpp"
 #include "Camera3D.hpp"
-#include "Skybox.hpp"
 #include "Clock.hpp"
+#include "Skybox.hpp"
+#include "Shape.hpp"
 
 namespace mygl 
 {
+    class Context;
+    // class Camera3D;
+    // class Skybox;
+    // class Clock;
+    // class Cube;
+
     class Scene {
         public:
             virtual ~Scene(){}
@@ -35,97 +37,27 @@ namespace mygl
         public:
             Context &ctx;
         public:
-            DefaultScene(Context &ctx) : ctx(ctx) {}
-            
-            void storeSceneInCtx() override 
-            {
-                // ctx.scenes.push_back(*this);
-            }
-
-            void openScene() override
-            {
-                glEnable(GL_DEPTH_TEST);
-                glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            }
-
-            void closeScene() override
-            {
-                return;
-            }
-
-            void update() override 
-            {
-                clock.update();
-                sky.render(camera);
-            }
-
-            void sceneClear() override
-            {
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            }
-
-            void processInput() override
-            {
-                if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-                glfwSetWindowShouldClose(ctx.window, true);
-
-                if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
-                    camera.processKeyboard(FORWARD, clock.delta_time);
-                if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
-                    camera.processKeyboard(BACKWARD, clock.delta_time);
-                if (glfwGetKey(ctx.window, GLFW_KEY_A) == GLFW_PRESS)
-                    camera.processKeyboard(LEFT, clock.delta_time);
-                if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
-                    camera.processKeyboard(RIGHT, clock.delta_time);
-            }
-            void mouseCallback(GLFWwindow* window, double xposIn, double yposIn) override
-            {
-                float xpos = static_cast<float>(xposIn);
-                float ypos = static_cast<float>(yposIn);
-
-                if (first_mouse)
-                {
-                    lastX = xpos;
-                    lastY = ypos;
-                    first_mouse = false;
-                }
-
-                float xoffset = xpos - lastX;
-                float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-                lastX = xpos;
-                lastY = ypos;
-
-                camera.processMouseMovement(xoffset, yoffset);
-            }
-
-            void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override
-            {
-                double xpos, ypos;
-                glfwGetCursorPos(window, &xpos, &ypos);
-                std::cout << "xpos = " << xpos << std::endl;
-                std::cout << "ypos = " << ypos << std::endl;
-            }
-
-            void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override
-            {
-                camera.processMouseScroll(static_cast<float>(yoffset));
-            }
-
-            void framebufferSizeCallback(GLFWwindow* window, int width, int height) override
-            {
-                glViewport(0, 0, width, height);
-                camera.width = width;
-                camera.height = height;
-            }
+            DefaultScene(Context &ctx);
+            void storeSceneInCtx() override;
+            void openScene() override;
+            void closeScene() override;
+            void update() override;
+            void sceneClear() override;
+            void processInput() override;
+            void mouseCallback(GLFWwindow* window, double xposIn, double yposIn);
+            void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override;
+            void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
+            void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
         private:
             Camera3D camera;
             Skybox sky;
             Clock clock;
+            Cube cube;
+            Shader cube_shader;
 
-            float lastX = ctx.win_width / 2.0f;
-            float lastY = ctx.win_height / 2.0f;
+            float lastX;
+            float lastY;
             bool first_mouse = true;
     };
 }

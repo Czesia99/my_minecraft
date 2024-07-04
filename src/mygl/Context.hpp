@@ -1,10 +1,8 @@
-#ifndef CONTEXT_HPP
-#define CONTEXT_HPP
+#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
-
 
 namespace mygl
 {
@@ -40,5 +38,3 @@ namespace mygl
             static void leftClickCallbackWrapper(GLFWwindow* window, int button, int action, int mods);
     };
 }
-
-#endif
