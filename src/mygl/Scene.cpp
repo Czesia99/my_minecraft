@@ -9,7 +9,8 @@ namespace mygl
     DefaultScene::DefaultScene(Context &ctx) : ctx(ctx), lastX(ctx.win_width / 2), lastY(ctx.win_height / 2)
     {
         // stbi_set_flip_vertically_on_load(true);
-        load_texture("../assets/textures/dirt.jpg", cube.diffuse_texture);
+        load_texture("../assets/textures/dirt.png", dirt_texture, GL_NEAREST, GL_NEAREST);
+        cube.setDiffuseTexture(dirt_texture);
         cube_shader = Shader("cube.vs", "cube.fs");
     }
 

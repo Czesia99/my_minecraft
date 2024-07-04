@@ -118,4 +118,9 @@ namespace mygl {
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+
+    void Cube::setDiffuseTexture(GLuint &texture)
+    {
+        diffuse_texture = texture;
+    }
 }

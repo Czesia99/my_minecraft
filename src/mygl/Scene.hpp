@@ -55,6 +55,7 @@ namespace mygl
             Clock clock;
             Cube cube;
             Shader cube_shader;
+            GLuint dirt_texture;
 
             float lastX;
             float lastY;

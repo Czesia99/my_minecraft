@@ -59,7 +59,7 @@ namespace mygl {
         public:
             Cube();
             void render(Shader shader, const ICamera &camera);
-
+            void setDiffuseTexture(GLuint &texture);
         public:
             Transform transform;
             GLuint diffuse_texture;
