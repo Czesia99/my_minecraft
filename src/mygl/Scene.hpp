@@ -13,21 +13,20 @@
 namespace mygl 
 {
     class Context;
-    // class Camera3D;
-    // class Skybox;
-    // class Clock;
-    // class Cube;
 
     class Scene {
         public:
-            virtual ~Scene(){}
+            Context &ctx;
+        public:
+            Scene(Context &ctx) : ctx(ctx) {};
+            virtual ~Scene() {}
             virtual void storeSceneInCtx() = 0;
             virtual void openScene() = 0;
             virtual void closeScene() = 0;
             virtual void update() = 0;
             virtual void sceneClear() = 0;
             virtual void processInput() = 0;
-            virtual void mouseCallback(GLFWwindow* window, double xposIn, double yposIn) = 0;
+            virtual void mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy) = 0;
             virtual void leftClickCallback(GLFWwindow* window, int button, int action, int mods) = 0;
             virtual void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) = 0;
             virtual void framebufferSizeCallback(GLFWwindow* window, int width, int height) = 0;
@@ -35,7 +34,7 @@ namespace mygl
 
     class DefaultScene : public Scene {
         public:
-            Context &ctx;
+            // Context &ctx;
         public:
             DefaultScene(Context &ctx);
             void storeSceneInCtx() override;
@@ -44,7 +43,7 @@ namespace mygl
             void update() override;
             void sceneClear() override;
             void processInput() override;
-            void mouseCallback(GLFWwindow* window, double xposIn, double yposIn);
+            void mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy);
             void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override;
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;

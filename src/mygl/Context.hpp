@@ -22,6 +22,8 @@ namespace mygl
             float win_height;
             float aspect_ratio = win_width / win_height;
             const char *win_name;
+            int mouse_x;
+            int mouse_y;
 
             Scene *current_scene = nullptr;
             std::vector<Scene*> scenes;

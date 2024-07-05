@@ -41,6 +41,7 @@ namespace mygl
     {
         if (current_scene == nullptr)
         {
+            std::cout << "no scene provided: Loading default scene" << std::endl;
             loadScene(default_scene);
         }
 
@@ -95,12 +96,18 @@ namespace mygl
         }   
     }
 
-    void Context::mouseCallbackWrapper(GLFWwindow* window, double xpos, double ypos)
+    void Context::mouseCallbackWrapper(GLFWwindow* window, double x, double y)
     {
         Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
 
+        float dx = x - ctx->mouse_x;
+        float dy = y - ctx->mouse_y;
+
+        ctx->mouse_x = x;
+        ctx->mouse_y = y;
+
         if (ctx->current_scene != nullptr) {
-            ctx->current_scene->mouseCallback(window, xpos, ypos);
+            ctx->current_scene->mouseCallback(window, x, y, dx, dy);
         }
     }
 

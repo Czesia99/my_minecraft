@@ -6,7 +6,7 @@
 
 namespace mygl
 {
-    void load_texture(const char *file, unsigned int &texture, int min_filter, int mag_filter, int wrap)
+    void loadTexture(const char *file, unsigned int &texture, int min_filter, int mag_filter, int wrap)
     {
         glGenTextures(1, &texture);
         

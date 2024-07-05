@@ -13,8 +13,6 @@ namespace game
 
     class GameScene : public Scene {
         public:
-            Context &ctx;
-        public:
             GameScene(Context &ctx);
             void storeSceneInCtx() override;
             void openScene() override;
@@ -22,7 +20,7 @@ namespace game
             void update() override;
             void sceneClear() override;
             void processInput() override;
-            void mouseCallback(GLFWwindow* window, double xposIn, double yposIn);
+            void mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy);
             void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override;
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;

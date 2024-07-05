@@ -6,10 +6,10 @@
 
 namespace mygl
 {
-    DefaultScene::DefaultScene(Context &ctx) : ctx(ctx), lastX(ctx.win_width / 2), lastY(ctx.win_height / 2)
+    DefaultScene::DefaultScene(Context &ctx) : Scene(ctx), lastX(ctx.win_width / 2), lastY(ctx.win_height / 2)
     {
         // stbi_set_flip_vertically_on_load(true);
-        load_texture("../assets/textures/dirt.png", dirt_texture, GL_NEAREST, GL_NEAREST);
+        loadTexture("../assets/textures/dirt.png", dirt_texture, GL_NEAREST, GL_NEAREST);
         cube.setDiffuseTexture(dirt_texture);
         cube_shader = Shader("cube.vs", "cube.fs");
     }
@@ -61,25 +61,9 @@ namespace mygl
             camera.processKeyboard(RIGHT, clock.delta_time);
     }
 
-    void DefaultScene::mouseCallback(GLFWwindow* window, double xposIn, double yposIn)
+    void DefaultScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)
     {
-        float xpos = static_cast<float>(xposIn);
-        float ypos = static_cast<float>(yposIn);
-
-        if (first_mouse)
-        {
-            lastX = xpos;
-            lastY = ypos;
-            first_mouse = false;
-        }
-
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-        lastX = xpos;
-        lastY = ypos;
-
-        camera.processMouseMovement(xoffset, yoffset);
+        camera.processMouseMovement(dx, -dy);
     }
 
     void DefaultScene::leftClickCallback(GLFWwindow* window, int button, int action, int mods)
