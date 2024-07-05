@@ -25,6 +25,7 @@ set(SRC_FILES
     ${MYGL}/Texture.cpp
     ${MYGL}/stb_image.cpp
     ${SRC}/main.cpp
+    ${SRC}/GameScene.cpp
 )
 
 set(LINK_LIB

@@ -14,7 +14,10 @@ namespace mygl
         cube_shader = Shader("cube.vs", "cube.fs");
     }
 
-    void DefaultScene::storeSceneInCtx() {}
+    void DefaultScene::storeSceneInCtx()
+    {
+        ctx.scenes.push_back(this);
+    }
 
     void DefaultScene::openScene()
     {

@@ -5,7 +5,8 @@
 #include "Shader.h"
 #include "Transform.hpp"
 
-namespace mygl {
+namespace mygl 
+{
     class ICamera;
     //2D PRIMITIVES
     class Triangle {
