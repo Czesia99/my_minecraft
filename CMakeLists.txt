@@ -26,6 +26,7 @@ set(SRC_FILES
     ${MYGL}/stb_image.cpp
     ${SRC}/main.cpp
     ${SRC}/GameScene.cpp
+    ${SRC}/Chunk.cpp
 )
 
 set(LINK_LIB

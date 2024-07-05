@@ -7,6 +7,8 @@
 #include "mygl/Skybox.hpp"
 #include "mygl/Shape.hpp"
 
+#include "Chunk.hpp"
+
 namespace game 
 {
     using namespace mygl;
@@ -29,7 +31,7 @@ namespace game
             Camera3D camera;
             Skybox sky;
             Clock clock;
-            Cube cube;
+            // Cube cube;
             Shader cube_shader;
             GLuint dirt_texture;
     };
