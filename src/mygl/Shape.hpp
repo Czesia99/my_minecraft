@@ -28,9 +28,9 @@ namespace mygl
             };
     };
 
-    class MyRectangle {
+    class Rectangle {
         public:
-            MyRectangle();
+            Rectangle();
             void render(Shader shader, const ICamera &camera);
 
         public:

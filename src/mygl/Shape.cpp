@@ -35,7 +35,7 @@ namespace mygl {
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
-    MyRectangle::MyRectangle()
+    Rectangle::Rectangle()
     {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -55,7 +55,7 @@ namespace mygl {
         glEnableVertexAttribArray(1);
     }
 
-    void MyRectangle::render(Shader shader, const ICamera &camera)
+    void Rectangle::render(Shader shader, const ICamera &camera)
     {
         shader.use();
         glm::mat4 mat = transform.getModelMatrix();
