@@ -34,8 +34,6 @@ namespace mygl
 
     class DefaultScene : public Scene {
         public:
-            // Context &ctx;
-        public:
             DefaultScene(Context &ctx);
             void storeSceneInCtx() override;
             void openScene() override;
@@ -55,9 +53,5 @@ namespace mygl
             Cube cube;
             Shader cube_shader;
             GLuint dirt_texture;
-
-            float lastX;
-            float lastY;
-            bool first_mouse = true;
     };
 }

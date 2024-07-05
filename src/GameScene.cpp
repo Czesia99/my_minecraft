@@ -1,11 +1,9 @@
 #include "GameScene.hpp"
-
-// #include "mygl/Context.hpp"
 #include "mygl/Texture.hpp"
 
 namespace game 
 {
-    GameScene::GameScene(Context &ctx) : Scene(ctx), lastX(ctx.win_width / 2), lastY(ctx.win_height / 2)
+    GameScene::GameScene(Context &ctx) : Scene(ctx)
     {
         // stbi_set_flip_vertically_on_load(true);
         storeSceneInCtx();

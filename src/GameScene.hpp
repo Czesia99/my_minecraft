@@ -32,9 +32,5 @@ namespace game
             Cube cube;
             Shader cube_shader;
             GLuint dirt_texture;
-
-            float lastX;
-            float lastY;
-            bool first_mouse = true;
     };
 }

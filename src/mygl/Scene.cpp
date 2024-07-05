@@ -6,7 +6,7 @@
 
 namespace mygl
 {
-    DefaultScene::DefaultScene(Context &ctx) : Scene(ctx), lastX(ctx.win_width / 2), lastY(ctx.win_height / 2)
+    DefaultScene::DefaultScene(Context &ctx) : Scene(ctx)
     {
         // stbi_set_flip_vertically_on_load(true);
         loadTexture("../assets/textures/dirt.png", dirt_texture, GL_NEAREST, GL_NEAREST);
@@ -34,8 +34,6 @@ namespace mygl
     {
         cube_shader.use();
         
-        
-
         clock.update();
         sky.render(camera);
         cube.render(cube_shader, camera);
