@@ -7,6 +7,7 @@ namespace game
     {
         // stbi_set_flip_vertically_on_load(true);
         storeSceneInCtx();
+        camera.setCameraSpeed(4.0f);
         chunk = new Chunk({0, 0, 0});
         loadTexture("../assets/textures/dirt.png", chunk->diffuse_texture, GL_NEAREST, GL_NEAREST);
         // cube.setDiffuseTexture(dirt_texture);

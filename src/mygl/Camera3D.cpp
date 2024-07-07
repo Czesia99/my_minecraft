@@ -56,7 +56,6 @@ namespace mygl
             if (pitch < -89.0f)
                 pitch = -89.0f;
         }
-
         updateCameraVectors();
     }
 
@@ -80,5 +79,16 @@ namespace mygl
         // also re-calculate the Right and Up vector
         right = glm::normalize(glm::cross(front, world_up));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         up = glm::normalize(glm::cross(right, front));
+    }
+
+    //getter and setter
+    const float Camera3D::getCameraSpeed()
+    {
+        return movement_speed;
+    }
+
+    void Camera3D::setCameraSpeed(float speed)
+    {
+        movement_speed = speed;
     }
 }

@@ -6,6 +6,7 @@ namespace game
     {
         createChunkVertices(pos);
         std::cout << chunk_vertices.size() << std::endl;
+        std::cout << cube_vertices.size() << std::endl;
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -50,18 +51,10 @@ namespace game
                         chunk_vertices.push_back(cube_vertices[i + 5]);
                         chunk_vertices.push_back(cube_vertices[i + 6]);
                         chunk_vertices.push_back(cube_vertices[i + 7]);
-
-                        std::cout << "i = " << i << std::endl;
-                        std::cout << "x = " << x << std::endl;
-                        std::cout << "y = " << y << std::endl;
-                        std::cout << "z = " << z << std::endl;
-
                     }
-
                 }
             }
         }
-
         std::cout << "end chunk vertices setup" << std::endl;
     }
 
@@ -87,6 +80,6 @@ namespace game
         shader.setMat3("normal", normal);
 
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 147456);
+        glDrawArrays(GL_TRIANGLES, 0, 36 * 16 * 16 * 16);
     }
 }
