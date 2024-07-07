@@ -35,5 +35,12 @@ namespace game
             Chunk *chunk;
             Shader cube_shader;
             GLuint dirt_texture;
+
+            GLuint block_textures;
+            std::vector<std::string>block_textures_path = 
+            {
+                "../assets/textures/dirt.png",
+                "../assets/textures/stone.png"
+            };
     };
 }

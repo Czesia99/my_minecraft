@@ -9,8 +9,7 @@ namespace game
         storeSceneInCtx();
         camera.setCameraSpeed(4.0f);
         chunk = new Chunk({0, 0, 0});
-        loadTexture("../assets/textures/dirt.png", chunk->diffuse_texture, GL_NEAREST, GL_NEAREST);
-        // cube.setDiffuseTexture(dirt_texture);
+        loadTextureArray(block_textures_path, block_textures, GL_NEAREST, GL_NEAREST);
         cube_shader = Shader("cube.vs", "cube.fs");
     }
 
@@ -34,6 +33,10 @@ namespace game
     {
         cube_shader.use();
         
+        cube_shader.setInt("material.diffuse", 0);
+        glBindTextureUnit(0, block_textures);
+
+
         clock.update();
         sky.render(camera);
         chunk->render(cube_shader, camera);
