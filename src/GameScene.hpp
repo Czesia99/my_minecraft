@@ -32,6 +32,7 @@ namespace game
             Skybox sky;
             Clock clock;
             // Cube cube;
+            Chunk *chunk;
             Shader cube_shader;
             GLuint dirt_texture;
     };

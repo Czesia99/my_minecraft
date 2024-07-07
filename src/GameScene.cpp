@@ -7,8 +7,9 @@ namespace game
     {
         // stbi_set_flip_vertically_on_load(true);
         storeSceneInCtx();
-        loadTexture("../assets/textures/dirt.png", dirt_texture, GL_NEAREST, GL_NEAREST);
-        cube.setDiffuseTexture(dirt_texture);
+        chunk = new Chunk({0, 0, 0});
+        loadTexture("../assets/textures/dirt.png", chunk->diffuse_texture, GL_NEAREST, GL_NEAREST);
+        // cube.setDiffuseTexture(dirt_texture);
         cube_shader = Shader("cube.vs", "cube.fs");
     }
 
@@ -34,7 +35,8 @@ namespace game
         
         clock.update();
         sky.render(camera);
-        cube.render(cube_shader, camera);
+        chunk->render(cube_shader, camera);
+        // cube.render(cube_shader, camera);
     }
 
     void GameScene::sceneClear()
