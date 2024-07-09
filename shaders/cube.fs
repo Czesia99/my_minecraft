@@ -20,4 +20,5 @@ void main()
     vec3 NewTexCoord = vec3(TexCoords.x, TexCoords.y, BlockType);
     vec4 color = texture(material.diffuse, NewTexCoord);
     FragColor = color;
+    // FragColor = vec4(TexCoords, 0.0, 1.0);
 }

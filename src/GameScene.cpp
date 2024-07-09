@@ -31,6 +31,7 @@ namespace game
 
     void GameScene::update() 
     {
+        glEnable(GL_CULL_FACE);
         cube_shader.use();
         
         cube_shader.setInt("material.diffuse", 0);
@@ -40,7 +41,7 @@ namespace game
         clock.update();
         sky.render(camera);
         chunk->render(cube_shader, camera);
-        // cube.render(cube_shader, camera);
+        std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
     }
 
     void GameScene::sceneClear()

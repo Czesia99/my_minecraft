@@ -42,6 +42,7 @@ namespace mygl
 
     void loadTextureArray(std::vector<std::string>files, unsigned int &texture, int min_filter, int mag_filter, int wrap)
     {
+        stbi_set_flip_vertically_on_load(true);
         glGenTextures(1, &texture);
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texture);
 
