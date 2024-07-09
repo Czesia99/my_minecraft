@@ -72,16 +72,11 @@ namespace game
             for (int i = 0; i < directions.size(); i++)
             {
                 glm::vec3 ndir = directions[i] + cube_pos;
-                int dir = positionToIndex(ndir);
-                // std::cout << "dir = " << dir << std::endl;
-                // std::cout << blocks[dir] << std::endl;
-                if (dir == -1 || blocks[dir] == 0)
+                int neighbor = positionToIndex(ndir);
+                if (neighbor == -1 || blocks[neighbor] == 0)
                 {
                     display = true;
                     break;
-                } else
-                {
-                    std::cout << "display false" << std::endl;
                 }
             }
 
