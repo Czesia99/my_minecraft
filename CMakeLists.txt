@@ -27,6 +27,7 @@ set(SRC_FILES
     ${SRC}/main.cpp
     ${SRC}/GameScene.cpp
     ${SRC}/Chunk.cpp
+    ${SRC}/Client.cpp
 )
 
 set(LINK_LIB

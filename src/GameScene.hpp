@@ -8,6 +8,7 @@
 #include "mygl/Shape.hpp"
 
 #include "Chunk.hpp"
+#include "Client.hpp"
 
 namespace game 
 {
@@ -35,6 +36,7 @@ namespace game
             Chunk *chunk;
             Shader cube_shader;
             GLuint dirt_texture;
+            Client client;
 
             GLuint block_textures;
             std::vector<std::string>block_textures_path = 

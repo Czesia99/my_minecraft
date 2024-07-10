@@ -5,8 +5,8 @@ namespace game
 {
     GameScene::GameScene(Context &ctx) : Scene(ctx)
     {
-        // stbi_set_flip_vertically_on_load(true);
         storeSceneInCtx();
+        client.receive();
         camera.setCameraSpeed(4.0f);
         chunk = new Chunk({0, 0, 0});
         loadTextureArray(block_textures_path, block_textures, GL_NEAREST, GL_NEAREST);
@@ -41,7 +41,8 @@ namespace game
         clock.update();
         sky.render(camera);
         chunk->render(cube_shader, camera);
-        std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
+        // client.receive();
+        // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
     }
 
     void GameScene::sceneClear()
