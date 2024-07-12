@@ -42,13 +42,31 @@ namespace game
 
     void Client::receive()
     {
-        uint8_t buffer[4096] = {0};
         recv(client_socket, buffer, 1, 0);
-        print_buffer("buffer", buffer, 4);
+        print_buffer("buffer", buffer, 1);
         uint8_t id = buffer[0];
+        switch (id) 
+        {
+            case 0x00:
+                myEntityID();
+            // case 0x01:
+            //     addEntity();
+            // case 0x02:
+            //     removeEntity();
+            // case 0x03:
+            //     updateEntity();
+            // case 0x04:
+            //     receiveChunk();
+            // case 0x05:
+            //     receiveMonoTypeChunk();
+        }
+    }
+
+    void Client::myEntityID()
+    {
         recv(client_socket, buffer, 4, 0);
-        std::cout << "buffer from server: " << buffer << std::endl;
-        print_buffer("buffer", buffer, 4);
+        entity_id = htobe32(*(int*)&buffer);
+        std::cout << "entity id = " << entity_id << std::endl;
     }
 
     void Client::connexion()
