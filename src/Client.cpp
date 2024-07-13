@@ -10,11 +10,6 @@ void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
     printf("]\n");
 }
 
-inline void swapEndian(int &val)
-{
-    val = (val<<24) | ((val<<8) & 0x00ff0000) | ((val>>8) & 0x0000ff00) | (val>>24);
-}
-
 namespace game
 {
     Client::Client()
@@ -38,9 +33,6 @@ namespace game
         // sending data
         // const char* message = "Hello, server!";
         // send(client_socket, message, strlen(message), 0);
-
-        // recieving data 
-
     
         // closing socket 
         // close(client_socket); 
@@ -51,7 +43,7 @@ namespace game
         recv(client_socket, buffer, 1, 0);
         print_buffer("buffer", buffer, 1);
         uint8_t id = buffer[0];
-        switch (id) 
+        switch (id)
         {
             case 0x00:
                 myEntityID();
@@ -78,8 +70,6 @@ namespace game
     {
         size_t bytes;
         //entityID[int]
-        // bytes = recv(client_socket, buffer, 4, 0);
-        // std::cout << "BYTES entity id " << bytes << std::endl;
         receiveAll(4);
         entity_id = be32toh(*(int*)&buffer); //ntohl
         std::cout << "entity id = " << entity_id << std::endl;
@@ -89,8 +79,6 @@ namespace game
     {
         size_t bytes;
         //entityID[int], xpos[float], ypos[float], yaw[float], pitch[float]
-        // bytes = recv(client_socket, buffer, 24, 0);
-        // std::cout << "BYTES add entity " << bytes << std::endl;
         receiveAll(24);
         // entity_id = htobe32(*(int*)&buffer); //ntohl
         // std::cout << "entity id = " << entity_id << std::endl;
@@ -100,7 +88,6 @@ namespace game
     {
         size_t bytes;
         //entityID[int]
-        // bytes = recv(client_socket, buffer, 4, 0);
         receiveAll(4);
         // std::cout << "BYTES remove entity " << bytes << std::endl;
     }
@@ -108,8 +95,6 @@ namespace game
     void Client::updateEntity() {
         size_t bytes;
         //entityID[int], xpos[float], ypos[float], yaw[float], pitch[float]
-        // bytes = recv(client_socket, buffer, 24, 0);
-        // std::cout << "BYTES update entity " << bytes << std::endl;
         receiveAll(24);
     }
 
@@ -135,34 +120,39 @@ namespace game
         //chunk xpos[int] chunk ypos[int] chunk zpos[int] blocktype[byte]
         // bytes = recv(client_socket, buffer, 12 + 1, 0);
         receiveAll(12+1);
-
+        ChunkData chunk;
         // std::cout << "BYTES receive mono type chunk " << bytes << std::endl;
         uint8_t *ptr = &buffer[0];
-        int xpos = 0;
-        int ypos = 0;
-        int zpos = 0;
+        // int xpos = 0;
+        // int ypos = 0;
+        // int zpos = 0;
         uint8_t blocktype;
 
-        memcpy(&xpos, ptr, sizeof(int));
-        xpos = be32toh(xpos);
-        std::cout << "xpos" << xpos << std::endl;
+        memcpy(&chunk.xpos, ptr, sizeof(int));
+        chunk.xpos = be32toh(chunk.xpos);
+        std::cout << "xpos" << chunk.xpos << std::endl;
         ptr += sizeof(int);
 
-        memcpy(&ypos, ptr, sizeof(int));
-        ypos = be32toh(ypos);
+        memcpy(&chunk.ypos, ptr, sizeof(int));
+        chunk.ypos = be32toh(chunk.ypos);
         ptr += sizeof(int);
 
-        memcpy(&zpos, ptr, sizeof(int));
+        memcpy(&chunk.zpos, ptr, sizeof(int));
         // be32toh(*(int *)&zpos);
-        zpos = be32toh(zpos);
+        chunk.zpos = be32toh(chunk.zpos);
         ptr += sizeof(int);
-        std::cout << "xpos: "<< xpos << " " << "ypos: "<< ypos << " " << "zpos: "<< zpos << std::endl;
+        std::cout << "xpos: "<< chunk.xpos << " " << "ypos: "<< chunk.ypos << " " << "zpos: "<< chunk.zpos << std::endl;
 
         memcpy(&blocktype, ptr, sizeof(uint8_t));
         // htobe32(*(uint8_t *)&blocktype);
-        std::cout << "blocktype = " << blocktype << std::endl;
-        
+        // chunk.blockTypes = {(int)blocktype};
+        std::fill(std::begin(chunk.blockTypes), std::end(chunk.blockTypes), blocktype);
+        std::cout << "blocktype = " << (int)blocktype << std::endl;
+
+        data->chunks.push_back(chunk);
+
     }
+
     void Client::connexion()
     {
         
@@ -177,22 +167,4 @@ namespace game
         }
         std::cout << "bytes = " << bytes << std::endl;
     }
-
-    // void Client::receiveAll(int fd, uint8_t *buffer, size_t size)
-    // {
-    //     size_t bytes_received = 0;
-
-    //     while (1) {
-    //         int recv_size = recv(fd, &buffer[bytes_received], size - bytes_received, 0);
-    //         bytes_received += recv_size;
-
-    //         if (recv_size == -1)
-    //             return -1;
-
-    //         if (bytes_received == size)
-    //             break;
-    //     }
-
-    //     return bytes_received;
-    // }
 }

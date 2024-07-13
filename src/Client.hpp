@@ -4,12 +4,27 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <endian.h>
+#include <vector>
 
 namespace game
 {
+    struct ChunkData 
+    {
+        int xpos;
+        int ypos;
+        int zpos;
+        int blockTypes[4096] = {0};
+    };
+
+    struct Data 
+    {
+        std::vector<ChunkData> chunks;
+    };
+
     class Client
     {
+        public:
+            Data *data;
         public:
             Client();
             void receive();

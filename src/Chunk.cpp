@@ -26,7 +26,6 @@ namespace game
         }}}
 
         createChunkVertices();
-        std::cout << "j'aime le caca, c'est délicieux... le caca hmmmmmmmmmmmmmmmmmmmmmmmmmmm" << std::endl;
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);

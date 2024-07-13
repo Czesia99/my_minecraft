@@ -41,9 +41,21 @@ namespace game
         clock.update();
         sky.render(camera);
         chunk->render(cube_shader, camera);
+
+        updateChunks();        
+
         // client.receive();
         // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
     }
+
+    //compare chunks vector size & data chunks size if different create and store chunk
+    // void GameScene::updateChunks()
+    // {
+    //     for (int i = 0; i < client.data->chunks.size(); i++)
+    //     {
+    //         chunks.push_back(Chunk({client.data->chunks[i].xpos, client.data->chunks[i].ypos, client.data->chunks[i].zpos}, client.data->chunks[i].blockTypes));
+    //     }
+    // }
 
     void GameScene::sceneClear()
     {

@@ -28,6 +28,8 @@ namespace game
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
+            void updateChunks();
+
         private:
             Camera3D camera;
             Skybox sky;
@@ -42,6 +44,7 @@ namespace game
             std::vector<std::string>block_textures_path = 
             {
                 "../assets/textures/dirt.png",
+                "../assets/textures/stone.png",
                 "../assets/textures/stone.png"
             };
 
