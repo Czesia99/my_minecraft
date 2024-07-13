@@ -14,9 +14,6 @@ namespace game
             Client();
             void receive();
             void connexion();
-            void littleToBigEndian(uint8_t *buffer);
-
-
 
             void myEntityID();
             void addEntity();
@@ -24,9 +21,10 @@ namespace game
             void updateEntity();
             void receiveChunk();
             void receiveMonoTypeChunk();
+
+            void receiveAll(size_t len);
         private:
             uint8_t buffer[4096] = {0};
-            uint8_t buffer2[4096] = {0};
             int client_socket;
             int entity_id;
             // sockaddr_in server_adress;

@@ -9,24 +9,20 @@ namespace game
         return pos.x + pos.y * 16 + pos.z*16*16;
     }
 
-    Chunk::Chunk(glm::ivec3 pos)
+    Chunk::Chunk(glm::ivec3 pos, int blocktypes[4096])
     {
         std::cout << chunk_vertices.size() << std::endl;
         std::cout << cube_vertices.size() << std::endl;
 
-        // for (int i = 0; i < 4096; i++)
-        // {
-        //     int val = rand() % 3;
-        //     blocks[i] = val;
-        // }
-
         for (int z = 0; z < size; z++) {
         for (int y = 0; y < size; y++) {
         for (int x = 0; x < size; x++) {
-            int index = x + y*16 + z*16*16;
-            if (y <= 7) blocks[index] = 2;
-            else if (y == 8) blocks[index] = 1;
-            else blocks[index] = 0;
+
+            if (!blocktypes) {
+                int index = x + y*16 + z*16*16;
+                if (y <= 7) blocks[index] = 2;
+                else if (y == 8) blocks[index] = 1;
+                else blocks[index] = 0;}
         }}}
 
         createChunkVertices();

@@ -44,5 +44,7 @@ namespace game
                 "../assets/textures/dirt.png",
                 "../assets/textures/stone.png"
             };
+
+            std::vector<Chunk>chunks;
     };
 }

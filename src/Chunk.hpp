@@ -18,7 +18,7 @@ namespace game
             Transform transform;
             GLuint diffuse_texture;
         public:
-            Chunk(glm::ivec3 pos);
+            Chunk(glm::ivec3 pos, int blocktypes[4096]);
             void createChunkVertices();
             void render(const Shader &shader, const ICamera &camera);
 

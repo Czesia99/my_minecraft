@@ -6,9 +6,9 @@ namespace game
     GameScene::GameScene(Context &ctx) : Scene(ctx)
     {
         storeSceneInCtx();
-        client.receive();
+        // client.receive();
         camera.setCameraSpeed(4.0f);
-        chunk = new Chunk({0, 0, 0});
+        chunk = new Chunk({0, 0, 0}, NULL);
         loadTextureArray(block_textures_path, block_textures, GL_NEAREST, GL_NEAREST);
         cube_shader = Shader("cube.vs", "cube.fs");
     }
@@ -74,6 +74,7 @@ namespace game
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
+        client.receive();
         std::cout << "xpos = " << xpos << std::endl;
         std::cout << "ypos = " << ypos << std::endl;
     }
