@@ -7,8 +7,8 @@ namespace game
     {
         storeSceneInCtx();
         // client.receive();
-        camera.setCameraSpeed(4.0f);
-        chunk = new Chunk({0, 0, 0}, NULL);
+        camera.setCameraSpeed(8.0f);
+        // chunk = new Chunk({0, 0, 0}, NULL);
         loadTextureArray(block_textures_path, block_textures, GL_NEAREST, GL_NEAREST);
         cube_shader = Shader("cube.vs", "cube.fs");
     }
@@ -40,22 +40,34 @@ namespace game
 
         clock.update();
         sky.render(camera);
-        chunk->render(cube_shader, camera);
+        // chunk->render(cube_shader, camera);
 
-        updateChunks();        
+        // updateChunks(); 
 
+        for (int i = 0; i < chunks.size(); i++)
+        {
+            chunks[i].render(cube_shader, camera);
+        }
         // client.receive();
+        client.receive();
+        updateChunks();
         // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
     }
 
-    //compare chunks vector size & data chunks size if different create and store chunk
-    // void GameScene::updateChunks()
-    // {
-    //     for (int i = 0; i < client.data->chunks.size(); i++)
-    //     {
-    //         chunks.push_back(Chunk({client.data->chunks[i].xpos, client.data->chunks[i].ypos, client.data->chunks[i].zpos}, client.data->chunks[i].blockTypes));
-    //     }
-    // }
+    void GameScene::updateChunks()
+    {
+        std::cout << "update chunk" << std::endl;
+        if (chunks.size() != client.data.chunks.size())
+        {
+            std::cout << "inside update chunk" << std::endl;
+            chunks.push_back(Chunk({client.data.chunks[client.data.chunks.size() - 1].xpos, 
+                                    client.data.chunks[client.data.chunks.size() - 1].ypos, 
+                                    client.data.chunks[client.data.chunks.size() - 1].zpos}, 
+                                    client.data.chunks[client.data.chunks.size() - 1].blocktypes));
+        }
+        // std::cout <<"render chunks size"<< chunks.size() << std::endl;
+        // std::cout <<"data chunks size"<< client.data.chunks.size() << std::endl;
+    }
 
     void GameScene::sceneClear()
     {
@@ -86,9 +98,14 @@ namespace game
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        client.receive();
-        std::cout << "xpos = " << xpos << std::endl;
-        std::cout << "ypos = " << ypos << std::endl;
+        if (action==GLFW_PRESS)
+        {
+
+            client.receive();
+            updateChunks();
+        }
+        // std::cout << "xpos = " << xpos << std::endl;
+        // std::cout << "ypos = " << ypos << std::endl;
     }
 
     void GameScene::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)

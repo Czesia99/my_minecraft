@@ -2,8 +2,14 @@
 #include "Context.hpp"
 #include "Scene.hpp"
 
+
+
 namespace mygl
 {
+void GLFW_error(int error, const char* description)
+{
+    fprintf(stderr, "%s\n", description);
+}
     Context::Context(float width, float height, const char *name) {
         win_width = width;
         win_height = height;
@@ -20,7 +26,8 @@ namespace mygl
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackWrapper);
         glfwSetCursorPosCallback(window, mouseCallbackWrapper);
         glfwSetMouseButtonCallback(window, leftClickCallbackWrapper);
-        glfwSetScrollCallback(window, scrollCallbackWrapper);  
+        glfwSetScrollCallback(window, scrollCallbackWrapper);
+        glfwSetErrorCallback(GLFW_error);
     }
 
     void Context::loadScene(Scene *scene)

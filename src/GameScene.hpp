@@ -39,13 +39,12 @@ namespace game
             Shader cube_shader;
             GLuint dirt_texture;
             Client client;
-
             GLuint block_textures;
+
             std::vector<std::string>block_textures_path = 
             {
                 "../assets/textures/dirt.png",
                 "../assets/textures/stone.png",
-                "../assets/textures/stone.png"
             };
 
             std::vector<Chunk>chunks;

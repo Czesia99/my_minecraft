@@ -18,8 +18,8 @@ namespace game
             Transform transform;
             GLuint diffuse_texture;
         public:
-            Chunk(glm::ivec3 pos, int blocktypes[4096]);
-            void createChunkVertices();
+            Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes);
+            void createChunkVertices(glm::ivec3 pos);
             void render(const Shader &shader, const ICamera &camera);
 
         private:
@@ -30,7 +30,8 @@ namespace game
             int size = 16;
             int vertex_count;
             glm::ivec3 chunk_pos;
-            int blocks[4096];
+            std::vector<uint8_t>blocktypes;
+            // int blocks[4096];
             std::vector<float> chunk_vertices;
             std::vector<float> cube_vertices
             {

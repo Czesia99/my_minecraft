@@ -13,7 +13,7 @@ namespace game
         int xpos;
         int ypos;
         int zpos;
-        int blockTypes[4096] = {0};
+        std::vector<uint8_t>blocktypes;
     };
 
     struct Data 
@@ -24,7 +24,7 @@ namespace game
     class Client
     {
         public:
-            Data *data;
+            Data data;
         public:
             Client();
             void receive();
@@ -39,7 +39,7 @@ namespace game
 
             void receiveAll(size_t len);
         private:
-            uint8_t buffer[4096] = {0};
+            uint8_t buffer[5000] = {0};
             int client_socket;
             int entity_id;
             // sockaddr_in server_adress;

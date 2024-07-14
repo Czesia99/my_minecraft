@@ -23,7 +23,7 @@ namespace mygl
 
     glm::mat4 Camera3D::getProjectionMatrix() const
     {
-        return glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
+        return glm::perspective(glm::radians(fov), width / height, 0.1f, 1000.0f);
     }
 
     void Camera3D::processKeyboard(Camera3D_Movement direction, float delta_time)
