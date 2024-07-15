@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include <cstring>
 
 namespace game
 {
@@ -11,21 +12,6 @@ namespace game
 
     Chunk::Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes) : blocktypes(blocktypes)
     {
-        // blocktypes = blocks;
-        std::cout << chunk_vertices.size() << std::endl;
-        std::cout << cube_vertices.size() << std::endl;
-        std::cout << "BLOCKTYPESSS "<< blocktypes.size() << std::endl;
-        // for (int z = 0; z < size; z++) {
-        // for (int y = 0; y < size; y++) {
-        // for (int x = 0; x < size; x++) {
-
-        //     if (!blocktypes) {
-        //         int index = x + y*16 + z*16*16;
-        //         if (y <= 7) blocks[index] = 2;
-        //         else if (y == 8) blocks[index] = 1;
-        //         else blocks[index] = 0;}
-        // }}}
-
         createChunkVertices(pos);
 
         glGenVertexArrays(1, &vao);
@@ -44,7 +30,8 @@ namespace game
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(5 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
-        glVertexAttribIPointer(3, 1, GL_INT, 9 * sizeof(float), (void*)(8 * sizeof(float)));
+        // glVertexAttribIPointer(3, 1, GL_INT, 9 * sizeof(float), (void*)(8 * sizeof(float))); //forint
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
         glEnableVertexAttribArray(3);
     }
 
@@ -58,10 +45,6 @@ namespace game
 
             int index = x + y*16 + z*16*16;
 
-            // if ((int)blocktypes[index] != 2)
-            // {
-            //     std::cout << "BLOCK TYPE "<< (int)blocktypes[index] << std::endl;
-            // }
             // std::cout << "BLOCK TYPE "<< (int)blocktypes[index] << std::endl;
             if (blocktypes[index] == 0) continue;
             bool display = false;
@@ -101,6 +84,8 @@ namespace game
                     chunk_vertices.push_back(cube_vertices[i + 7]);
 
                     //block type ?
+                    // int forint = blocktypes[index] - 1;
+                    // memcpy(&chunk_vertices[chunk_vertices.size() - 1], &forint, sizeof(int));
                     chunk_vertices.push_back(blocktypes[index] - 1);
                     
                     vertex_count += 1;

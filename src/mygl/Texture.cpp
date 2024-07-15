@@ -42,11 +42,14 @@ namespace mygl
 
     void loadTextureArray(std::vector<std::string>files, unsigned int &texture, int min_filter, int mag_filter, int wrap)
     {
-        std::cout << "file size" << files.size() << std::endl;
+        std::cout << "files size = " << files.size() << std::endl;
         stbi_set_flip_vertically_on_load(true);
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texture);
         int width, height, nrComponents;
         glTextureStorage3D(texture, 1, GL_RGB8, 16, 16, files.size());
+        // glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
+        // glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, 16, 16, files.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
         for (int i = 0; i < files.size(); i++)
         {
             unsigned char *data = stbi_load(files[i].c_str(), &width, &height, &nrComponents, 0);

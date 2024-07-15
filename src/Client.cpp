@@ -124,6 +124,10 @@ namespace game
         chunk.blocktypes.resize(4096);
         memcpy(&chunk.blocktypes[0], ptr, 4096);
 
+        // for (int i = 0; i < chunk.blocktypes.size(); i++)
+        // {
+        //     std::cout << (int)chunk.blocktypes[i] << std::endl;
+        // }
         data.chunks.push_back(chunk);
     }
 
@@ -150,7 +154,7 @@ namespace game
 
         memcpy(&blocktype, ptr, sizeof(uint8_t));
         chunk.blocktypes.resize(4096);
-        std::fill(std::begin(chunk.blocktypes), std::end(chunk.blocktypes), 2);
+        std::fill(std::begin(chunk.blocktypes), std::end(chunk.blocktypes), blocktype);
 
         data.chunks.push_back(chunk);
     }

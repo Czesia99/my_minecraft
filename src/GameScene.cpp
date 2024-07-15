@@ -34,8 +34,9 @@ namespace game
         glEnable(GL_CULL_FACE);
         cube_shader.use();
         
-        cube_shader.setInt("material.diffuse", 0);
-        glBindTextureUnit(0, block_textures);
+        // cube_shader.setInt("material.diffuse", 0);
+        glActiveTexture(GL_TEXTURE_2D_ARRAY);
+        glBindTextureUnit(GL_TEXTURE_2D_ARRAY, block_textures);
 
 
         clock.update();
@@ -48,7 +49,6 @@ namespace game
         {
             chunks[i].render(cube_shader, camera);
         }
-        // client.receive();
         client.receive();
         updateChunks();
         // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
@@ -98,12 +98,12 @@ namespace game
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        if (action==GLFW_PRESS)
-        {
+        // if (action==GLFW_PRESS)
+        // {
 
-            client.receive();
-            updateChunks();
-        }
+        //     client.receive();
+        //     updateChunks();
+        // }
         // std::cout << "xpos = " << xpos << std::endl;
         // std::cout << "ypos = " << ypos << std::endl;
     }

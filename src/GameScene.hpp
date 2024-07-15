@@ -43,8 +43,11 @@ namespace game
 
             std::vector<std::string>block_textures_path = 
             {
+                "../assets/textures/grass2.png",
                 "../assets/textures/dirt.png",
                 "../assets/textures/stone.png",
+                "../assets/textures/oak_log.png",
+                // "../assets/textures/oak_log.png",
             };
 
             std::vector<Chunk>chunks;
