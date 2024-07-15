@@ -16,8 +16,6 @@ namespace game
     Client::Client()
     {
         int status;
-        // creating socket
-        // int client_socket;
         client_socket = socket(AF_INET, SOCK_STREAM, 0);
     
         // specifying address 
@@ -25,7 +23,7 @@ namespace game
         server_adress.sin_family = AF_INET;
         server_adress.sin_port = htons(15000);
         server_adress.sin_addr.s_addr = inet_addr("127.0.0.1"); //local server
-        //inet_addr("162.19.137.231");
+        //server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
     
         // sending connection request
         status = connect(client_socket, (struct sockaddr*)&server_adress, sizeof(server_adress));
@@ -76,7 +74,7 @@ namespace game
         size_t bytes;
         //entityID[int]
         receiveAll(4);
-        entity_id = be32toh(*(int*)&buffer); //ntohl
+        entity_id = be32toh(*(int*)&buffer);
         // std::cout << "entity id = " << entity_id << std::endl;
     }
 
@@ -108,26 +106,22 @@ namespace game
         ChunkData chunk;
         uint8_t *ptr = &buffer[0];
 
-        memcpy(&chunk.xpos, ptr, sizeof(int));
-        chunk.xpos = be32toh(chunk.xpos);
+        memcpy(&chunk.pos.x, ptr, sizeof(int));
+        chunk.pos.x = be32toh(chunk.pos.x);
         ptr += sizeof(int);
 
-        memcpy(&chunk.ypos, ptr, sizeof(int));
-        chunk.ypos = be32toh(chunk.ypos);
+        memcpy(&chunk.pos.y, ptr, sizeof(int));
+        chunk.pos.y = be32toh(chunk.pos.y);
         ptr += sizeof(int);
 
-        memcpy(&chunk.zpos, ptr, sizeof(int));
-        chunk.zpos = be32toh(chunk.zpos);
+        memcpy(&chunk.pos.z, ptr, sizeof(int));
+        chunk.pos.z = be32toh(chunk.pos.z);
         ptr += sizeof(int);
 
         // std::cout << "xpos: "<< chunk.xpos << " " << "ypos: "<< chunk.ypos << " " << "zpos: "<< chunk.zpos << std::endl;
         chunk.blocktypes.resize(4096);
         memcpy(&chunk.blocktypes[0], ptr, 4096);
 
-        // for (int i = 0; i < chunk.blocktypes.size(); i++)
-        // {
-        //     std::cout << (int)chunk.blocktypes[i] << std::endl;
-        // }
         data.chunks.push_back(chunk);
     }
 
@@ -139,18 +133,18 @@ namespace game
         uint8_t *ptr = &buffer[0];
         uint8_t blocktype;
 
-        memcpy(&chunk.xpos, ptr, sizeof(int));
-        chunk.xpos = be32toh(chunk.xpos);
+        memcpy(&chunk.pos.x, ptr, sizeof(int));
+        chunk.pos.x = be32toh(chunk.pos.x);
         ptr += sizeof(int);
 
-        memcpy(&chunk.ypos, ptr, sizeof(int));
-        chunk.ypos = be32toh(chunk.ypos);
+        memcpy(&chunk.pos.y, ptr, sizeof(int));
+        chunk.pos.y = be32toh(chunk.pos.y);
         ptr += sizeof(int);
 
-        memcpy(&chunk.zpos, ptr, sizeof(int));
-        chunk.zpos = be32toh(chunk.zpos);
+        memcpy(&chunk.pos.z, ptr, sizeof(int));
+        chunk.pos.z = be32toh(chunk.pos.z);
         ptr += sizeof(int);
-        std::cout << "xpos: "<< chunk.xpos << " " << "ypos: "<< chunk.ypos << " " << "zpos: "<< chunk.zpos << std::endl;
+        // std::cout << "xpos: "<< chunk.xpos << " " << "ypos: "<< chunk.ypos << " " << "zpos: "<< chunk.zpos << std::endl;
 
         memcpy(&blocktype, ptr, sizeof(uint8_t));
         chunk.blocktypes.resize(4096);

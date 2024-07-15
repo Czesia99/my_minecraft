@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <vector>
+#include <deque>
+#include <glm/glm.hpp>
 
 namespace game
 {
@@ -13,12 +15,13 @@ namespace game
         int xpos;
         int ypos;
         int zpos;
+        glm::ivec3 pos;
         std::vector<uint8_t>blocktypes;
     };
 
     struct Data 
     {
-        std::vector<ChunkData> chunks;
+        std::deque<ChunkData> chunks;
     };
 
     class Client

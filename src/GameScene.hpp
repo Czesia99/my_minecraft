@@ -9,8 +9,10 @@
 
 #include "Chunk.hpp"
 #include "Client.hpp"
+#include "glm/gtx/hash.hpp"
+#include <unordered_map>
 
-namespace game 
+namespace game
 {
     using namespace mygl;
 
@@ -34,7 +36,6 @@ namespace game
             Camera3D camera;
             Skybox sky;
             Clock clock;
-            // Cube cube;
             Chunk *chunk;
             Shader cube_shader;
             GLuint dirt_texture;
@@ -49,7 +50,9 @@ namespace game
                 "../assets/textures/oak_log.png",
                 // "../assets/textures/oak_log.png",
             };
+            // std::vector<Chunk>chunks;
 
-            std::vector<Chunk>chunks;
+            std::unordered_map<glm::ivec3, Chunk*> chunks;
+            // std::unordered_map<glm::ivec3, Chunk>::iterator itr;
     };
 }

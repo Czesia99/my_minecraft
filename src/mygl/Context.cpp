@@ -6,10 +6,11 @@
 
 namespace mygl
 {
-void GLFW_error(int error, const char* description)
-{
-    fprintf(stderr, "%s\n", description);
-}
+    void GLFW_error(int error, const char* description)
+    {
+        fprintf(stderr, "%s\n", description);
+    }
+
     Context::Context(float width, float height, const char *name) {
         win_width = width;
         win_height = height;

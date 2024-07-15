@@ -83,7 +83,7 @@ namespace game
                     chunk_vertices.push_back(cube_vertices[i + 6]);
                     chunk_vertices.push_back(cube_vertices[i + 7]);
 
-                    //block type ?
+                    //block type
                     // int forint = blocktypes[index] - 1;
                     // memcpy(&chunk_vertices[chunk_vertices.size() - 1], &forint, sizeof(int));
                     chunk_vertices.push_back(blocktypes[index] - 1);

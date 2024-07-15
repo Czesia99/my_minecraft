@@ -43,12 +43,21 @@ namespace game
         sky.render(camera);
         // chunk->render(cube_shader, camera);
 
-        // updateChunks(); 
+        // for (int i = 0; i < chunks.size(); i++)
+        // {
+        //     chunks[i].render(cube_shader, camera);
+        // }
 
-        for (int i = 0; i < chunks.size(); i++)
+        // for (itr = chunks.begin(); itr != chunks.end(); itr++)
+        // {
+        //     itr->second.render(cube_shader, camera);
+        // }
+
+        for (auto &it : chunks)
         {
-            chunks[i].render(cube_shader, camera);
+            it.second->render(cube_shader, camera);
         }
+
         client.receive();
         updateChunks();
         // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
@@ -57,13 +66,10 @@ namespace game
     void GameScene::updateChunks()
     {
         std::cout << "update chunk" << std::endl;
-        if (chunks.size() != client.data.chunks.size())
+        if (client.data.chunks.size() != 0)
         {
-            std::cout << "inside update chunk" << std::endl;
-            chunks.push_back(Chunk({client.data.chunks[client.data.chunks.size() - 1].xpos, 
-                                    client.data.chunks[client.data.chunks.size() - 1].ypos, 
-                                    client.data.chunks[client.data.chunks.size() - 1].zpos}, 
-                                    client.data.chunks[client.data.chunks.size() - 1].blocktypes));
+            chunks[client.data.chunks[0].pos] = new Chunk(client.data.chunks[0].pos, client.data.chunks[0].blocktypes);
+            client.data.chunks.pop_front();
         }
         // std::cout <<"render chunks size"<< chunks.size() << std::endl;
         // std::cout <<"data chunks size"<< client.data.chunks.size() << std::endl;
