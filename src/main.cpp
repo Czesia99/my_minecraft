@@ -2,12 +2,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-// #include "mygl/Context.hpp"
 #include "GameScene.hpp"
 
 int main()
 {
-    mygl::Context ctx;
+    mygl::Context ctx(1920, 1080, "MY_MINECRAFT");
     glfwSwapInterval(1); //vsync
 
     game::GameScene game(ctx); //idx 0

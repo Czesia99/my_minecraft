@@ -12,16 +12,22 @@ namespace game
 {
     struct ChunkData 
     {
-        int xpos;
-        int ypos;
-        int zpos;
         glm::ivec3 pos;
         std::vector<uint8_t>blocktypes;
+    };
+
+    struct EntityData
+    {
+        int id;
+        glm::ivec3 pos;
+        float yaw;
+        float pitch;
     };
 
     struct Data 
     {
         std::deque<ChunkData> chunks;
+        std::deque<EntityData> entitys;
     };
 
     class Client
@@ -31,7 +37,6 @@ namespace game
         public:
             Client();
             void receive();
-            void connexion();
 
             void myEntityID();
             void addEntity();

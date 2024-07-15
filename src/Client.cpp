@@ -22,8 +22,8 @@ namespace game
         sockaddr_in server_adress;
         server_adress.sin_family = AF_INET;
         server_adress.sin_port = htons(15000);
-        server_adress.sin_addr.s_addr = inet_addr("127.0.0.1"); //local server
-        //server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
+        // server_adress.sin_addr.s_addr = inet_addr("127.0.0.1"); //local server
+        server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
     
         // sending connection request
         status = connect(client_socket, (struct sockaddr*)&server_adress, sizeof(server_adress));
@@ -41,7 +41,6 @@ namespace game
     void Client::receive()
     {
         recv(client_socket, buffer, 1, 0);
-        // receiveAll(1);
         print_buffer("buffer", buffer, 1);
         uint8_t id = buffer[0];
         switch (id)
@@ -69,21 +68,55 @@ namespace game
         }
     }
 
+    void Client::receiveAll(size_t len)
+    {
+        size_t bytes = 0;
+        
+        while (bytes != len){
+            bytes += recv(client_socket, &buffer[bytes], len - bytes, 0);
+        }
+        std::cout << "bytes = " << bytes << std::endl;
+    }
+
     void Client::myEntityID()
     {
-        size_t bytes;
         //entityID[int]
         receiveAll(4);
         entity_id = be32toh(*(int*)&buffer);
-        // std::cout << "entity id = " << entity_id << std::endl;
     }
 
     void Client::addEntity()
     {
-        //entityID[int], xpos[float], ypos[float], yaw[float], pitch[float]
+        //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
         receiveAll(24);
-        // entity_id = htobe32(*(int*)&buffer); //ntohl
-        // std::cout << "entity id = " << entity_id << std::endl;
+        EntityData entity;
+        uint8_t *ptr = &buffer[0];
+
+        memcpy(&entity.id, ptr, sizeof(int));
+        entity.id = be32toh(entity.id);
+        ptr += sizeof(int);
+
+        memcpy(&entity.pos.x, ptr, sizeof(float));
+        entity.pos.x = be32toh(entity.pos.x);
+        ptr += sizeof(float);
+
+        memcpy(&entity.pos.y, ptr, sizeof(float));
+        entity.pos.y = be32toh(entity.pos.y);
+        ptr += sizeof(float);
+
+        memcpy(&entity.pos.z, ptr, sizeof(float));
+        entity.pos.z = be32toh(entity.pos.z);
+        ptr += sizeof(float);
+
+        memcpy(&entity.yaw, ptr, sizeof(float));
+        entity.yaw = be32toh(entity.yaw);
+        ptr += sizeof(float);
+
+        memcpy(&entity.pitch, ptr, sizeof(float));
+        entity.pitch = be32toh(entity.pitch);
+        ptr += sizeof(float);
+
+        data.entitys.push_back(entity);
     }
 
     void Client::removeEntity()
@@ -95,7 +128,7 @@ namespace game
 
     void Client::updateEntity() 
     {
-        //entityID[int], xpos[float], ypos[float], yaw[float], pitch[float]
+        //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
         receiveAll(24);
     }
 
@@ -151,20 +184,5 @@ namespace game
         std::fill(std::begin(chunk.blocktypes), std::end(chunk.blocktypes), blocktype);
 
         data.chunks.push_back(chunk);
-    }
-
-    void Client::connexion()
-    {
-        
-    }
-
-    void Client::receiveAll(size_t len)
-    {
-        size_t bytes = 0;
-        
-        while (bytes != len){
-            bytes += recv(client_socket, &buffer[bytes], len - bytes, 0);
-        }
-        std::cout << "bytes = " << bytes << std::endl;
     }
 }
