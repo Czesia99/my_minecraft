@@ -39,12 +39,12 @@ namespace game
         // close(client_socket); 
     }
 
-    void Client::clientThread()
+    void Client::receiveThread()
     {
         while(1)
         {
-            // receive();
-            std::cout << "caca" << std::endl;
+            std::cout << "in while thread" << std::endl;
+            receive();
         }
     }
 
@@ -62,10 +62,10 @@ namespace game
                 addEntity();
                 break;
             case 0x02:
-                removeEntity();
+                receiveRemoveEntity();
                 break;
             case 0x03:
-                updateEntity();
+                receiveUpdateEntity();
                 break;
             case 0x04:
                 receiveChunk();
@@ -129,14 +129,14 @@ namespace game
         data.entitys.push_back(entity);
     }
 
-    void Client::removeEntity()
+    void Client::receiveRemoveEntity()
     {
         //entityID[int]
         receiveAll(4);
         // std::cout << "BYTES remove entity " << bytes << std::endl;
     }
 
-    void Client::updateEntity() 
+    void Client::receiveUpdateEntity() 
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
         receiveAll(24);
@@ -194,5 +194,14 @@ namespace game
         std::fill(std::begin(chunk.blocktypes), std::end(chunk.blocktypes), blocktype);
 
         data.chunks.push_back(chunk);
+    }
+
+    void Client::sendUpdateEntity(float &xpos, float &ypos, float &zpos, float &yaw, float &pitch)
+    {
+        //id[byte], entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
+        uint8_t id = 0x00;
+        
+
+
     }
 }

@@ -37,16 +37,21 @@ namespace game
         public:
             Client();
             void receive();
+            void receiveAll(size_t len);
+            void receiveThread();
 
+            //receive
             void myEntityID();
             void addEntity();
-            void removeEntity();
-            void updateEntity();
+            void receiveRemoveEntity();
+            void receiveUpdateEntity();
             void receiveChunk();
             void receiveMonoTypeChunk();
 
-            void clientThread();
-            void receiveAll(size_t len);
+            //send
+            void sendUpdateEntity(float &xpos, float &ypos, float &zpos, float &yaw, float &pitch);
+            void sendUpdateBlock();
+            
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;

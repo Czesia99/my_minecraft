@@ -11,6 +11,7 @@
 #include "Client.hpp"
 #include "glm/gtx/hash.hpp"
 #include <unordered_map>
+#include <thread>
 
 namespace game
 {
@@ -46,14 +47,14 @@ namespace game
             std::vector<std::string>block_textures_path = 
             {
                 "../assets/textures/grass2.png",
-                "../assets/textures/dirt.png",
-                "../assets/textures/stone.png",
-                "../assets/textures/oak_log.png",
+                "../assets/textures/dirt2.png",
+                "../assets/textures/stone2.png",
+                "../assets/textures/oak_log2.png",
                 // "../assets/textures/oak_log.png",
             };
             // std::vector<Chunk>chunks;
 
             std::unordered_map<glm::ivec3, Chunk*> chunks;
-            // std::unordered_map<glm::ivec3, Chunk>::iterator itr;
+            std::thread t1;
     };
 }

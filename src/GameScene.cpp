@@ -9,13 +9,10 @@ namespace game
         storeSceneInCtx();
         // client.receive();
         camera.setCameraSpeed(8.0f);
-        // chunk = new Chunk({0, 0, 0}, NULL);
-        loadTextureArray(block_textures_path, block_textures, GL_NEAREST, GL_NEAREST);
+        loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         cube_shader = Shader("cube.vs", "cube.fs");
-        client.receive();
-        // std::thread t1(&Client::clientThread, client);
-
-        // t1.detach();
+        t1 = std::thread(&Client::receiveThread, &client);
+        t1.detach();
     }
 
     void GameScene::storeSceneInCtx() 
@@ -54,7 +51,6 @@ namespace game
         }
 
         // client.receive();
-        
         updateChunks();
         // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
     }

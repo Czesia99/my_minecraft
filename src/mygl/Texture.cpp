@@ -40,12 +40,12 @@ namespace mygl
         }
     }
 
-    void loadTextureArray(std::vector<std::string>files, unsigned int &texture, int min_filter, int mag_filter, int wrap)
+    void loadTextureArray(std::vector<std::string>files, unsigned int &texture, int width, int height, int min_filter, int mag_filter, int wrap)
     {
         stbi_set_flip_vertically_on_load(true);
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texture);
-        int width, height, nrComponents;
-        glTextureStorage3D(texture, 1, GL_RGB8, 16, 16, files.size());
+        int nrComponents;
+        glTextureStorage3D(texture, 1, GL_RGB8, width, height, files.size());
         // glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
         // glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, 16, 16, files.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
