@@ -42,7 +42,6 @@ namespace mygl
 
     void loadTextureArray(std::vector<std::string>files, unsigned int &texture, int min_filter, int mag_filter, int wrap)
     {
-        std::cout << "files size = " << files.size() << std::endl;
         stbi_set_flip_vertically_on_load(true);
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texture);
         int width, height, nrComponents;
@@ -53,10 +52,8 @@ namespace mygl
         for (int i = 0; i < files.size(); i++)
         {
             unsigned char *data = stbi_load(files[i].c_str(), &width, &height, &nrComponents, 0);
-            std::cout << "width == " << width << ", height == " << height << std::endl;
             if (data) {
                 GLenum format;
-                std::cout << "nbr components" << nrComponents << std::endl;
                 if (nrComponents == 1)
                     format = GL_RED;
                 else if (nrComponents == 3)

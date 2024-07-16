@@ -45,6 +45,7 @@ namespace game
             void receiveChunk();
             void receiveMonoTypeChunk();
 
+            void clientThread();
             void receiveAll(size_t len);
         private:
             uint8_t buffer[5000] = {0};

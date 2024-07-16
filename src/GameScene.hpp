@@ -31,6 +31,7 @@ namespace game
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
             void updateChunks();
+            void receiveThread();
 
         private:
             Camera3D camera;

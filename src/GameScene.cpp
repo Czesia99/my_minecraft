@@ -1,5 +1,6 @@
 #include "GameScene.hpp"
 #include "mygl/Texture.hpp"
+#include <thread>
 
 namespace game 
 {
@@ -11,6 +12,10 @@ namespace game
         // chunk = new Chunk({0, 0, 0}, NULL);
         loadTextureArray(block_textures_path, block_textures, GL_NEAREST, GL_NEAREST);
         cube_shader = Shader("cube.vs", "cube.fs");
+        client.receive();
+        // std::thread t1(&Client::clientThread, client);
+
+        // t1.detach();
     }
 
     void GameScene::storeSceneInCtx() 
@@ -43,22 +48,13 @@ namespace game
         sky.render(camera);
         // chunk->render(cube_shader, camera);
 
-        // for (int i = 0; i < chunks.size(); i++)
-        // {
-        //     chunks[i].render(cube_shader, camera);
-        // }
-
-        // for (itr = chunks.begin(); itr != chunks.end(); itr++)
-        // {
-        //     itr->second.render(cube_shader, camera);
-        // }
-
         for (auto &it : chunks)
         {
             it.second->render(cube_shader, camera);
         }
 
-        client.receive();
+        // client.receive();
+        
         updateChunks();
         // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
     }

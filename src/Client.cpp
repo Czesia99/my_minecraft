@@ -1,6 +1,7 @@
 #include "Client.hpp"
 #include <cstring>
 #include <arpa/inet.h>
+#include <thread>
 
 void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 {
@@ -38,10 +39,19 @@ namespace game
         // close(client_socket); 
     }
 
+    void Client::clientThread()
+    {
+        while(1)
+        {
+            // receive();
+            std::cout << "caca" << std::endl;
+        }
+    }
+
     void Client::receive()
     {
         recv(client_socket, buffer, 1, 0);
-        print_buffer("buffer", buffer, 1);
+        // print_buffer("buffer", buffer, 1);
         uint8_t id = buffer[0];
         switch (id)
         {
