@@ -10,6 +10,7 @@ namespace game
         // client.receive();
         camera.setCameraSpeed(8.0f);
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
+        // loadTextureArray(block_textures_path, block_textures, 128, 128);
         cube_shader = Shader("cube.vs", "cube.fs");
         t1 = std::thread(&Client::receiveThread, &client);
         t1.detach();
@@ -52,19 +53,15 @@ namespace game
 
         // client.receive();
         updateChunks();
-        // std::cout << "x = " << camera.front.x << "y = " << camera.front.y << "z = " <<camera.front.z << std::endl;
     }
 
     void GameScene::updateChunks()
     {
-        std::cout << "update chunk" << std::endl;
         if (client.data.chunks.size() != 0)
         {
             chunks[client.data.chunks[0].pos] = new Chunk(client.data.chunks[0].pos, client.data.chunks[0].blocktypes);
             client.data.chunks.pop_front();
         }
-        // std::cout <<"render chunks size"<< chunks.size() << std::endl;
-        // std::cout <<"data chunks size"<< client.data.chunks.size() << std::endl;
     }
 
     void GameScene::sceneClear()
@@ -77,14 +74,28 @@ namespace game
         if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(ctx.window, true);
 
-        if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
+        if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS) 
+        {
             camera.processKeyboard(FORWARD, clock.delta_time);
+            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        }
         if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
+        {
             camera.processKeyboard(BACKWARD, clock.delta_time);
+            // client.sendUpdateEntity(camera.position.x, camera.position.x, camera.position.x, camera.yaw, camera.pitch);
+        }
         if (glfwGetKey(ctx.window, GLFW_KEY_A) == GLFW_PRESS)
+        {
             camera.processKeyboard(LEFT, clock.delta_time);
+            // client.sendUpdateEntity(camera.position.x, camera.position.x, camera.position.x, camera.yaw, camera.pitch);
+        }
         if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
+        {
             camera.processKeyboard(RIGHT, clock.delta_time);
+            // client.sendUpdateEntity(camera.position.x, camera.position.x, camera.position.x, camera.yaw, camera.pitch);
+        }
+
+        
     }
 
     void GameScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)

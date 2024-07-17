@@ -38,14 +38,12 @@ namespace game
     void Chunk::createChunkVertices(glm::ivec3 pos)
     {
         vertex_count = 0;
-        std::cout << "start chunk vertices setup" << std::endl;
         for (int z = 0; z < size; z++) {
         for (int y = 0; y < size; y++) {
         for (int x = 0; x < size; x++) {
 
             int index = x + y*16 + z*16*16;
 
-            // std::cout << "BLOCK TYPE "<< (int)blocktypes[index] << std::endl;
             if (blocktypes[index] == 0) continue;
             bool display = false;
 
@@ -92,10 +90,6 @@ namespace game
                 }
             }
             }}}
-
-
-        std::cout << "vertex count" << vertex_count << std::endl;
-        std::cout << "end chunk vertices setup" << std::endl;
     }
 
     void Chunk::render(const Shader &shader, const ICamera &camera)

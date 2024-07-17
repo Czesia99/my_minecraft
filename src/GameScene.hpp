@@ -40,7 +40,6 @@ namespace game
             Clock clock;
             Chunk *chunk;
             Shader cube_shader;
-            GLuint dirt_texture;
             Client client;
             GLuint block_textures;
 
@@ -52,6 +51,15 @@ namespace game
                 "../assets/textures/oak_log2.png",
                 // "../assets/textures/oak_log.png",
             };
+
+            // std::vector<std::string>block_textures_path = 
+            // {
+            //     "../assets/textures/grass2.png",
+            //     "../assets/textures/papa/Durt_1.png",
+            //     "../assets/textures/papa/Stone_1.png",
+            //     "../assets/textures/papa/Oak_1.png",
+            //     "../assets/textures/oak_log.png",
+            // };
             // std::vector<Chunk>chunks;
 
             std::unordered_map<glm::ivec3, Chunk*> chunks;

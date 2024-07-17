@@ -30,6 +30,17 @@ namespace game
         std::deque<EntityData> entitys;
     };
 
+    struct UpdateEntityData
+    {
+        uint8_t id;
+        int entity_id;
+        uint32_t xpos;
+        uint32_t ypos;
+        uint32_t zpos;
+        uint32_t yaw;
+        uint32_t pitch;
+    } __attribute__((packed));
+
     class Client
     {
         public:
@@ -54,6 +65,7 @@ namespace game
             
         private:
             uint8_t buffer[5000] = {0};
+            uint8_t send_buffer[100] = {0};
             int client_socket;
             int entity_id;
             // sockaddr_in server_adress;

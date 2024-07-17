@@ -29,13 +29,6 @@ namespace game
         // sending connection request
         status = connect(client_socket, (struct sockaddr*)&server_adress, sizeof(server_adress));
         
-        // std::cout << "status = " << status << std::endl;
-        
-        // sending data
-        // const char* message = "Hello, server!";
-        // send(client_socket, message, strlen(message), 0);
-    
-        // closing socket 
         // close(client_socket); 
     }
 
@@ -43,7 +36,6 @@ namespace game
     {
         while(1)
         {
-            std::cout << "in while thread" << std::endl;
             receive();
         }
     }
@@ -85,7 +77,6 @@ namespace game
         while (bytes != len){
             bytes += recv(client_socket, &buffer[bytes], len - bytes, 0);
         }
-        std::cout << "bytes = " << bytes << std::endl;
     }
 
     void Client::myEntityID()
@@ -133,7 +124,6 @@ namespace game
     {
         //entityID[int]
         receiveAll(4);
-        // std::cout << "BYTES remove entity " << bytes << std::endl;
     }
 
     void Client::receiveUpdateEntity() 
@@ -161,7 +151,6 @@ namespace game
         chunk.pos.z = be32toh(chunk.pos.z);
         ptr += sizeof(int);
 
-        // std::cout << "xpos: "<< chunk.xpos << " " << "ypos: "<< chunk.ypos << " " << "zpos: "<< chunk.zpos << std::endl;
         chunk.blocktypes.resize(4096);
         memcpy(&chunk.blocktypes[0], ptr, 4096);
 
@@ -187,7 +176,6 @@ namespace game
         memcpy(&chunk.pos.z, ptr, sizeof(int));
         chunk.pos.z = be32toh(chunk.pos.z);
         ptr += sizeof(int);
-        // std::cout << "xpos: "<< chunk.xpos << " " << "ypos: "<< chunk.ypos << " " << "zpos: "<< chunk.zpos << std::endl;
 
         memcpy(&blocktype, ptr, sizeof(uint8_t));
         chunk.blocktypes.resize(4096);
@@ -198,10 +186,27 @@ namespace game
 
     void Client::sendUpdateEntity(float &xpos, float &ypos, float &zpos, float &yaw, float &pitch)
     {
+        std::cout << "send update entity" << std::endl;
         //id[byte], entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
+        // uint8_t buffer[24] = {0};
         uint8_t id = 0x00;
-        
+        // uint8_t *ptr = &send_buffer[0];
+        UpdateEntityData ued;
 
+        ued.id = id;
+        ued.entity_id = htobe32(entity_id);
+        std::cout << "entity id = " << entity_id << " " << ued.entity_id << std::endl;
+        ued.xpos = htobe32(*(uint32_t*)&xpos);
+        std::cout << "xpos = " << xpos << std::endl;
+        std::cout << "xpos ued = " << ued.xpos << std::endl;
+        ued.ypos = htobe32(*(uint32_t*)&ypos);
+        std::cout << "ypos = " << ypos << std::endl;
+        ued.zpos = htobe32(*(uint32_t*)&zpos);
+        std::cout << "zpos = " << zpos << std::endl;
+        ued.yaw = htobe32(*(uint32_t*)&yaw);
+        ued.pitch = htobe32(*(uint32_t*)&pitch);
 
+        std::cout << sizeof(ued) << std::endl;
+        send(client_socket, &ued, sizeof(ued), 0);
     }
 }
