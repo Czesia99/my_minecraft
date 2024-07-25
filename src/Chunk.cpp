@@ -12,7 +12,7 @@ namespace game
 
     Chunk::Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes) : blocktypes(blocktypes)
     {
-        createChunkVertices(pos);
+        createChunkVertices(pos); // only him in thread
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);

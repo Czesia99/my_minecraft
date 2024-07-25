@@ -154,7 +154,7 @@ namespace game
         chunk.blocktypes.resize(4096);
         memcpy(&chunk.blocktypes[0], ptr, 4096);
 
-        data.chunks.push_back(chunk);
+        data.chunks.push_back(chunk); // to lock
     }
 
     void Client::receiveMonoTypeChunk()
@@ -186,7 +186,6 @@ namespace game
 
     void Client::sendUpdateEntity(float &xpos, float &ypos, float &zpos, float &yaw, float &pitch)
     {
-        std::cout << "send update entity" << std::endl;
         //id[byte], entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
         // uint8_t buffer[24] = {0};
         uint8_t id = 0x00;
@@ -195,18 +194,12 @@ namespace game
 
         ued.id = id;
         ued.entity_id = htobe32(entity_id);
-        std::cout << "entity id = " << entity_id << " " << ued.entity_id << std::endl;
         ued.xpos = htobe32(*(uint32_t*)&xpos);
-        std::cout << "xpos = " << xpos << std::endl;
-        std::cout << "xpos ued = " << ued.xpos << std::endl;
         ued.ypos = htobe32(*(uint32_t*)&ypos);
-        std::cout << "ypos = " << ypos << std::endl;
         ued.zpos = htobe32(*(uint32_t*)&zpos);
-        std::cout << "zpos = " << zpos << std::endl;
         ued.yaw = htobe32(*(uint32_t*)&yaw);
         ued.pitch = htobe32(*(uint32_t*)&pitch);
 
-        std::cout << sizeof(ued) << std::endl;
         send(client_socket, &ued, sizeof(ued), 0);
     }
 }

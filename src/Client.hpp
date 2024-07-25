@@ -65,7 +65,6 @@ namespace game
             
         private:
             uint8_t buffer[5000] = {0};
-            uint8_t send_buffer[100] = {0};
             int client_socket;
             int entity_id;
             // sockaddr_in server_adress;

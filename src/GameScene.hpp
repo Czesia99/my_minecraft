@@ -64,5 +64,6 @@ namespace game
 
             std::unordered_map<glm::ivec3, Chunk*> chunks;
             std::thread t1;
+            float request_interval = 0.0;
     };
 }

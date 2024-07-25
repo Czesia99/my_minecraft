@@ -8,12 +8,12 @@ namespace game
     {
         storeSceneInCtx();
         // client.receive();
-        camera.setCameraSpeed(8.0f);
+        camera.setCameraSpeed(32.0f);
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         // loadTextureArray(block_textures_path, block_textures, 128, 128);
         cube_shader = Shader("cube.vs", "cube.fs");
         t1 = std::thread(&Client::receiveThread, &client);
-        t1.detach();
+        // t1.detach();
     }
 
     void GameScene::storeSceneInCtx() 
@@ -35,6 +35,7 @@ namespace game
     void GameScene::update() 
     {
         glEnable(GL_CULL_FACE);
+        clock.update();
         cube_shader.use();
         
         // cube_shader.setInt("material.diffuse", 0);
@@ -42,7 +43,6 @@ namespace game
         glBindTextureUnit(GL_TEXTURE_2D_ARRAY, block_textures);
 
 
-        clock.update();
         sky.render(camera);
         // chunk->render(cube_shader, camera);
 
@@ -51,7 +51,13 @@ namespace game
             it.second->render(cube_shader, camera);
         }
 
-        // client.receive();
+        std::cout << "delta time = " << clock.delta_time << std::endl;
+        request_interval += clock.delta_time;
+        if (request_interval >= 1.0f/20.0f) {
+            request_interval = 0;
+            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        }
+
         updateChunks();
     }
 
@@ -59,9 +65,11 @@ namespace game
     {
         if (client.data.chunks.size() != 0)
         {
+            //lock
             chunks[client.data.chunks[0].pos] = new Chunk(client.data.chunks[0].pos, client.data.chunks[0].blocktypes);
             client.data.chunks.pop_front();
         }
+        //unlock
     }
 
     void GameScene::sceneClear()
@@ -77,7 +85,6 @@ namespace game
         if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS) 
         {
             camera.processKeyboard(FORWARD, clock.delta_time);
-            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
         {
