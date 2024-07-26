@@ -52,6 +52,8 @@ namespace game
 
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + pos;
+            
+            const std::vector<glm::ivec3> directions = {{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
 
             loadFrontFaceVertices(local_pos, world_pos, index);
             loadBackFaceVertices(local_pos, world_pos, index);
@@ -59,8 +61,7 @@ namespace game
             loadRightFaceVertices(local_pos, world_pos, index);
             loadBottomFaceVertices(local_pos, world_pos, index);
             loadTopFaceVertices(local_pos, world_pos, index);
-
-            }}}
+        }}}
     }
 
     void Chunk::render(const Shader &shader, const ICamera &camera)
@@ -81,15 +82,15 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    void Chunk::loadFrontFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index)
+    void Chunk::loadFrontFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
-        glm::ivec3 direction = {0, 0, -1};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
+        // glm::ivec3 direction = {0, -1, 0};
+        // glm::ivec3 ndir = direction + local_pos;
+        // int neighbor = positionToIndex(ndir);
 
-        if (neighbor != -1 || blocktypes[neighbor] != 0)
-            return;
-
+        // if (neighbor != -1 || blocktypes[neighbor] != 0)
+        //     return;
+        std::cout << "load front face" << std::endl;
         for (int i = 0; i < front_face_vertices.size(); i+= 8)
         {
             chunk_vertices.push_back(front_face_vertices[i] + world_pos.x);
@@ -112,15 +113,15 @@ namespace game
         }
     }
 
-    void Chunk::loadBackFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index)
+    void Chunk::loadBackFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
-        glm::ivec3 direction = {0, 0, 1};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
+        // glm::ivec3 direction = {0, 0, 1};
+        // glm::ivec3 ndir = direction + local_pos;
+        // int neighbor = positionToIndex(ndir);
 
-        if (neighbor != -1 || blocktypes[neighbor] != 0)
-            return;
-
+        // if (neighbor != -1 || blocktypes[neighbor] != 0)
+        //     return;
+        std::cout << "load back face" << std::endl;
         for (int i = 0; i < back_face_vertices.size(); i+= 8)
         {
             chunk_vertices.push_back(back_face_vertices[i] + world_pos.x);
@@ -143,7 +144,7 @@ namespace game
         }
     }
 
-    void Chunk::loadLeftFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index)
+    void Chunk::loadLeftFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
         glm::ivec3 direction = {-1, 0, 0};
         glm::ivec3 ndir = direction + local_pos;
@@ -151,7 +152,7 @@ namespace game
 
         if (neighbor != -1 || blocktypes[neighbor] != 0)
             return;
-
+        std::cout << "load left face" << std::endl;
         for (int i = 0; i < left_face_vertices.size(); i+= 8)
         {
             chunk_vertices.push_back(left_face_vertices[i] + world_pos.x);
@@ -174,7 +175,7 @@ namespace game
         }
     }
 
-    void Chunk::loadRightFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index)
+    void Chunk::loadRightFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
         glm::ivec3 direction = {1, 0, 0};
         glm::ivec3 ndir = direction + local_pos;
@@ -182,7 +183,7 @@ namespace game
 
         if (neighbor != -1 || blocktypes[neighbor] != 0)
             return;
-
+        std::cout << "load right face" << std::endl;
         for (int i = 0; i < right_face_vertices.size(); i+= 8)
         {
             chunk_vertices.push_back(right_face_vertices[i] + world_pos.x);
@@ -205,15 +206,17 @@ namespace game
         }
     }
 
-    void Chunk::loadTopFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index)
+    void Chunk::loadTopFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
-        glm::ivec3 direction = {0, 1, 0};
+        glm::ivec3 direction = {0, -1, 0};
         glm::ivec3 ndir = direction + local_pos;
         int neighbor = positionToIndex(ndir);
-
+        // std::cout << " ndir = " << ndir.x << " " << ndir.y << " " << ndir.z << std::endl;
         if (neighbor != -1 || blocktypes[neighbor] != 0)
             return;
 
+        std::cout << "load top face" << std::endl;
+        std::cout << "blocktype = " << (int)blocktypes[neighbor] << std::endl;
         for (int i = 0; i < top_face_vertices.size(); i+= 8)
         {
             chunk_vertices.push_back(top_face_vertices[i] + world_pos.x);
@@ -236,15 +239,15 @@ namespace game
         }
     }
 
-    void Chunk::loadBottomFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index)
+    void Chunk::loadBottomFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
-        glm::ivec3 direction = {0, -1, 0};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
+        // glm::ivec3 direction = {0, 1, 0};
+        // glm::ivec3 ndir = direction + local_pos;
+        // int neighbor = positionToIndex(ndir);
 
-        if (neighbor != -1 || blocktypes[neighbor] != 0)
-            return;
-
+        // if (neighbor != -1 || blocktypes[neighbor] != 0)
+        //     return;
+        // std::cout << "load bottom face" << std::endl;
         for (int i = 0; i < bottom_face_vertices.size(); i+= 8)
         {
             chunk_vertices.push_back(bottom_face_vertices[i] + world_pos.x);

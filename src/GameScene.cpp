@@ -36,7 +36,7 @@ namespace game
 
     void GameScene::update() 
     {
-        // glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
         clock.update();
         cube_shader.use();
         

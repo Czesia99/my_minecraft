@@ -25,12 +25,12 @@ namespace game
             void deleteChunk();
 
         private:
-            void loadFrontFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index);
-            void loadBackFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index);
-            void loadLeftFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index);
-            void loadRightFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index);
-            void loadTopFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index);
-            void loadBottomFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int &index);
+            void loadFrontFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadBackFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadLeftFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadRightFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadTopFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadBottomFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
 
         private:
             GLuint vao;
@@ -149,7 +149,7 @@ namespace game
                 1.0f, 1.0f, 0.0f,     0.0f, 0.0f,    0.0f, 1.0f,  0.0f,
                 0.0f, 1.0f, 1.0f,     1.0f, 1.0f,    0.0f, 1.0f,  0.0f,
                 1.0f, 1.0f, 1.0f,      0.0f, 1.0f,    0.0f, 1.0f,  0.0f,
-                0.0f, 1.0f, 0.0f,    1.0f, 0.0f,    0.0f, 1.0f,  0.0f
+                0.0f, 1.0f, 0.0f,    1.0f, 0.0f,    0.0f, 1.0f,  0.0f,
             };
     };
 }
