@@ -62,10 +62,9 @@ namespace game
             //     "../assets/textures/papa/Oak_1.png",
             //     "../assets/textures/oak_log.png",
             // };
-            // std::vector<Chunk>chunks;
 
+            // std::vector<Chunk>chunks;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
-            // std::unordered_map<glm::ivec3, Chunk*>::iterator it;
             std::thread t1;
             float request_interval = 0.0;
             float peak_rss;

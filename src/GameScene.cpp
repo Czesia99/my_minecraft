@@ -36,7 +36,7 @@ namespace game
 
     void GameScene::update() 
     {
-        glEnable(GL_CULL_FACE);
+        // glEnable(GL_CULL_FACE);
         clock.update();
         cube_shader.use();
         
@@ -64,10 +64,10 @@ namespace game
         
         peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
         current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
-        std::cout << "chunks len " << client.data.chunks.size() << std::endl;
+        // std::cout << "chunks len " << client.data.chunks.size() << std::endl;
         // std::cout << "entitys len " << client.data.entitys.size() << std::endl;
-        std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
-        std::cout << "-------- CURRENT RSS -------- " << std::endl << current_rss << std::endl;
+        // std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
+        // std::cout << "-------- CURRENT RSS -------- " << std::endl << current_rss << std::endl;
     }
 
     void GameScene::updateChunks()
@@ -81,8 +81,8 @@ namespace game
             if (it != chunks.end())
             {
                 std::cout << "delete chunk" << std::endl;
-                chunks.at(chunk.pos)->deleteChunk();
-                delete chunks.at(chunk.pos);
+                it->second->deleteChunk();
+                delete it->second;
             }
             chunks[chunk.pos] = new Chunk(chunk.pos, chunk.blocktypes);
             client.data.chunks.pop_front();

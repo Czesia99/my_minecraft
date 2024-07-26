@@ -34,8 +34,10 @@ set(LINK_LIB
     glfw
     OpenGL::GL
 )
+# set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(${INCLUDE_DIR})
 add_executable(${PROJECT_MINECRAFT} ${SRC_FILES})
 
 target_link_libraries(${PROJECT_MINECRAFT} ${LINK_LIB})
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
