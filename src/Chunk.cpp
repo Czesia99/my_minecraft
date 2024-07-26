@@ -32,7 +32,7 @@ namespace game
 
         // glVertexAttribIPointer(3, 1, GL_INT, 9 * sizeof(float), (void*)(8 * sizeof(float))); //forint
         glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
-        glEnableVertexAttribArray(3);
+        glEnableVertexAttribArray(3);   
     }
 
     void Chunk::createChunkVertices(glm::ivec3 pos)
@@ -108,6 +108,12 @@ namespace game
 
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+    }
+    
+    void Chunk::deleteChunk()
+    {
+        glDeleteBuffers(1, &vbo);
+        glDeleteVertexArrays(1, &vao);
     }
 }
 

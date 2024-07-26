@@ -1,7 +1,9 @@
 #include "GameScene.hpp"
 #include "mygl/Texture.hpp"
 #include <thread>
+#include "memory.hpp"
 
+#include <algorithm>
 namespace game 
 {
     GameScene::GameScene(Context &ctx) : Scene(ctx)
@@ -51,7 +53,6 @@ namespace game
             it.second->render(cube_shader, camera);
         }
 
-        std::cout << "delta time = " << clock.delta_time << std::endl;
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
             request_interval = 0;
@@ -59,14 +60,31 @@ namespace game
         }
 
         updateChunks();
+
+        
+        peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
+        current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
+        std::cout << "chunks len " << client.data.chunks.size() << std::endl;
+        // std::cout << "entitys len " << client.data.entitys.size() << std::endl;
+        std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
+        std::cout << "-------- CURRENT RSS -------- " << std::endl << current_rss << std::endl;
     }
 
     void GameScene::updateChunks()
     {
         if (client.data.chunks.size() != 0)
         {
-            //lock
-            chunks[client.data.chunks[0].pos] = new Chunk(client.data.chunks[0].pos, client.data.chunks[0].blocktypes);
+            //lockmutex
+            //delete
+            ChunkData &chunk = client.data.chunks.front();
+            auto it = chunks.find(chunk.pos);
+            if (it != chunks.end())
+            {
+                std::cout << "delete chunk" << std::endl;
+                chunks.at(chunk.pos)->deleteChunk();
+                delete chunks.at(chunk.pos);
+            }
+            chunks[chunk.pos] = new Chunk(chunk.pos, chunk.blocktypes);
             client.data.chunks.pop_front();
         }
         //unlock
@@ -114,6 +132,7 @@ namespace game
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
+        clearAllChunks();
         // if (action==GLFW_PRESS)
         // {
 
@@ -134,5 +153,15 @@ namespace game
         glViewport(0, 0, width, height);
         camera.width = width;
         camera.height = height;
+    }
+
+    void GameScene::clearAllChunks()
+    {
+        for (auto &[key, value] : chunks)
+        {
+            value->deleteChunk();
+            delete value;
+        }
+        chunks.clear();
     }
 }

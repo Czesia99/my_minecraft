@@ -16,16 +16,18 @@ namespace game
     {
         public:
             Transform transform;
-            GLuint diffuse_texture;
+            // GLuint diffuse_texture;
         public:
             Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes);
+            // ~Chunk() = default;
             void createChunkVertices(glm::ivec3 pos);
             void render(const Shader &shader, const ICamera &camera);
+            void deleteChunk();
 
         private:
             GLuint vao;
             GLuint vbo;
-            GLuint texture;
+            // GLuint texture;
 
             int size = 16;
             int vertex_count;

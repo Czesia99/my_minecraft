@@ -34,6 +34,8 @@ namespace game
             void updateChunks();
             void receiveThread();
 
+            void clearAllChunks();
+
         private:
             Camera3D camera;
             Skybox sky;
@@ -63,7 +65,10 @@ namespace game
             // std::vector<Chunk>chunks;
 
             std::unordered_map<glm::ivec3, Chunk*> chunks;
+            // std::unordered_map<glm::ivec3, Chunk*>::iterator it;
             std::thread t1;
             float request_interval = 0.0;
+            float peak_rss;
+            float current_rss;
     };
 }
