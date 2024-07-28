@@ -20,6 +20,7 @@ namespace game
     class GameScene : public Scene {
         public:
             GameScene(Context &ctx);
+            ~GameScene();
             void storeSceneInCtx() override;
             void openScene() override;
             void closeScene() override;
@@ -63,7 +64,6 @@ namespace game
             //     "../assets/textures/oak_log.png",
             // };
 
-            // std::vector<Chunk>chunks;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
             std::thread t1;
             float request_interval = 0.0;

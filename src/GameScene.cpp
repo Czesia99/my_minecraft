@@ -18,6 +18,12 @@ namespace game
         // t1.detach();
     }
 
+    GameScene::~GameScene()
+    {
+        // printf("%s\n", "game scene destructor");
+        // clearAllChunks();
+    }
+
     void GameScene::storeSceneInCtx() 
     {
         ctx.scenes.push_back(this);
@@ -62,10 +68,8 @@ namespace game
         updateChunks();
 
         
-        peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
-        current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
-        // std::cout << "chunks len " << client.data.chunks.size() << std::endl;
-        // std::cout << "entitys len " << client.data.entitys.size() << std::endl;
+        // peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
+        // current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
         // std::cout << "-------- CURRENT RSS -------- " << std::endl << current_rss << std::endl;
     }
@@ -76,7 +80,8 @@ namespace game
         {
             //lockmutex
             //delete
-            ChunkData &chunk = client.data.chunks.front();
+            ChunkData chunk = client.data.chunks.front();
+            client.data.chunks.pop_front();
             auto it = chunks.find(chunk.pos);
             if (it != chunks.end())
             {
@@ -85,7 +90,6 @@ namespace game
                 delete it->second;
             }
             chunks[chunk.pos] = new Chunk(chunk.pos, chunk.blocktypes);
-            client.data.chunks.pop_front();
         }
         //unlock
     }
@@ -107,20 +111,15 @@ namespace game
         if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
         {
             camera.processKeyboard(BACKWARD, clock.delta_time);
-            // client.sendUpdateEntity(camera.position.x, camera.position.x, camera.position.x, camera.yaw, camera.pitch);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_A) == GLFW_PRESS)
         {
             camera.processKeyboard(LEFT, clock.delta_time);
-            // client.sendUpdateEntity(camera.position.x, camera.position.x, camera.position.x, camera.yaw, camera.pitch);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
         {
             camera.processKeyboard(RIGHT, clock.delta_time);
-            // client.sendUpdateEntity(camera.position.x, camera.position.x, camera.position.x, camera.yaw, camera.pitch);
         }
-
-        
     }
 
     void GameScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)

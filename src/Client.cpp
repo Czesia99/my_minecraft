@@ -184,16 +184,12 @@ namespace game
         data.chunks.push_back(chunk);
     }
 
-    void Client::sendUpdateEntity(float &xpos, float &ypos, float &zpos, float &yaw, float &pitch)
+    void Client::sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch)
     {
         //id[byte], entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        // uint8_t buffer[24] = {0};
         uint8_t id = 0x00;
-        // uint8_t *ptr = &send_buffer[0];
-        UpdateEntityData ued;
 
         ued.id = id;
-        // ued.entity_id = htobe32(entity_id);
         ued.xpos = htobe32(*(uint32_t*)&xpos);
         ued.ypos = htobe32(*(uint32_t*)&ypos);
         ued.zpos = htobe32(*(uint32_t*)&zpos);

@@ -59,13 +59,14 @@ namespace game
             void receiveMonoTypeChunk();
 
             //send
-            void sendUpdateEntity(float &xpos, float &ypos, float &zpos, float &yaw, float &pitch);
+            void sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch);
             void sendUpdateBlock();
             
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;
             int entity_id;
+            UpdateEntityData ued;
             // sockaddr_in server_adress;
     };
 

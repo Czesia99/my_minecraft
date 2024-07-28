@@ -53,8 +53,6 @@ namespace game
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + pos;
             
-            const std::vector<glm::ivec3> directions = {{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
-            // std::cout << "LOCAL POS = " << local_pos.x << " " << local_pos.y << " " << local_pos.z << std::endl;
             loadFrontFaceVertices(local_pos, world_pos, index);
             loadBackFaceVertices(local_pos, world_pos, index);
             loadLeftFaceVertices(local_pos, world_pos, index);
