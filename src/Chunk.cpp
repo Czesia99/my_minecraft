@@ -12,7 +12,8 @@ namespace game
 
     Chunk::Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes) : blocktypes(blocktypes)
     {
-        createChunkVertices(pos); // only him in thread
+        // thread_chunk_vertices = std::thread(&Chunk::createChunkVertices, this, pos); // only him in thread
+        createChunkVertices(pos);
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -30,12 +31,11 @@ namespace game
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(5 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
-        // glVertexAttribIPointer(3, 1, GL_INT, 9 * sizeof(float), (void*)(8 * sizeof(float))); //forint
         glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
         glEnableVertexAttribArray(3);
 
         // chunk_vertices.erase(chunk_vertices.begin(), chunk_vertices.end());
-        // chunk_vertices.shrink_to_fit(); 
+        // chunk_vertices.shrink_to_fit();
     }
 
     void Chunk::createChunkVertices(glm::ivec3 pos)

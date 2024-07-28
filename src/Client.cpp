@@ -43,8 +43,8 @@ namespace game
     void Client::receive()
     {
         recv(client_socket, buffer, 1, 0);
-        // print_buffer("buffer", buffer, 1);
         uint8_t id = buffer[0];
+
         switch (id)
         {
             case 0x00:
@@ -154,7 +154,9 @@ namespace game
         chunk.blocktypes.resize(4096);
         memcpy(&chunk.blocktypes[0], ptr, 4096);
 
+        mtx_chunk_data.lock();
         data.chunks.push_back(chunk); // to lock
+        mtx_chunk_data.unlock();
     }
 
     void Client::receiveMonoTypeChunk()

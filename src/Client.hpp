@@ -7,6 +7,7 @@
 #include <vector>
 #include <deque>
 #include <glm/glm.hpp>
+#include <mutex>
 
 namespace game
 {
@@ -44,6 +45,7 @@ namespace game
     {
         public:
             Data data;
+            std::mutex mtx_chunk_data;
         public:
             Client();
             void receive();

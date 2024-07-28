@@ -79,7 +79,7 @@ namespace game
         if (client.data.chunks.size() != 0)
         {
             //lockmutex
-            //delete
+            client.mtx_chunk_data.lock();
             ChunkData chunk = client.data.chunks.front();
             client.data.chunks.pop_front();
             auto it = chunks.find(chunk.pos);
@@ -91,7 +91,7 @@ namespace game
             }
             chunks[chunk.pos] = new Chunk(chunk.pos, chunk.blocktypes);
         }
-        //unlock
+        client.mtx_chunk_data.unlock();
     }
 
     void GameScene::sceneClear()

@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
+#include <thread>
 
 #include "mygl/Shader.h"
 #include "mygl/Transform.hpp"
@@ -17,6 +18,7 @@ namespace game
         public:
             Transform transform;
             std::vector<float> chunk_vertices;
+
             // GLuint diffuse_texture;
         public:
             Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes);
@@ -41,14 +43,10 @@ namespace game
             int vertex_count;
             glm::ivec3 chunk_pos;
             std::vector<uint8_t>blocktypes;
-            //front face -Z
-            //back face +Z
-            //left face -X
-            //right face +X
-            // bottom face -Y
-            //top face +Y
-            std::vector<float> front_face_vertices
-            {
+            std::thread thread_chunk_vertices;
+
+            std::vector<float> front_face_vertices {
+                //front face -Z
                 0.0f, 0.0f, 0.0f,    1.0f, 0.0f,    0.0f, 0.0f, -1.0f,
                 1.0f, 1.0f, 0.0f,      0.0f, 1.0f,    0.0f, 0.0f, -1.0f,
                 1.0f, 0.0f, 0.0f,     0.0f, 0.0f,    0.0f, 0.0f, -1.0f,
@@ -56,9 +54,8 @@ namespace game
                 0.0f, 0.0f, 0.0f,    1.0f, 0.0f,    0.0f, 0.0f, -1.0f,
                 0.0f, 1.0f, 0.0f,     1.0f, 1.0f,    0.0f, 0.0f, -1.0f,
             };
-
-            std::vector<float> back_face_vertices
-            {
+            std::vector<float> back_face_vertices {
+                //back face +Z
                 0.0f, 0.0f, 1.0f,    0.0f, 0.0f,    0.0f, 0.0f, 1.0f,
                 1.0f, 0.0f, 1.0f,     1.0f, 0.0f,    0.0f, 0.0f, 1.0f,
                 1.0f, 1.0f, 1.0f,      1.0f, 1.0f,    0.0f, 0.0f, 1.0f,
@@ -66,9 +63,8 @@ namespace game
                 0.0f, 1.0f, 1.0f,     0.0f, 1.0f,    0.0f, 0.0f, 1.0f,
                 0.0f, 0.0f, 1.0f,    0.0f, 0.0f,    0.0f, 0.0f, 1.0f, 
             };
-
-            std::vector<float> left_face_vertices
-            {
+            std::vector<float> left_face_vertices {
+                //left face -X
                 0.0f,  1.0f,  1.0f,    1.0f, 1.0f,    -1.0f, 0.0f,  0.0f,
                 0.0f,  1.0f, 0.0f,    0.0f, 1.0f,    -1.0f, 0.0f,  0.0f,
                 0.0f, 0.0f, 0.0f,    0.0f, 0.0f,    -1.0f, 0.0f,  0.0f,
@@ -76,9 +72,8 @@ namespace game
                 0.0f, 0.0f,  1.0f,    1.0f, 0.0f,    -1.0f, 0.0f,  0.0f,
                 0.0f,  1.0f,  1.0f,    1.0f, 1.0f,    -1.0f, 0.0f,  0.0f,
             };
-
-            std::vector<float> right_face_vertices
-            {
+            std::vector<float> right_face_vertices {
+                //right face +X
                 1.0f,  1.0f,  1.0f,    0.0f, 1.0f,    1.0f, 0.0f,  0.0f,
                 1.0f, 0.0f, 0.0f,    1.0f, 0.0f,    1.0f, 0.0f,  0.0f,
                 1.0f,  1.0f, 0.0f,    1.0f, 1.0f,    1.0f, 0.0f,  0.0f,
@@ -86,9 +81,8 @@ namespace game
                 1.0f,  1.0f,  1.0f,    0.0f, 1.0f,    1.0f, 0.0f,  0.0f,
                 1.0f, 0.0f,  1.0f,    0.0f, 0.0f,    1.0f, 0.0f,  0.0f, 
             };
-
-            std::vector<float> bottom_face_vertices 
-            {
+            std::vector<float> bottom_face_vertices {
+                // bottom face -Y
                 0.0f, 0.0f, 0.0f,    1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
                 1.0f, 0.0f, 0.0f,     0.0f, 1.0f,    0.0f, -1.0f,  0.0f,
                 1.0f, 0.0f,  1.0f,     0.0f, 0.0f,    0.0f, -1.0f,  0.0f,
@@ -96,9 +90,8 @@ namespace game
                 0.0f, 0.0f,  1.0f,    1.0f, 0.0f,    0.0f, -1.0f,  0.0f,
                 0.0f, 0.0f, 0.0f,    1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
             };
-
-            std::vector<float> top_face_vertices
-            {
+            std::vector<float> top_face_vertices {
+                //top face +Y
                 0.0f, 1.0f, 0.0f,    1.0f, 0.0f,    0.0f, 1.0f,  0.0f,
                 1.0f, 1.0f, 1.0f,      0.0f, 1.0f,    0.0f, 1.0f,  0.0f,
                 1.0f, 1.0f, 0.0f,     0.0f, 0.0f,    0.0f, 1.0f,  0.0f,
