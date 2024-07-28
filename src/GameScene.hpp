@@ -37,6 +37,9 @@ namespace game
 
             void clearAllChunks();
 
+            void dda();
+            bool isBlock(int x, int y, int z);
+
         private:
             Camera3D camera;
             Skybox sky;

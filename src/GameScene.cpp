@@ -67,7 +67,7 @@ namespace game
 
         updateChunks();
 
-        
+        dda();
         // peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
@@ -92,6 +92,61 @@ namespace game
             chunks[chunk.pos] = new Chunk(chunk.pos, chunk.blocktypes);
         }
         client.mtx_chunk_data.unlock();
+    }
+
+    void GameScene::dda()
+    {
+        glm::vec3 start = camera.position;
+        glm::vec3 end = camera.front * 8.0f + start;
+
+        float dx = end.x - start.x;
+        float dy = end.y - start.y;
+        float dz = end.z - start.z;
+        
+        int steps = std::max({std::abs(dx), std::abs(dy), std::abs(dz)});
+        
+        int xinc = dx / steps;
+        int yinc = dy / steps;
+        int zinc = dz / steps;
+
+        int x = (int)start.x;
+        int y = (int)start.y;
+        int z = (int)start.z;
+
+        for (int i = 0; i <= steps; ++i)
+        {
+            isBlock(x,y,z);
+            std::cout << "Point: (" << (x) << ", " << (y) << ", " << (z) << ")" << std::endl;
+
+            x += xinc;
+            y += yinc;
+            z += zinc;
+        }
+
+    }
+
+    bool GameScene::isBlock(int x, int y, int z)
+    {
+
+        int chunk_x = (x < 0 ? (x + 1) / (16 - 1) : x / 16) * 16;
+        int chunk_y = (y < 0 ? (y + 1) / (16 - 1) : y / 16) * 16;
+        int chunk_z = (z < 0 ? (z + 1) / (16 - 1) : z / 16) * 16;
+
+        std::cout << "chunk pos " << chunk_x << " " << chunk_y << " " << chunk_z << std::endl;
+
+        glm::ivec3 cube_pos = {x, y, z};
+        glm::ivec3 chunk_pos = {chunk_x, chunk_y, chunk_z};
+        auto it =  chunks.find(chunk_pos);
+        if (it != chunks.end())
+        {
+            int chunktype = (int)it->second->blocktypes[it->second->positionToIndex(cube_pos)];
+            std::cout << "chunk found" << std::endl;
+            std::cout <<"chunktype == " << chunktype << std::endl;
+        } else 
+        {
+            std::cout << "chunk not found" << std::endl;
+        }
+        return true;
     }
 
     void GameScene::sceneClear()
@@ -131,7 +186,6 @@ namespace game
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        clearAllChunks();
         // if (action==GLFW_PRESS)
         // {
 

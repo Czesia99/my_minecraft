@@ -18,7 +18,7 @@ namespace game
         public:
             Transform transform;
             std::vector<float> chunk_vertices;
-
+            std::vector<uint8_t>blocktypes;
             // GLuint diffuse_texture;
         public:
             Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes);
@@ -26,6 +26,7 @@ namespace game
             void createChunkVertices(glm::ivec3 pos);
             void render(const Shader &shader, const ICamera &camera);
             void deleteChunk();
+            int positionToIndex(glm::ivec3 pos);
 
         private:
             void loadFrontFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
@@ -42,7 +43,7 @@ namespace game
             int size = 16;
             int vertex_count;
             glm::ivec3 chunk_pos;
-            std::vector<uint8_t>blocktypes;
+            
             std::thread thread_chunk_vertices;
 
             std::vector<float> front_face_vertices {

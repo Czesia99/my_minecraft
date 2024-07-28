@@ -3,7 +3,7 @@
 
 namespace game
 {
-    inline int positionToIndex(glm::ivec3 pos)
+    int Chunk::positionToIndex(glm::ivec3 pos)
     {
         if (pos.x < 0 || pos.x > 15 || pos.y < 0 || pos.y > 15 || pos.z < 0 || pos.z > 15)
             return -1;
@@ -12,7 +12,6 @@ namespace game
 
     Chunk::Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes) : blocktypes(blocktypes)
     {
-        // thread_chunk_vertices = std::thread(&Chunk::createChunkVertices, this, pos); // only him in thread
         createChunkVertices(pos);
 
         glGenVertexArrays(1, &vao);
