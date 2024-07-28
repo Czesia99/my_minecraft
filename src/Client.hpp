@@ -33,7 +33,6 @@ namespace game
     struct UpdateEntityData
     {
         uint8_t id;
-        int entity_id;
         uint32_t xpos;
         uint32_t ypos;
         uint32_t zpos;

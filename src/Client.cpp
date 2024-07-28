@@ -193,7 +193,7 @@ namespace game
         UpdateEntityData ued;
 
         ued.id = id;
-        ued.entity_id = htobe32(entity_id);
+        // ued.entity_id = htobe32(entity_id);
         ued.xpos = htobe32(*(uint32_t*)&xpos);
         ued.ypos = htobe32(*(uint32_t*)&ypos);
         ued.zpos = htobe32(*(uint32_t*)&zpos);
