@@ -49,6 +49,10 @@ namespace game
             Client client;
             GLuint block_textures;
 
+            //to test dda
+            Shader test_cube_shader;
+            Cube test_cube;
+
             std::vector<std::string>block_textures_path = 
             {
                 "../assets/textures/grass2.png",

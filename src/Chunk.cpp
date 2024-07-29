@@ -12,7 +12,8 @@ namespace game
 
     Chunk::Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes) : blocktypes(blocktypes)
     {
-        createChunkVertices(pos);
+        chunk_pos = pos;
+        createChunkVertices();
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -37,9 +38,10 @@ namespace game
         // chunk_vertices.shrink_to_fit();
     }
 
-    void Chunk::createChunkVertices(glm::ivec3 pos)
+    void Chunk::createChunkVertices()
     {
         vertex_count = 0;
+        
         for (int z = 0; z < size; z++) {
         for (int y = 0; y < size; y++) {
         for (int x = 0; x < size; x++) {
@@ -50,7 +52,7 @@ namespace game
             bool display = false;
 
             glm::ivec3 local_pos = {x, y, z};
-            glm::ivec3 world_pos = local_pos + pos;
+            glm::ivec3 world_pos = local_pos + chunk_pos;
             
             loadFrontFaceVertices(local_pos, world_pos, index);
             loadBackFaceVertices(local_pos, world_pos, index);

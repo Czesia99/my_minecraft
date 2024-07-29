@@ -13,7 +13,10 @@ namespace game
         camera.setCameraSpeed(32.0f);
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         // loadTextureArray(block_textures_path, block_textures, 128, 128);
+
         cube_shader = Shader("cube.vs", "cube.fs");
+        test_cube_shader = Shader("test_cube.vs", "test_cube.fs");
+        // test_cube.transform.scale *= 0.5f;
         t1 = std::thread(&Client::receiveThread, &client);
         // t1.detach();
     }
@@ -67,6 +70,10 @@ namespace game
 
         updateChunks();
 
+        for (auto &[key, value] : chunks)
+        {
+            assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
+        }
         dda();
         // peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
@@ -97,27 +104,29 @@ namespace game
     void GameScene::dda()
     {
         glm::vec3 start = camera.position;
-        glm::vec3 end = camera.front * 8.0f + start;
-
+        glm::vec3 end = camera.front * 16.0f  + camera.position;
+        // isBlock(floor(end.x), floor(end.y), floor(end.z));
+        // return;
+        
+        // std::cout << "END = " << end.x << " " << end.y << " " << end.z << std::endl;
         float dx = end.x - start.x;
         float dy = end.y - start.y;
         float dz = end.z - start.z;
         
         int steps = std::max({std::abs(dx), std::abs(dy), std::abs(dz)});
         
-        int xinc = dx / steps;
-        int yinc = dy / steps;
-        int zinc = dz / steps;
+        float xinc = dx / (float)steps;
+        float yinc = dy / (float)steps;
+        float zinc = dz / (float)steps;
 
-        int x = (int)start.x;
-        int y = (int)start.y;
-        int z = (int)start.z;
+        float x = start.x;
+        float y = start.y;
+        float z = start.z;
 
         for (int i = 0; i <= steps; ++i)
         {
-            isBlock(x,y,z);
-            std::cout << "Point: (" << (x) << ", " << (y) << ", " << (z) << ")" << std::endl;
-
+            isBlock(floor(x),floor(y),floor(z));
+                
             x += xinc;
             y += yinc;
             z += zinc;
@@ -127,26 +136,46 @@ namespace game
 
     bool GameScene::isBlock(int x, int y, int z)
     {
+        glm::ivec3 chunk_pos = glm::floor(glm::vec3(x,y,z) / 16.0f) * 16.0f;
+        glm::ivec3 local_pos = {x % 16, y % 16, z % 16};
+        if (local_pos.x < 0) local_pos.x += 16;
+        if (local_pos.y < 0) local_pos.y += 16;
+        if (local_pos.z < 0) local_pos.z += 16;
 
-        int chunk_x = (x < 0 ? (x + 1) / (16 - 1) : x / 16) * 16;
-        int chunk_y = (y < 0 ? (y + 1) / (16 - 1) : y / 16) * 16;
-        int chunk_z = (z < 0 ? (z + 1) / (16 - 1) : z / 16) * 16;
-
-        std::cout << "chunk pos " << chunk_x << " " << chunk_y << " " << chunk_z << std::endl;
+        // std::cout << "local pos " << local_pos.x << " " << local_pos.y << " " << local_pos.z << std::endl;
+        // std::cout << "chunk pos " << chunk_pos.x << " " << chunk_pos.y << " " << chunk_pos.z << std::endl;
 
         glm::ivec3 cube_pos = {x, y, z};
-        glm::ivec3 chunk_pos = {chunk_x, chunk_y, chunk_z};
+
         auto it =  chunks.find(chunk_pos);
         if (it != chunks.end())
         {
-            int chunktype = (int)it->second->blocktypes[it->second->positionToIndex(cube_pos)];
+            int blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
+            std::cout <<"blocktype == " << blocktype << std::endl;
+            if (blocktype != 0) {
+                glDisable(GL_CULL_FACE);
+                // test_cube.transform.scale *= 0.5f;
+                test_cube_shader.use();
+                test_cube_shader.setVec3("isValid", glm::vec3(0.0, 1.0, 0.0));
+                test_cube.transform.position = {cube_pos.x, cube_pos.y, cube_pos.z};
+                test_cube.render(test_cube_shader, camera);
+                return true;
+            }
             std::cout << "chunk found" << std::endl;
-            std::cout <<"chunktype == " << chunktype << std::endl;
+            
+            return false;
+            
         } else 
         {
-            std::cout << "chunk not found" << std::endl;
+            // glDisable(GL_CULL_FACE);
+            // std::cout << "chunk not found" << std::endl;
+            // test_cube_shader.use();
+            // test_cube_shader.setVec3("isValid", glm::vec3(1.0, 0.0, 0.0));
+            // test_cube.transform.position = {cube_pos.x, cube_pos.y, cube_pos.z};
+            // test_cube.render(test_cube_shader, camera);
+            return false;
         }
-        return true;
+
     }
 
     void GameScene::sceneClear()
