@@ -65,10 +65,9 @@ namespace game
             // std::vector<std::string>block_textures_path = 
             // {
             //     "../assets/textures/grass2.png",
-            //     "../assets/textures/papa/Durt_1.png",
-            //     "../assets/textures/papa/Stone_1.png",
-            //     "../assets/textures/papa/Oak_1.png",
-            //     "../assets/textures/oak_log.png",
+            //     "../assets/textures/default/dirt.png",
+            //     "../assets/textures/default/stone.png",
+            //     "../assets/textures/default/oak_log.png",
             // };
 
             std::unordered_map<glm::ivec3, Chunk*> chunks;

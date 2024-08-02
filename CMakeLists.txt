@@ -14,16 +14,9 @@ set(SRC ./src)
 set(MYGL ./src/mygl)
 
 add_subdirectory(include/glfw)
+add_subdirectory(include/mygl)
 
 set(SRC_FILES
-    ${MYGL}/glad.c
-    ${MYGL}/Camera3D.cpp
-    ${MYGL}/Context.cpp
-    ${MYGL}/Scene.cpp
-    ${MYGL}/Shape.cpp
-    ${MYGL}/Skybox.cpp
-    ${MYGL}/Texture.cpp
-    ${MYGL}/stb_image.cpp
     ${SRC}/main.cpp
     ${SRC}/GameScene.cpp
     ${SRC}/Chunk.cpp
@@ -33,6 +26,7 @@ set(SRC_FILES
 set(LINK_LIB
     glfw
     OpenGL::GL
+    mygl
 )
 # set(CMAKE_BUILD_TYPE Debug)
 
