@@ -9,9 +9,10 @@ namespace mygl
     DefaultScene::DefaultScene(Context &ctx) : Scene(ctx)
     {
         // stbi_set_flip_vertically_on_load(true);
-        loadTexture("../assets/textures/default/dirt.png", dirt_texture, GL_NEAREST, GL_NEAREST);
-        cube.setDiffuseTexture(dirt_texture);
-        cube_shader = Shader("cube.vs", "cube.fs");
+        // loadTexture("../assets/textures/default/dirt.png", dirt_texture, GL_NEAREST, GL_NEAREST);
+        // cube.setDiffuseTexture(dirt_texture);
+        camera.setCameraSpeed(32.0f);
+        cube_shader = Shader("default_cube.vs", "default_cube.fs");
     }
 
     void DefaultScene::storeSceneInCtx()
@@ -32,9 +33,9 @@ namespace mygl
 
     void DefaultScene::update() 
     {
+        clock.update();
         cube_shader.use();
         
-        clock.update();
         sky.render(camera);
         cube.render(cube_shader, camera);
     }
@@ -61,7 +62,10 @@ namespace mygl
 
     void DefaultScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)
     {
-        camera.processMouseMovement(dx, -dy);
+        std::cout << "dx = " << dx << std::endl;
+        std::cout << "dy = " << dy << std::endl;
+        camera.processMouseMovement((float)dx, (float)-dy);
+
     }
 
     void DefaultScene::leftClickCallback(GLFWwindow* window, int button, int action, int mods)

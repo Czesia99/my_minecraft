@@ -9,9 +9,9 @@ int main()
     mygl::Context ctx(1920, 1080, "MY_MINECRAFT");
     glfwSwapInterval(1); //vsync
 
-    game::GameScene game(ctx); //idx 0
+    // game::GameScene game(ctx); //idx 0
 
-    ctx.loadScene(ctx.scenes[0]);
+    // ctx.loadScene(ctx.scenes[0]);
     ctx.run();
 
     glfwTerminate();

@@ -126,12 +126,10 @@ namespace game
         for (int i = 0; i <= steps; ++i)
         {
             isBlock(floor(x),floor(y),floor(z));
-                
             x += xinc;
             y += yinc;
             z += zinc;
         }
-
     }
 
     bool GameScene::isBlock(int x, int y, int z)

@@ -37,7 +37,7 @@ namespace mygl
             current_scene->closeScene();
         current_scene = scene;
         current_scene->openScene();
-        framebufferSizeCallbackWrapper(window, win_width, win_height); //because
+        framebufferSizeCallbackWrapper(window, win_width, win_height);
     }
 
     void Context::loadSceneId(int id)

@@ -110,7 +110,7 @@ namespace mygl {
         glm::mat4 view = camera.getViewMatrix();
         glm::mat3 normal = glm::transpose(glm::inverse(model));
 
-        shader.setMat4("model", model); 
+        shader.setMat4("model", model);
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         shader.setMat3("normal", normal);

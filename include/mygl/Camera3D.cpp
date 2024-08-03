@@ -1,7 +1,7 @@
 #include "Camera3D.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <iostream>
 namespace mygl
 {
     Camera3D::Camera3D(glm::vec3 pos, float cam_width, float cam_height, float speed, bool is_fps) 
@@ -40,7 +40,7 @@ namespace mygl
         if (fps)
             position.y = initial_pos.y;
     }
-
+    
     void Camera3D::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
     {
         xoffset *= mouse_sensitivity;
@@ -56,6 +56,7 @@ namespace mygl
             if (pitch < -89.0f)
                 pitch = -89.0f;
         }
+
         updateCameraVectors();
     }
 
