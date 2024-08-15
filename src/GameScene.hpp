@@ -38,6 +38,7 @@ namespace game
             void clearAllChunks();
 
             void dda();
+            void dda2();
             uint8_t getBlockAt(int x, int y, int z);
 
             struct DDA_Data
@@ -46,6 +47,7 @@ namespace game
                 float xpos;
                 float ypos;
                 float zpos;
+                glm::ivec3 face;
             };
 
             DDA_Data dda_data = {};

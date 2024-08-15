@@ -3,6 +3,7 @@
 enum BlockType
 {
     Air,
+    Grass,
     Dirt,
     Stone,
     Oak_log,

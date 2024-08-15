@@ -75,7 +75,7 @@ namespace game
         {
             assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
         }
-        // dda();
+
         // peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
@@ -138,6 +138,52 @@ namespace game
         }
     }
 
+    void GameScene::dda2()
+    {
+        glm::ivec3 mapPos = glm::ivec3(floor(camera.position));
+        glm::vec3 deltaDist = abs(length(camera.front) / camera.front);
+        glm::ivec3 rayStep = glm::ivec3(sign(camera.front));
+        glm::vec3 sideDist = (sign(camera.front) * (glm::vec3(mapPos) - camera.position) + (sign(camera.front) * glm::vec3(0.5)) + glm::vec3(0.5)) * deltaDist; 
+        glm::ivec3 mask;
+        
+        for (int i = 0; i < 100; i++) {
+            uint8_t bt = getBlockAt(mapPos.x, mapPos.y, mapPos.z);
+            if (bt != 0)
+            {
+                dda_data.blocktype = bt;
+                dda_data.xpos = mapPos.x;
+                dda_data.ypos = mapPos.y;
+                dda_data.zpos = mapPos.z;
+                dda_data.face = mask;
+                return;
+            }
+            if (sideDist.x < sideDist.y) {
+                if (sideDist.x < sideDist.z) {
+                    sideDist.x += deltaDist.x;
+                    mapPos.x += rayStep.x;
+                    mask = glm::ivec3(-rayStep.x, 0, 0);
+                }
+                else {
+                    sideDist.z += deltaDist.z;
+                    mapPos.z += rayStep.z;
+                    mask = glm::ivec3(0, 0, -rayStep.z);
+                }
+            }
+            else {
+                if (sideDist.y < sideDist.z) {
+                    sideDist.y += deltaDist.y;
+                    mapPos.y += rayStep.y;
+                    mask = glm::ivec3(0, -rayStep.y, 0);
+                }
+                else {
+                    sideDist.z += deltaDist.z;
+                    mapPos.z += rayStep.z;
+                    mask = glm::ivec3(0, 0, -rayStep.z);
+                }
+            }
+        }
+    }
+
     uint8_t GameScene::getBlockAt(int x, int y, int z)
     {
         glm::ivec3 chunk_pos = glm::floor(glm::vec3(x,y,z) / 16.0f) * 16.0f;
@@ -194,11 +240,17 @@ namespace game
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        if (action==GLFW_PRESS)
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS)
         {
-            dda();
+            dda2();
             client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
         }
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && action==GLFW_PRESS)
+        {
+            dda2();
+            client.sendUpdateBlock(BlockType::Oak_log, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
+        }
+
     }
 
     void GameScene::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
