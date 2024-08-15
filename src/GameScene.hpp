@@ -38,7 +38,17 @@ namespace game
             void clearAllChunks();
 
             void dda();
-            bool isBlock(int x, int y, int z);
+            uint8_t getBlockAt(int x, int y, int z);
+
+            struct DDA_Data
+            {
+                uint8_t blocktype;
+                float xpos;
+                float ypos;
+                float zpos;
+            };
+
+            DDA_Data dda_data = {};
 
         private:
             Camera3D camera;

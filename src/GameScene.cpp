@@ -4,6 +4,7 @@
 #include "memory.hpp"
 
 #include <algorithm>
+#include "Blocktype.h"
 namespace game 
 {
     GameScene::GameScene(Context &ctx) : Scene(ctx)
@@ -74,7 +75,7 @@ namespace game
         {
             assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
         }
-        dda();
+        // dda();
         // peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
         // std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
@@ -105,10 +106,7 @@ namespace game
     {
         glm::vec3 start = camera.position;
         glm::vec3 end = camera.front * 16.0f  + camera.position;
-        // isBlock(floor(end.x), floor(end.y), floor(end.z));
-        // return;
-        
-        // std::cout << "END = " << end.x << " " << end.y << " " << end.z << std::endl;
+
         float dx = end.x - start.x;
         float dy = end.y - start.y;
         float dz = end.z - start.z;
@@ -125,14 +123,22 @@ namespace game
 
         for (int i = 0; i <= steps; ++i)
         {
-            isBlock(floor(x),floor(y),floor(z));
+            uint8_t bt = getBlockAt(floor(x),floor(y),floor(z));
+            if ( bt != 0)
+            {
+                dda_data.blocktype = bt;
+                dda_data.xpos = floor(x);
+                dda_data.ypos = floor(y);
+                dda_data.zpos = floor(z);
+                return;
+            }
             x += xinc;
             y += yinc;
             z += zinc;
         }
     }
 
-    bool GameScene::isBlock(int x, int y, int z)
+    uint8_t GameScene::getBlockAt(int x, int y, int z)
     {
         glm::ivec3 chunk_pos = glm::floor(glm::vec3(x,y,z) / 16.0f) * 16.0f;
         glm::ivec3 local_pos = {x % 16, y % 16, z % 16};
@@ -140,40 +146,15 @@ namespace game
         if (local_pos.y < 0) local_pos.y += 16;
         if (local_pos.z < 0) local_pos.z += 16;
 
-        // std::cout << "local pos " << local_pos.x << " " << local_pos.y << " " << local_pos.z << std::endl;
-        // std::cout << "chunk pos " << chunk_pos.x << " " << chunk_pos.y << " " << chunk_pos.z << std::endl;
-
         glm::ivec3 cube_pos = {x, y, z};
 
         auto it =  chunks.find(chunk_pos);
         if (it != chunks.end())
         {
-            int blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
-            std::cout <<"blocktype == " << blocktype << std::endl;
-            if (blocktype != 0) {
-                glDisable(GL_CULL_FACE);
-                // test_cube.transform.scale *= 0.5f;
-                test_cube_shader.use();
-                test_cube_shader.setVec3("isValid", glm::vec3(0.0, 1.0, 0.0));
-                test_cube.transform.position = {cube_pos.x, cube_pos.y, cube_pos.z};
-                test_cube.render(test_cube_shader, camera);
-                return true;
-            }
-            std::cout << "chunk found" << std::endl;
-            
-            return false;
-            
-        } else 
-        {
-            // glDisable(GL_CULL_FACE);
-            // std::cout << "chunk not found" << std::endl;
-            // test_cube_shader.use();
-            // test_cube_shader.setVec3("isValid", glm::vec3(1.0, 0.0, 0.0));
-            // test_cube.transform.position = {cube_pos.x, cube_pos.y, cube_pos.z};
-            // test_cube.render(test_cube_shader, camera);
-            return false;
-        }
-
+            uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];       
+            return blocktype;
+        } else
+            return 0;
     }
 
     void GameScene::sceneClear()
@@ -213,14 +194,11 @@ namespace game
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        // if (action==GLFW_PRESS)
-        // {
-
-        //     client.receive();
-        //     updateChunks();
-        // }
-        // std::cout << "xpos = " << xpos << std::endl;
-        // std::cout << "ypos = " << ypos << std::endl;
+        if (action==GLFW_PRESS)
+        {
+            dda();
+            client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
+        }
     }
 
     void GameScene::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)

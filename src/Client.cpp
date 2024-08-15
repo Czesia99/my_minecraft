@@ -17,6 +17,7 @@ namespace game
     Client::Client()
     {
         int status;
+
         client_socket = socket(AF_INET, SOCK_STREAM, 0);
     
         // specifying address 
@@ -188,7 +189,7 @@ namespace game
 
     void Client::sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch)
     {
-        //id[byte], entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
+        //id[byte], entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float], name[char 64]
         uint8_t id = 0x00;
 
         ued.id = id;
@@ -199,5 +200,18 @@ namespace game
         ued.pitch = htobe32(*(uint32_t*)&pitch);
 
         send(client_socket, &ued, sizeof(ued), 0);
+    }
+
+    void Client::sendUpdateBlock(uint8_t block_type, int xpos, int ypos, int zpos)
+    {
+        uint8_t id = 0x01;
+
+        ubd.id = id;
+        ubd.blocktype = block_type;
+        ubd.xpos = htobe32(*(uint32_t*)&xpos);
+        ubd.ypos = htobe32(*(uint32_t*)&ypos);
+        ubd.zpos = htobe32(*(uint32_t*)&zpos);
+
+        send(client_socket, &ubd, sizeof(ubd), 0);
     }
 }

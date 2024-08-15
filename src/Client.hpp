@@ -41,6 +41,15 @@ namespace game
         uint32_t pitch;
     } __attribute__((packed));
 
+    struct UpdateBlockData
+    {
+        uint8_t id;
+        uint8_t blocktype;
+        uint32_t xpos;
+        uint32_t ypos;
+        uint32_t zpos;
+    } __attribute__((packed));
+
     class Client
     {
         public:
@@ -52,7 +61,7 @@ namespace game
             void receiveAll(size_t len);
             void receiveThread();
 
-            //receive
+            //receive (CLIENT BOUND)
             void myEntityID();
             void addEntity();
             void receiveRemoveEntity();
@@ -60,15 +69,17 @@ namespace game
             void receiveChunk();
             void receiveMonoTypeChunk();
 
-            //send
+            //send (SERVER BOUND)
             void sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch);
-            void sendUpdateBlock();
+            void sendUpdateBlock(uint8_t block_type, int xpos, int ypos, int zpos);
             
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;
             int entity_id;
-            UpdateEntityData ued;
+            UpdateEntityData ued = {};
+            UpdateBlockData ubd = {};
+            char name[64] = "Czesia";
             // sockaddr_in server_adress;
     };
 
