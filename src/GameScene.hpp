@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mygl/Context.hpp"
-#include "mygl/Scene.hpp"
-#include "mygl/Camera3D.hpp"
-#include "mygl/Clock.hpp"
-#include "mygl/Skybox.hpp"
-#include "mygl/Shape.hpp"
+#include "MYGL/Context.hpp"
+#include "MYGL/Scene.hpp"
+#include "MYGL/Camera3D.hpp"
+#include "MYGL/Clock.hpp"
+#include "MYGL/Skybox.hpp"
+#include "MYGL/Shape.hpp"
 
 #include "Chunk.hpp"
 #include "Client.hpp"

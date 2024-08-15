@@ -1,3 +1,6 @@
 [submodule "include/glfw"]
 	path = include/glfw
 	url = https://github.com/glfw/glfw
+[submodule "include/MYGL"]
+	path = include/MYGL
+	url = https://github.com/Czesia99/MYGL.git

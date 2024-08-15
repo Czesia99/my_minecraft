@@ -5,9 +5,9 @@
 #include <vector>
 #include <thread>
 
-#include "mygl/Shader.h"
-#include "mygl/Transform.hpp"
-#include "mygl/ICamera.hpp"
+#include "MYGL/Shader.h"
+#include "MYGL/Transform.hpp"
+#include "MYGL/ICamera.hpp"
 
 namespace game
 {

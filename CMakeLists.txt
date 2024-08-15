@@ -11,10 +11,9 @@ find_package(OpenGL REQUIRED)
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
 set(SRC ./src)
-set(MYGL ./src/mygl)
 
 add_subdirectory(include/glfw)
-add_subdirectory(include/mygl)
+add_subdirectory(include/MYGL)
 
 set(SRC_FILES
     ${SRC}/main.cpp

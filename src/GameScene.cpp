@@ -1,5 +1,5 @@
 #include "GameScene.hpp"
-#include "mygl/Texture.hpp"
+#include "MYGL/Texture.hpp"
 #include <thread>
 #include "memory.hpp"
 
