@@ -3,6 +3,7 @@
 #include "MYGL/Context.hpp"
 #include "MYGL/Scene.hpp"
 #include "MYGL/Camera3D.hpp"
+#include "MYGL/CameraOrtho.hpp"
 #include "MYGL/Clock.hpp"
 #include "MYGL/Skybox.hpp"
 #include "MYGL/Shape.hpp"
@@ -32,14 +33,31 @@ namespace game
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
-            void updateChunks();
-            void receiveThread();
-
+            uint8_t getBlockAt(int x, int y, int z);
             void clearAllChunks();
 
+        private:
+            void updateChunks();
             void dda();
-            void dda2();
-            uint8_t getBlockAt(int x, int y, int z);
+        private:
+            Camera3D camera;
+            CameraOrtho camera_ortho;
+            Skybox sky;
+            Clock clock;
+            Chunk *chunk;
+            Shader cube_shader;
+            Client client;
+            GLuint block_textures;
+
+            // Shader test_cube_shader;
+            // Cube test_cube;
+            Rectangle cursor_img;
+            Shader cursor_shader;
+            std::unordered_map<glm::ivec3, Chunk*> chunks;
+            std::thread t1;
+            float request_interval = 0.0;
+            float peak_rss;
+            float current_rss;
 
             struct DDA_Data
             {
@@ -52,19 +70,6 @@ namespace game
 
             DDA_Data dda_data = {};
 
-        private:
-            Camera3D camera;
-            Skybox sky;
-            Clock clock;
-            Chunk *chunk;
-            Shader cube_shader;
-            Client client;
-            GLuint block_textures;
-
-            //to test dda
-            Shader test_cube_shader;
-            Cube test_cube;
-
             std::vector<std::string>block_textures_path = 
             {
                 "../assets/textures/grass2.png",
@@ -74,6 +79,7 @@ namespace game
                 // "../assets/textures/oak_log.png",
             };
 
+
             // std::vector<std::string>block_textures_path = 
             // {
             //     "../assets/textures/grass2.png",
@@ -81,11 +87,5 @@ namespace game
             //     "../assets/textures/default/stone.png",
             //     "../assets/textures/default/oak_log.png",
             // };
-
-            std::unordered_map<glm::ivec3, Chunk*> chunks;
-            std::thread t1;
-            float request_interval = 0.0;
-            float peak_rss;
-            float current_rss;
     };
 }

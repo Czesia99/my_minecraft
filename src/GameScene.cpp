@@ -11,15 +11,19 @@ namespace game
     {
         storeSceneInCtx();
         // client.receive();
-        camera.setCameraSpeed(32.0f);
+        camera.setCameraSpeed(100.0f);
+        camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
-        // loadTextureArray(block_textures_path, block_textures, 128, 128);
+        loadTexture("../assets/cursor.png", cursor_img.texture);
 
         cube_shader = Shader("cube.vs", "cube.fs");
-        test_cube_shader = Shader("test_cube.vs", "test_cube.fs");
+        cursor_shader = Shader("cursor.vs", "cursor.fs");
+        // test_cube_shader = Shader("test_cube.vs", "test_cube.fs");
         // test_cube.transform.scale *= 0.5f;
         t1 = std::thread(&Client::receiveThread, &client);
-        // t1.detach();
+
+        cursor_img.transform.scale.x = ctx.win_width;
+        cursor_img.transform.scale.y = ctx.win_height;
     }
 
     GameScene::~GameScene()
@@ -49,14 +53,8 @@ namespace game
         glEnable(GL_CULL_FACE);
         clock.update();
         cube_shader.use();
-        
-        // cube_shader.setInt("material.diffuse", 0);
-        glActiveTexture(GL_TEXTURE_2D_ARRAY);
-        glBindTextureUnit(GL_TEXTURE_2D_ARRAY, block_textures);
-
 
         sky.render(camera);
-        // chunk->render(cube_shader, camera);
 
         for (auto &it : chunks)
         {
@@ -76,10 +74,13 @@ namespace game
             assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
         }
 
-        // peak_rss = (double)getPeakRSS() / (1024.0f * 1024.0f  * 1024.0f);
-        // current_rss = (double)getCurrentRSS() / (1024.0f * 1024.0f  * 1024.0f);
-        // std::cout << "-------- PEAK RSS -------- " << std::endl << peak_rss << std::endl;
-        // std::cout << "-------- CURRENT RSS -------- " << std::endl << current_rss << std::endl;
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        cursor_shader.use();
+        cursor_img.render(cursor_shader, camera_ortho);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
     }
 
     void GameScene::updateChunks()
@@ -103,42 +104,6 @@ namespace game
     }
 
     void GameScene::dda()
-    {
-        glm::vec3 start = camera.position;
-        glm::vec3 end = camera.front * 16.0f  + camera.position;
-
-        float dx = end.x - start.x;
-        float dy = end.y - start.y;
-        float dz = end.z - start.z;
-        
-        int steps = std::max({std::abs(dx), std::abs(dy), std::abs(dz)});
-        
-        float xinc = dx / (float)steps;
-        float yinc = dy / (float)steps;
-        float zinc = dz / (float)steps;
-
-        float x = start.x;
-        float y = start.y;
-        float z = start.z;
-
-        for (int i = 0; i <= steps; ++i)
-        {
-            uint8_t bt = getBlockAt(floor(x),floor(y),floor(z));
-            if ( bt != 0)
-            {
-                dda_data.blocktype = bt;
-                dda_data.xpos = floor(x);
-                dda_data.ypos = floor(y);
-                dda_data.zpos = floor(z);
-                return;
-            }
-            x += xinc;
-            y += yinc;
-            z += zinc;
-        }
-    }
-
-    void GameScene::dda2()
     {
         glm::ivec3 mapPos = glm::ivec3(floor(camera.position));
         glm::vec3 deltaDist = abs(length(camera.front) / camera.front);
@@ -242,13 +207,13 @@ namespace game
         glfwGetCursorPos(window, &xpos, &ypos);
         if (button == GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS)
         {
-            dda2();
+            dda();
             client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
         }
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action==GLFW_PRESS)
         {
-            dda2();
-            client.sendUpdateBlock(BlockType::Oak_log, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
+            dda();
+            client.sendUpdateBlock(BlockType::Grass, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
         }
 
     }
