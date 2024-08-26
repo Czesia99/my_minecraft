@@ -30,12 +30,7 @@ namespace game
             int positionToIndex(glm::ivec3 pos);
 
         private:
-            void loadFrontFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
-            void loadBackFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
-            void loadLeftFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
-            void loadRightFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
-            void loadTopFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
-            void loadBottomFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadFaceVertices(std::vector<float> vertices, glm::ivec3 direction, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
 
         private:
             GLuint vao;

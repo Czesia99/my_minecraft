@@ -1,5 +1,6 @@
 #include "Chunk.hpp"
 #include <cstring>
+#include "Blocktype.h"
 
 namespace game
 {
@@ -54,12 +55,13 @@ namespace game
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + chunk_pos;
             
-            loadFrontFaceVertices(local_pos, world_pos, index);
-            loadBackFaceVertices(local_pos, world_pos, index);
-            loadLeftFaceVertices(local_pos, world_pos, index);
-            loadRightFaceVertices(local_pos, world_pos, index);
-            loadBottomFaceVertices(local_pos, world_pos, index);
-            loadTopFaceVertices(local_pos, world_pos, index);
+            glm::ivec3 front_face {0, 0, -1};
+            loadFaceVertices(front_face_vertices, getFaceOrientationVector(FaceOrientation::Front), local_pos, world_pos, index);
+            loadFaceVertices(back_face_vertices, getFaceOrientationVector(FaceOrientation::Back), local_pos, world_pos, index);
+            loadFaceVertices(left_face_vertices, getFaceOrientationVector(FaceOrientation::Left), local_pos, world_pos, index);
+            loadFaceVertices(right_face_vertices, getFaceOrientationVector(FaceOrientation::Right), local_pos, world_pos, index);
+            loadFaceVertices(top_face_vertices, getFaceOrientationVector(FaceOrientation::Top), local_pos, world_pos, index);
+            loadFaceVertices(bottom_face_vertices, getFaceOrientationVector(FaceOrientation::Bottom), local_pos, world_pos, index);
         }}}
     }
 
@@ -81,28 +83,27 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    void Chunk::loadFrontFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
+    void Chunk::loadFaceVertices(std::vector<float> vertices, glm::ivec3 direction, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
-        glm::ivec3 direction = {0, 0, -1};
         glm::ivec3 ndir = direction + local_pos;
         int neighbor = positionToIndex(ndir);
 
         if (neighbor == -1 || blocktypes[neighbor] == 0) 
         {
-            for (int i = 0; i < front_face_vertices.size(); i+= 8)
+            for (int i = 0; i < vertices.size(); i+= 8)
             {
-                chunk_vertices.push_back(front_face_vertices[i] + world_pos.x);
-                chunk_vertices.push_back(front_face_vertices[i + 1] + world_pos.y);
-                chunk_vertices.push_back(front_face_vertices[i + 2] + world_pos.z);
+                chunk_vertices.push_back(vertices[i] + world_pos.x);
+                chunk_vertices.push_back(vertices[i + 1] + world_pos.y);
+                chunk_vertices.push_back(vertices[i + 2] + world_pos.z);
 
                 //tex coords
-                chunk_vertices.push_back(front_face_vertices[i + 3]);
-                chunk_vertices.push_back(front_face_vertices[i + 4]);
+                chunk_vertices.push_back(vertices[i + 3]);
+                chunk_vertices.push_back(vertices[i + 4]);
 
                 //normals
-                chunk_vertices.push_back(front_face_vertices[i + 5]);
-                chunk_vertices.push_back(front_face_vertices[i + 6]);
-                chunk_vertices.push_back(front_face_vertices[i + 7]);
+                chunk_vertices.push_back(vertices[i + 5]);
+                chunk_vertices.push_back(vertices[i + 6]);
+                chunk_vertices.push_back(vertices[i + 7]);
 
                 //block type
                 chunk_vertices.push_back(blocktypes[index] - 1);
@@ -112,158 +113,6 @@ namespace game
         }
     }
 
-    void Chunk::loadBackFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
-    {
-        glm::ivec3 direction = {0, 0, 1};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
-
-        if (neighbor == -1 || blocktypes[neighbor] == 0) {
-            for (int i = 0; i < back_face_vertices.size(); i+= 8)
-            {
-                chunk_vertices.push_back(back_face_vertices[i] + world_pos.x);
-                chunk_vertices.push_back(back_face_vertices[i + 1] + world_pos.y);
-                chunk_vertices.push_back(back_face_vertices[i + 2] + world_pos.z);
-
-                //tex coords
-                chunk_vertices.push_back(back_face_vertices[i + 3]);
-                chunk_vertices.push_back(back_face_vertices[i + 4]);
-
-                //normals
-                chunk_vertices.push_back(back_face_vertices[i + 5]);
-                chunk_vertices.push_back(back_face_vertices[i + 6]);
-                chunk_vertices.push_back(back_face_vertices[i + 7]);
-
-                //block type
-                chunk_vertices.push_back(blocktypes[index] - 1);
-                
-                vertex_count += 1;
-            }
-        }
-    }
-
-    void Chunk::loadLeftFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
-    {
-        glm::ivec3 direction = {-1, 0, 0};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
-
-        if (neighbor == -1 || blocktypes[neighbor] == 0) {
-            for (int i = 0; i < left_face_vertices.size(); i+= 8)
-            {
-                chunk_vertices.push_back(left_face_vertices[i] + world_pos.x);
-                chunk_vertices.push_back(left_face_vertices[i + 1] + world_pos.y);
-                chunk_vertices.push_back(left_face_vertices[i + 2] + world_pos.z);
-
-                //tex coords
-                chunk_vertices.push_back(left_face_vertices[i + 3]);
-                chunk_vertices.push_back(left_face_vertices[i + 4]);
-
-                //normals
-                chunk_vertices.push_back(left_face_vertices[i + 5]);
-                chunk_vertices.push_back(left_face_vertices[i + 6]);
-                chunk_vertices.push_back(left_face_vertices[i + 7]);
-
-                //block type
-                chunk_vertices.push_back(blocktypes[index] - 1);
-                
-                vertex_count += 1;
-            }
-        }
-    }
-
-    void Chunk::loadRightFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
-    {
-        glm::ivec3 direction = {1, 0, 0};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
-
-        if (neighbor == -1 || blocktypes[neighbor] == 0) 
-        {
-            for (int i = 0; i < right_face_vertices.size(); i+= 8)
-            {
-                chunk_vertices.push_back(right_face_vertices[i] + world_pos.x);
-                chunk_vertices.push_back(right_face_vertices[i + 1] + world_pos.y);
-                chunk_vertices.push_back(right_face_vertices[i + 2] + world_pos.z);
-
-                //tex coords
-                chunk_vertices.push_back(right_face_vertices[i + 3]);
-                chunk_vertices.push_back(right_face_vertices[i + 4]);
-
-                //normals
-                chunk_vertices.push_back(right_face_vertices[i + 5]);
-                chunk_vertices.push_back(right_face_vertices[i + 6]);
-                chunk_vertices.push_back(right_face_vertices[i + 7]);
-
-                //block type
-                chunk_vertices.push_back(blocktypes[index] - 1);
-                
-                vertex_count += 1;
-            }
-        }
-    }
-
-    void Chunk::loadTopFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
-    {
-        glm::ivec3 direction = {0, 1, 0};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
-
-        if (neighbor == -1 || blocktypes[neighbor] == 0) 
-        {
-            for (int i = 0; i < top_face_vertices.size(); i+= 8)
-            {
-                chunk_vertices.push_back(top_face_vertices[i] + world_pos.x);
-                chunk_vertices.push_back(top_face_vertices[i + 1] + world_pos.y);
-                chunk_vertices.push_back(top_face_vertices[i + 2] + world_pos.z);
-
-                //tex coords
-                chunk_vertices.push_back(top_face_vertices[i + 3]);
-                chunk_vertices.push_back(top_face_vertices[i + 4]);
-
-                //normals
-                chunk_vertices.push_back(top_face_vertices[i + 5]);
-                chunk_vertices.push_back(top_face_vertices[i + 6]);
-                chunk_vertices.push_back(top_face_vertices[i + 7]);
-
-                //block type
-                chunk_vertices.push_back(blocktypes[index] - 1);
-                
-                vertex_count += 1;
-            }
-        }
-    }
-
-    void Chunk::loadBottomFaceVertices(glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
-    {
-        glm::ivec3 direction = {0, -1, 0};
-        glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
-
-        if (neighbor == -1 || blocktypes[neighbor] == 0)
-        {
-            for (int i = 0; i < bottom_face_vertices.size(); i+= 8)
-            {
-                chunk_vertices.push_back(bottom_face_vertices[i] + world_pos.x);
-                chunk_vertices.push_back(bottom_face_vertices[i + 1] + world_pos.y);
-                chunk_vertices.push_back(bottom_face_vertices[i + 2] + world_pos.z);
-
-                //tex coords
-                chunk_vertices.push_back(bottom_face_vertices[i + 3]);
-                chunk_vertices.push_back(bottom_face_vertices[i + 4]);
-
-                //normals
-                chunk_vertices.push_back(bottom_face_vertices[i + 5]);
-                chunk_vertices.push_back(bottom_face_vertices[i + 6]);
-                chunk_vertices.push_back(bottom_face_vertices[i + 7]);
-
-                //block type
-                chunk_vertices.push_back(blocktypes[index] - 1);
-                
-                vertex_count += 1;
-            }
-        }
-    }
 
     void Chunk::deleteChunk()
     {
