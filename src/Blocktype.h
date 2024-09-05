@@ -12,7 +12,7 @@ enum BlockType
     Oak_leaves,
 };
 
-enum class FaceOrientation
+enum FaceOrientation
 {
     Front,
     Back,

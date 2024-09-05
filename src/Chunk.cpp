@@ -113,17 +113,9 @@ namespace game
         }
     }
 
-
     void Chunk::deleteChunk()
     {
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);
     }
 }
-
-// vertices.insert(vertices.end(), {
-//                 x+0.f, y+0.f, z+0.f, 0.f, 0.f, Orientation::Front,
-//                 x+1.f, y+0.f, z+0.f, 1.f, 0.f, Orientation::Front,
-//                 x+1.f, y+1.f, z+0.f, 1.f, 1.f, Orientation::Front,
-//                 x+0.f, y+1.f, z+0.f, 0.f, 1.f, Orientation::Front,
-//             });

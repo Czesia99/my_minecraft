@@ -86,6 +86,7 @@ namespace game
             //     "../assets/textures/default/dirt.png",
             //     "../assets/textures/default/stone.png",
             //     "../assets/textures/default/oak_log.png",
+            //     "../assets/textures/default/grasstop.jpg",
             // };
     };
 }

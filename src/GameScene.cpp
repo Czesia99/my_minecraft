@@ -13,13 +13,13 @@ namespace game
         // client.receive();
         camera.setCameraSpeed(100.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
+
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
         cube_shader = Shader("cube.vs", "cube.fs");
         cursor_shader = Shader("cursor.vs", "cursor.fs");
-        // test_cube_shader = Shader("test_cube.vs", "test_cube.fs");
-        // test_cube.transform.scale *= 0.5f;
+
         t1 = std::thread(&Client::receiveThread, &client);
 
         cursor_img.transform.scale.x = ctx.win_width;

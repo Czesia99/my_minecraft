@@ -8,11 +8,8 @@ in vec2 TexCoords;
 in flat int BlockType;
 
 struct Material {
-    // sampler2D diffuse;
     sampler2DArray diffuse;
 };
-
-// uniform float textureUnit;
 
 uniform Material material;
 
