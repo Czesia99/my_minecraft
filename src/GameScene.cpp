@@ -14,7 +14,8 @@ namespace game
         camera.setCameraSpeed(100.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
-        loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
+        // loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
+        loadTextures();
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
         cube_shader = Shader("cube.vs", "cube.fs");
@@ -166,6 +167,19 @@ namespace game
             return blocktype;
         } else
             return 0;
+    }
+
+    void GameScene::loadTextures()
+    {
+        int id = 0;
+        for (auto &[key, value] : block_textures_map)
+        {
+            std::cout << "id == " << id << std::endl;
+            loadTextureArrayId(value, block_textures, id, 16, 16, GL_NEAREST, GL_NEAREST);
+            id += value.size();
+            std::cout << key << std::endl;
+            std::cout << value.size() << std::endl;
+        }
     }
 
     void GameScene::sceneClear()

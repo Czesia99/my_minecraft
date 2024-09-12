@@ -12,6 +12,16 @@ enum BlockType
     Oak_leaves,
 };
 
+enum BlockTextures
+{
+    GrassTop,
+    GrassSide,
+    Dirt,
+    Stone,
+    OakLogSide,
+    OakLogTop,
+};
+
 enum FaceOrientation
 {
     Front,

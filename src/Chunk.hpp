@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <thread>
+#include <unordered_map>
 
 #include "MYGL/Shader.h"
 #include "MYGL/Transform.hpp"
@@ -41,6 +42,15 @@ namespace game
             
             
             std::thread thread_chunk_vertices;
+
+            //Blocktype, {top, side, bottom}
+            std::unordered_map<BlockType, std::vector<BlockTextures>> textures_map =
+            {
+                {BlockType::Grass, {BlockTextures::GrassTop, BlockTextures::GrassSide, BlockTextures::Dirt}},
+                {BlockType::Dirt, {BlockTextures::Dirt, BlockTextures::Dirt, BlockTextures::Dirt}},
+                {BlockType::Stone, {BlockTextures::Stone, BlockTextures::Stone, BlockTextures::Stone}},
+                {BlockType::Oak_log, {BlockTextures::OakLogTop, BlockTextures::OakLogSide, BlockTextures::OakLogTop}},
+            };
 
             std::vector<float> front_face_vertices {
                 //front face -Z

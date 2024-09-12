@@ -12,6 +12,7 @@
 #include "Client.hpp"
 #include "glm/gtx/hash.hpp"
 #include <unordered_map>
+#include <map>
 #include <thread>
 
 #include "Blocktype.h"
@@ -40,6 +41,7 @@ namespace game
 
         private:
             void updateChunks();
+            void loadTextures();
             void dda();
         private:
             Camera3D camera;
@@ -81,23 +83,15 @@ namespace game
                 // "../assets/textures/oak_log.png",
             };
 
-            // std::vector<std::string>block_textures_path = 
-            // {
-            //     "../assets/textures/default/grass.png",
-            //     "../assets/textures/default/dirt.png",
-            //     "../assets/textures/default/stone.png",
-            //     "../assets/textures/default/oak_log.png",
-            //     "../assets/textures/default/grasstop.jpg",
-            // };
-
-            //key = blocktype //values = top, side, bottom
-            std::unordered_map<BlockType, std::vector<std::string>> block_textures_map = {
-                {BlockType::Grass, {"../assets/textures/default/grasstop.jpg", "../assets/textures/default/grass.png", "../assets/textures/default/dirt.png"}},
-                {BlockType::Dirt, {"../assets/textures/default/dirt.png"}},
-                {BlockType::Stone, {"../assets/textures/default/stone.png"}},
-                {BlockType::Oak_log, {"../assets/textures/default/oak_log_top.png", "../assets/textures/default/oak_log.png"}}
+            //EDIT ENUM BLOCKTEXTURES
+            std::vector<std::string>block_textures_path2 = 
+            {
+                "../assets/textures/default/grasstop.jpg",
+                "../assets/textures/default/grass_block_side.png",
+                "../assets/textures/default/dirt.png",
+                "../assets/textures/default/stone.png",
+                "../assets/textures/default/oak_log.png",
+                "../assets/textures/default/oak_log_top.png",
             };
-
-            int textureIDTracker[4] = {3, 1, 1, 2};
     };
 }
