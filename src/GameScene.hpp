@@ -41,7 +41,6 @@ namespace game
 
         private:
             void updateChunks();
-            void loadTextures();
             void dda();
         private:
             Camera3D camera;

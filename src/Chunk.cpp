@@ -56,12 +56,12 @@ namespace game
             glm::ivec3 world_pos = local_pos + chunk_pos;
             
             glm::ivec3 front_face {0, 0, -1};
-            loadFaceVertices(front_face_vertices, getFaceOrientationVector(FaceOrientation::Front), local_pos, world_pos, index);
-            loadFaceVertices(back_face_vertices, getFaceOrientationVector(FaceOrientation::Back), local_pos, world_pos, index);
-            loadFaceVertices(left_face_vertices, getFaceOrientationVector(FaceOrientation::Left), local_pos, world_pos, index);
-            loadFaceVertices(right_face_vertices, getFaceOrientationVector(FaceOrientation::Right), local_pos, world_pos, index);
-            loadFaceVertices(top_face_vertices, getFaceOrientationVector(FaceOrientation::Top), local_pos, world_pos, index);
-            loadFaceVertices(bottom_face_vertices, getFaceOrientationVector(FaceOrientation::Bottom), local_pos, world_pos, index);
+            loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
+            loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
+            loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);
+            loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, index);
+            loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, index);
+            loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, index);
         }}}
     }
 
@@ -83,8 +83,9 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    void Chunk::loadFaceVertices(std::vector<float> vertices, glm::ivec3 direction, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
+    void Chunk::loadFaceVertices(std::vector<float> vertices, FaceOrientation orientation, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
     {
+        glm::ivec3 direction = getFaceOrientationVector(orientation);
         glm::ivec3 ndir = direction + local_pos;
         int neighbor = positionToIndex(ndir);
 
@@ -105,12 +106,31 @@ namespace game
                 chunk_vertices.push_back(vertices[i + 6]);
                 chunk_vertices.push_back(vertices[i + 7]);
 
-                //block type
-                chunk_vertices.push_back(blocktypes[index] - 1);
+                //block textures
+                chunk_vertices.push_back(findBlockTextures(getBlockType(blocktypes[index]), orientation));
                 
                 vertex_count += 1;
             }
         }
+    }
+
+    int Chunk::findBlockTextures(BlockType type, FaceOrientation orientation)
+    {
+        if (orientation == FaceOrientation::Front || orientation == FaceOrientation::Back || orientation == FaceOrientation::Left || orientation == FaceOrientation::Right)
+        {
+            return textures_umap.at(type).at(1);
+        }
+
+        if (orientation == FaceOrientation::Top)
+        {
+            return textures_umap.at(type).at(0);
+        }
+
+        if (orientation == FaceOrientation::Bottom)
+        {
+            return textures_umap.at(type).at(2);
+        }
+        return 0;
     }
 
     void Chunk::deleteChunk()

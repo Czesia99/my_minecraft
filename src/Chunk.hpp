@@ -5,10 +5,12 @@
 #include <vector>
 #include <thread>
 #include <unordered_map>
+#include <array>
 
 #include "MYGL/Shader.h"
 #include "MYGL/Transform.hpp"
 #include "MYGL/ICamera.hpp"
+#include "Blocktype.h"
 
 namespace game
 {
@@ -31,7 +33,8 @@ namespace game
             int positionToIndex(glm::ivec3 pos);
 
         private:
-            void loadFaceVertices(std::vector<float> vertices, glm::ivec3 direction, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadFaceVertices(std::vector<float> vertices, FaceOrientation orientation, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            int findBlockTextures(BlockType type, FaceOrientation orientation);
 
         private:
             GLuint vao;
@@ -40,16 +43,16 @@ namespace game
             int size = 16;
             int vertex_count;
             
-            
             std::thread thread_chunk_vertices;
 
             //Blocktype, {top, side, bottom}
-            std::unordered_map<BlockType, std::vector<BlockTextures>> textures_map =
+            std::unordered_map<BlockType, std::array<BlockTextures, 3>> textures_umap =
             {
-                {BlockType::Grass, {BlockTextures::GrassTop, BlockTextures::GrassSide, BlockTextures::Dirt}},
-                {BlockType::Dirt, {BlockTextures::Dirt, BlockTextures::Dirt, BlockTextures::Dirt}},
-                {BlockType::Stone, {BlockTextures::Stone, BlockTextures::Stone, BlockTextures::Stone}},
+                {BlockType::Grass, {BlockTextures::GrassTop, BlockTextures::GrassSide, BlockTextures::DirtTex}},
+                {BlockType::Dirt, {BlockTextures::DirtTex, BlockTextures::DirtTex, BlockTextures::DirtTex}},
+                {BlockType::Stone, {BlockTextures::StoneTex, BlockTextures::StoneTex, BlockTextures::StoneTex}},
                 {BlockType::Oak_log, {BlockTextures::OakLogTop, BlockTextures::OakLogSide, BlockTextures::OakLogTop}},
+                {BlockType::Oak_leaves, {BlockTextures::GrassTop, BlockTextures::GrassTop, BlockTextures::GrassTop}},
             };
 
             std::vector<float> front_face_vertices {

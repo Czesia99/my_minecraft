@@ -16,8 +16,8 @@ enum BlockTextures
 {
     GrassTop,
     GrassSide,
-    Dirt,
-    Stone,
+    DirtTex,
+    StoneTex,
     OakLogSide,
     OakLogTop,
 };
@@ -31,6 +31,20 @@ enum FaceOrientation
     Top,
     Bottom,
 };
+
+constexpr BlockType getBlockType(uint8_t bt)
+{
+    switch (bt)
+    {
+        case 0: return BlockType::Air;
+        case 1: return BlockType::Grass;
+        case 2: return BlockType::Dirt;
+        case 3: return BlockType::Stone;
+        case 4: return BlockType::Oak_log;
+        case 5: return BlockType::Oak_leaves;
+        default: return BlockType::Air;
+    }
+}
 
 constexpr glm::ivec3 getFaceOrientationVector(FaceOrientation orientation)
 {
