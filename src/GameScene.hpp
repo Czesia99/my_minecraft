@@ -38,6 +38,7 @@ namespace game
 
             uint8_t getBlockAt(int x, int y, int z);
             void clearAllChunks();
+            void renderWorld();
 
         private:
             void updateChunks();
@@ -61,6 +62,10 @@ namespace game
             float request_interval = 0.0;
             float peak_rss;
             float current_rss;
+
+            unsigned int depthMapFBO;
+            unsigned int depthMap;
+            const unsigned int shadow_width = 1024, shadow_height = 1024;
 
             struct DDA_Data
             {

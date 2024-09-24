@@ -24,6 +24,22 @@ namespace game
 
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
+
+        glGenFramebuffers(1, &depthMapFBO);
+        glGenTextures(1, &depthMap);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     GameScene::~GameScene()
@@ -48,10 +64,10 @@ namespace game
         return;
     }
 
-    void GameScene::update() 
+    void GameScene::renderWorld()
     {
         glEnable(GL_CULL_FACE);
-        clock.update();
+        
         cube_shader.use();
 
         sky.render(camera);
@@ -61,26 +77,45 @@ namespace game
             it.second->render(cube_shader, camera);
         }
 
-        request_interval += clock.delta_time;
-        if (request_interval >= 1.0f/20.0f) {
-            request_interval = 0;
-            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
-        }
-
         updateChunks();
 
         for (auto &[key, value] : chunks)
         {
             assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
         }
+    }
 
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        cursor_shader.use();
-        cursor_img.render(cursor_shader, camera_ortho);
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
+    void GameScene::update() 
+    {
+        clock.update();
+
+        //render shadow map
+        glViewport(0, 0, shadow_width, shadow_height);
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        // ConfigureShaderAndMatrices();
+        renderWorld();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        //render game
+        glViewport(0, 0, ctx.win_width, ctx.win_height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // ConfigureShaderAndMatrices();
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        renderWorld();
+
+        request_interval += clock.delta_time;
+        if (request_interval >= 1.0f/20.0f) {
+            request_interval = 0;
+            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        }
+        // glDisable(GL_DEPTH_TEST);
+        // glEnable(GL_BLEND);
+        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // cursor_shader.use();
+        // cursor_img.render(cursor_shader, camera_ortho);
+        // glEnable(GL_DEPTH_TEST);
+        // glDisable(GL_BLEND);
     }
 
     void GameScene::updateChunks()
