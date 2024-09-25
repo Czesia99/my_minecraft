@@ -40,7 +40,7 @@ namespace game
 
             uint8_t getBlockAt(int x, int y, int z);
             void clearAllChunks();
-            void renderWorld();
+            void renderWorld(const Shader &shader);
 
         private:
             void updateChunks();
@@ -71,7 +71,7 @@ namespace game
             float near_plane = 0.1f;
             float far_plane = 75.0f;
             glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, near_plane, far_plane);
-            glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 30.0f, 0.0f), glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
+            glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 30.0f, 0.0f), glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
             glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
             Shader depth_shader;

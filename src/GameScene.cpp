@@ -69,26 +69,12 @@ namespace game
         return;
     }
 
-    void GameScene::renderWorld()
+    void GameScene::renderWorld(const Shader &shader)
     {
-        glEnable(GL_CULL_FACE);
-        
-        cube_shader.use();
-
-        sky.render(camera);
-
         for (auto &it : chunks)
         {
-            it.second->render(cube_shader, camera);
+            it.second->render(shader, camera);
         }
-
-        updateChunks();
-
-        for (auto &[key, value] : chunks)
-        {
-            assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
-        }
-
     }
 
     void GameScene::update() 
@@ -103,7 +89,7 @@ namespace game
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         // ConfigureShaderAndMatrices();
-        renderWorld();
+        renderWorld(depth_shader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //reset viewport
@@ -114,14 +100,18 @@ namespace game
         debug_depth_shader.use();
         debug_depth_shader.setFloat("near_plane", near_plane);
         debug_depth_shader.setFloat("far_plane", far_plane);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, depthMap);
+        depth_quad.texture = depthMap;
         depth_quad.render(debug_depth_shader, camera_ortho);
         
         //render game
         // // ConfigureShaderAndMatrices();
         // glBindTexture(GL_TEXTURE_2D, depthMap);
-        renderWorld();
+        glEnable(GL_CULL_FACE);
+        cube_shader.use();
+        sky.render(camera);
+        renderWorld(cube_shader);
 
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
@@ -129,6 +119,12 @@ namespace game
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
         }
 
+        updateChunks();
+
+        for (auto &[key, value] : chunks)
+        {
+            assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
+        }
         // glDisable(GL_DEPTH_TEST);
         // glEnable(GL_BLEND);
         // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
