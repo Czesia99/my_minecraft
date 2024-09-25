@@ -8,6 +8,8 @@
 #include "MYGL/Skybox.hpp"
 #include "MYGL/Shape.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Chunk.hpp"
 #include "Client.hpp"
 #include "glm/gtx/hash.hpp"
@@ -66,6 +68,15 @@ namespace game
             unsigned int depthMapFBO;
             unsigned int depthMap;
             const unsigned int shadow_width = 1024, shadow_height = 1024;
+            float near_plane = 0.1f;
+            float far_plane = 75.0f;
+            glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, near_plane, far_plane);
+            glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 30.0f, 0.0f), glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
+            glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+            Shader depth_shader;
+            Shader debug_depth_shader;
+            Rectangle depth_quad;
 
             struct DDA_Data
             {

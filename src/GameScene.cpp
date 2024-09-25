@@ -19,6 +19,8 @@ namespace game
 
         cube_shader = Shader("cube.vs", "cube.fs");
         cursor_shader = Shader("cursor.vs", "cursor.fs");
+        depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
+        debug_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
         t1 = std::thread(&Client::receiveThread, &client);
 
@@ -40,6 +42,9 @@ namespace game
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        debug_depth_shader.use();
+        debug_depth_shader.setInt("depthMap", 0);
     }
 
     GameScene::~GameScene()
@@ -83,6 +88,7 @@ namespace game
         {
             assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
         }
+
     }
 
     void GameScene::update() 
@@ -90,6 +96,9 @@ namespace game
         clock.update();
 
         //render shadow map
+        depth_shader.use();
+        // glUniformMatrix4fv(depth_shader.setMat4, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+        depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -97,11 +106,21 @@ namespace game
         renderWorld();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        //render game
+        //reset viewport
         glViewport(0, 0, ctx.win_width, ctx.win_height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // ConfigureShaderAndMatrices();
+
+        //render depth map
+        debug_depth_shader.use();
+        debug_depth_shader.setFloat("near_plane", near_plane);
+        debug_depth_shader.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, depthMap);
+        depth_quad.render(debug_depth_shader, camera_ortho);
+        
+        //render game
+        // // ConfigureShaderAndMatrices();
+        // glBindTexture(GL_TEXTURE_2D, depthMap);
         renderWorld();
 
         request_interval += clock.delta_time;
@@ -109,6 +128,7 @@ namespace game
             request_interval = 0;
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
         }
+
         // glDisable(GL_DEPTH_TEST);
         // glEnable(GL_BLEND);
         // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -129,7 +149,6 @@ namespace game
             auto it = chunks.find(chunk.pos);
             if (it != chunks.end())
             {
-                std::cout << "delete chunk" << std::endl;
                 it->second->deleteChunk();
                 delete it->second;
             }
