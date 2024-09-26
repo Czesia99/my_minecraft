@@ -17,7 +17,8 @@ namespace game
         loadTextureArray(block_textures_path2, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
-        cube_shader = Shader("cube.vs", "cube.fs");
+        cube_shader = Shader("cube_shadow.vs", "cube_shadow.fs");
+        cube_shadow = Shader("cube_shadow.vs", "cube_shadow.fs");
         cursor_shader = Shader("cursor.vs", "cursor.fs");
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         debug_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
@@ -45,6 +46,8 @@ namespace game
 
         debug_depth_shader.use();
         debug_depth_shader.setInt("depthMap", 0);
+        cube_shadow.use();
+        cube_shadow.setInt("shadowMap", 1);
     }
 
     GameScene::~GameScene()
@@ -100,18 +103,22 @@ namespace game
         debug_depth_shader.use();
         debug_depth_shader.setFloat("near_plane", near_plane);
         debug_depth_shader.setFloat("far_plane", far_plane);
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, depthMap);
         depth_quad.texture = depthMap;
         depth_quad.render(debug_depth_shader, camera_ortho);
         
         //render game
-        // // ConfigureShaderAndMatrices();
-        // glBindTexture(GL_TEXTURE_2D, depthMap);
         glEnable(GL_CULL_FACE);
-        cube_shader.use();
+        // cube_shader.use();
+        cube_shadow.use();
+        // cube_shader.use();
+        cube_shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        
+        
+
         sky.render(camera);
-        renderWorld(cube_shader);
+        renderWorld(cube_shadow);
 
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {

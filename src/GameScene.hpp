@@ -74,6 +74,7 @@ namespace game
             glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 30.0f, 0.0f), glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
             glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
+            Shader cube_shadow;
             Shader depth_shader;
             Shader debug_depth_shader;
             Rectangle depth_quad;
