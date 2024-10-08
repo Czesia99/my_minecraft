@@ -60,7 +60,7 @@ namespace game
             Rectangle cursor_img;
             Shader cursor_shader;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
-            std::thread t1;
+            std::thread client_thread;
             float request_interval = 0.0;
             float peak_rss;
             float current_rss;

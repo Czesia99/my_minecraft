@@ -16,8 +16,6 @@ namespace game
 {
     Client::Client()
     {
-        int status;
-
         client_socket = socket(AF_INET, SOCK_STREAM, 0);
     
         // specifying address 
@@ -30,6 +28,10 @@ namespace game
         // sending connection request
         status = connect(client_socket, (struct sockaddr*)&server_adress, sizeof(server_adress));
         
+        if (status == -1)
+        {
+            std::cout << "can't connect to game server" << std::endl;
+        }
         // close(client_socket); 
     }
 

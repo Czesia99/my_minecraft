@@ -10,7 +10,14 @@ namespace game
     GameScene::GameScene(Context &ctx) : Scene(ctx)
     {
         storeSceneInCtx();
-        // client.receive();
+        if (client.status == -1)
+        {
+            std::cout << "connexion failed: loading default scene" << std::endl;
+            ctx.loadScene(ctx.default_scene);
+            ctx.run();
+            return;
+        }
+        std::cout << "in game scene2" << std::endl;
         camera.setCameraSpeed(100.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
@@ -23,7 +30,8 @@ namespace game
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         debug_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
-        t1 = std::thread(&Client::receiveThread, &client);
+        if (client.status != -1)
+            client_thread = std::thread(&Client::receiveThread, &client);
 
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
@@ -114,8 +122,6 @@ namespace game
         cube_shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthMap);
-        
-        
 
         sky.render(camera);
         renderWorld(cube_shadow);

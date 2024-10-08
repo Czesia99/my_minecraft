@@ -53,6 +53,7 @@ namespace game
     class Client
     {
         public:
+            int status;
             Data data;
             std::mutex mtx_chunk_data;
         public:
