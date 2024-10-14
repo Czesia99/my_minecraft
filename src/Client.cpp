@@ -22,8 +22,8 @@ namespace game
         sockaddr_in server_adress;
         server_adress.sin_family = AF_INET;
         server_adress.sin_port = htons(15000);
-        // server_adress.sin_addr.s_addr = inet_addr("127.0.0.1"); //local server
-        server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
+        server_adress.sin_addr.s_addr = inet_addr("127.0.0.1"); //local server
+        // server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
     
         // sending connection request
         status = connect(client_socket, (struct sockaddr*)&server_adress, sizeof(server_adress));

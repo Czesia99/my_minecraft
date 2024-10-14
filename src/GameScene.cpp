@@ -120,6 +120,8 @@ namespace game
         cube_shadow.use();
         // cube_shader.use();
         cube_shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        cube_shadow.setVec3("lightPos", glm::vec3(-2.0f, 4.0f, -1.0f));
+        cube_shadow.setVec3("viewPos", camera.position);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthMap);
 
