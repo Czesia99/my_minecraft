@@ -107,12 +107,12 @@ namespace game
         glViewport(0, 0, ctx.win_width, ctx.win_height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //render depth map
-        debug_depth_shader.use();
-        debug_depth_shader.setFloat("near_plane", near_plane);
-        debug_depth_shader.setFloat("far_plane", far_plane);
-        depth_quad.texture = depthMap;
-        depth_quad.render(debug_depth_shader, camera_ortho);
+        //render depth map quad
+        // debug_depth_shader.use();
+        // debug_depth_shader.setFloat("near_plane", near_plane);
+        // debug_depth_shader.setFloat("far_plane", far_plane);
+        // depth_quad.texture = depthMap;
+        // depth_quad.render(debug_depth_shader, camera_ortho);
         
         //render game
         glEnable(GL_CULL_FACE);

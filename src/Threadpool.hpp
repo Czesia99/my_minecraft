@@ -59,7 +59,7 @@ public:
 private: 
     vector<thread> threads_; 
 
-    queue<function<void()> > tasks_; 
+    queue<function<void()>> tasks_; 
     mutex queue_mutex_; 
     condition_variable cv_; 
     bool stop_ = false; 

@@ -38,26 +38,26 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 void main()
 {
     vec3 NewTexCoord = vec3(fs_in.TexCoords.x, fs_in.TexCoords.y, fs_in.BlockType);           
-    vec4 color = texture(material.diffuse, NewTexCoord);
+    vec3 color = texture(material.diffuse, NewTexCoord).rgb;
 
     vec3 normal = normalize(fs_in.Normal);
-    vec3 lightColor = vec3(0.3);
+    vec3 lightColor = vec3(1.0);
     // ambient
-    vec3 ambient = 0.3 * lightColor;
+    vec3 ambient = 0.3 * lightColor;    
     // diffuse
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * lightColor;
     // specular
-    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = 0.0;
-    vec3 halfwayDir = normalize(lightDir + viewDir);  
-    spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
-    vec3 specular = spec * lightColor;    
+    // vec3 viewDir = normalize(viewPos - fs_in.FragPos);
+    // vec3 reflectDir = reflect(-lightDir, normal);
+    // vec3 halfwayDir = normalize(lightDir + viewDir);  
+    // float spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+    // float specularStrength = 0.1;
+    // vec3 specular = specularStrength * spec * lightColor;
     
     float shadow = ShadowCalculation(fs_in.FragPosLightSpace);                      
-    vec4 lighting = (1.0 - shadow) * color;  
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse /* + specular*/)) * color; 
     
-    FragColor = lighting;
+    FragColor = vec4(lighting, 1.0);
 }
