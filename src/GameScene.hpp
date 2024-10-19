@@ -67,12 +67,14 @@ namespace game
 
             unsigned int depthMapFBO;
             unsigned int depthMap;
-            const unsigned int shadow_width = 1024, shadow_height = 1024;
-            float near_plane = 0.1f;
-            float far_plane = 75.0f;
-            glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, near_plane, far_plane);
-            glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 30.0f, 0.0f), glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
+            const unsigned int shadow_width = 4096, shadow_height = 4096;
+            float near_plane = -40.0f;
+            float far_plane = 40.0f;
+            glm::vec3 lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
+            glm::mat4 lightProjection = glm::ortho(-32.0f, 32.0f, -32.0f, 32.0f, near_plane, far_plane);
+            glm::mat4 lightView = glm::lookAt(-lightDir, glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
             glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+            // glm::vec3 lightDir = glm::vec3(-2.0, 4.0, -1.0);
 
             Shader cube_shadow;
             Shader depth_shader;

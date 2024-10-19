@@ -1,7 +1,6 @@
-
-#version 330 core
+#version 460 core
 
 void main()
 {             
-    // gl_FragDepth = gl_FragCoord.z;
+    // gl_FragDepth = 1.0;// gl_FragCoord.z;
 }

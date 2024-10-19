@@ -36,24 +36,27 @@ namespace game
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
 
-        glGenFramebuffers(1, &depthMapFBO);
-        glGenTextures(1, &depthMap);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glCreateFramebuffers(1, &depthMapFBO);
+        glCreateTextures(GL_TEXTURE_2D, 1, &depthMap);
+        // glBindTexture(GL_TEXTURE_2D, depthMap);
+        // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTextureParameteri(depthMap, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTextureParameteri(depthMap, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTextureParameteri(depthMap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTextureParameteri(depthMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
+        glTextureStorage2D(depthMap, 1, GL_DEPTH_COMPONENT24, shadow_width, shadow_height);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+        glNamedFramebufferTexture(depthMapFBO, GL_DEPTH_ATTACHMENT, depthMap, 0);
+        glNamedFramebufferDrawBuffer(depthMapFBO, GL_NONE);
+        glNamedFramebufferReadBuffer(depthMapFBO, GL_NONE);
+        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-        debug_depth_shader.use();
-        debug_depth_shader.setInt("depthMap", 0);
+        // debug_depth_shader.use();
+        // debug_depth_shader.setInt("texture0", 0);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
     }
@@ -94,25 +97,26 @@ namespace game
 
         //render shadow map
         depth_shader.use();
-        // glUniformMatrix4fv(depth_shader.setMat4, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
         depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-        // ConfigureShaderAndMatrices();
+
         renderWorld(depth_shader);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0); //unbind
 
         //reset viewport
         glViewport(0, 0, ctx.win_width, ctx.win_height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //render depth map quad
-        // debug_depth_shader.use();
-        // debug_depth_shader.setFloat("near_plane", near_plane);
-        // debug_depth_shader.setFloat("far_plane", far_plane);
-        // depth_quad.texture = depthMap;
-        // depth_quad.render(debug_depth_shader, camera_ortho);
+        // render depth map quad
+        debug_depth_shader.use();
+        debug_depth_shader.setInt("texture0", 0);
+        debug_depth_shader.setFloat("near_plane", near_plane);
+        debug_depth_shader.setFloat("far_plane", far_plane);
+        depth_quad.texture = depthMap;
+        glBindTextureUnit(0, depthMap);
+        depth_quad.render(debug_depth_shader, camera_ortho);
         
         //render game
         glEnable(GL_CULL_FACE);
@@ -120,11 +124,11 @@ namespace game
         cube_shadow.use();
         // cube_shader.use();
         cube_shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-        cube_shadow.setVec3("lightPos", glm::vec3(-2.0f, 4.0f, -1.0f));
+        cube_shadow.setVec3("lightDir", lightDir);
         cube_shadow.setVec3("viewPos", camera.position);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glBindTextureUnit(1, depthMap);
 
+        glBindTextureUnit(0, block_textures);
         sky.render(camera);
         renderWorld(cube_shadow);
 
@@ -280,7 +284,6 @@ namespace game
             dda();
             client.sendUpdateBlock(BlockType::Grass, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
         }
-
     }
 
     void GameScene::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
