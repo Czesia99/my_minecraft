@@ -28,7 +28,7 @@ namespace game
         cube_shadow = Shader("cube_shadow.vs", "cube_shadow.fs");
         cursor_shader = Shader("cursor.vs", "cursor.fs");
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
-        debug_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
+        quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
         if (client.status != -1)
             client_thread = std::thread(&Client::receiveThread, &client);
@@ -55,10 +55,13 @@ namespace game
         float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
         glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-        // debug_depth_shader.use();
-        // debug_depth_shader.setInt("texture0", 0);
+        depth_quad.texture = depthMap;
+        quad_depth_shader.use();
+        quad_depth_shader.setInt("texture0", 0);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
+        cursor_shader.use();
+        cursor_shader.setInt("texture0", 0);
     }
 
     GameScene::~GameScene()
@@ -83,19 +86,30 @@ namespace game
         return;
     }
 
-    void GameScene::renderWorld(const Shader &shader)
+    void GameScene::renderCursorQuad()
     {
-        for (auto &it : chunks)
-        {
-            it.second->render(shader, camera);
-        }
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        cursor_shader.use();
+        glBindTextureUnit(0, cursor_img.texture);
+        cursor_img.render(cursor_shader, camera_ortho);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
     }
 
-    void GameScene::update() 
+    void GameScene::renderShadowMapQuad()
     {
-        clock.update();
+        quad_depth_shader.use();
+        quad_depth_shader.setFloat("near_plane", near_plane);
+        quad_depth_shader.setFloat("far_plane", far_plane);
+        
+        glBindTextureUnit(0, depthMap);
+        depth_quad.render(quad_depth_shader, camera_ortho);
+    }
 
-        //render shadow map
+    void GameScene::renderShadowMap()
+    {
         depth_shader.use();
         depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
@@ -108,29 +122,38 @@ namespace game
         //reset viewport
         glViewport(0, 0, ctx.win_width, ctx.win_height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 
-        // render depth map quad
-        debug_depth_shader.use();
-        debug_depth_shader.setInt("texture0", 0);
-        debug_depth_shader.setFloat("near_plane", near_plane);
-        debug_depth_shader.setFloat("far_plane", far_plane);
-        depth_quad.texture = depthMap;
-        glBindTextureUnit(0, depthMap);
-        depth_quad.render(debug_depth_shader, camera_ortho);
+    void GameScene::renderWorld(const Shader &shader)
+    {
+        for (auto &it : chunks)
+        {
+            it.second->render(shader, camera);
+        }
+    }
+
+    void GameScene::update()
+    {
+        clock.update();
         
+        renderShadowMap();
+
+        // renderShadowMapQuad();
+
         //render game
         glEnable(GL_CULL_FACE);
-        // cube_shader.use();
         cube_shadow.use();
-        // cube_shader.use();
         cube_shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         cube_shadow.setVec3("lightDir", lightDir);
         cube_shadow.setVec3("viewPos", camera.position);
         glBindTextureUnit(1, depthMap);
-
         glBindTextureUnit(0, block_textures);
-        sky.render(camera);
+
         renderWorld(cube_shadow);
+
+        renderCursorQuad();
+
+        sky.render(camera);
 
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
@@ -144,13 +167,6 @@ namespace game
         {
             assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
         }
-        // glDisable(GL_DEPTH_TEST);
-        // glEnable(GL_BLEND);
-        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // cursor_shader.use();
-        // cursor_img.render(cursor_shader, camera_ortho);
-        // glEnable(GL_DEPTH_TEST);
-        // glDisable(GL_BLEND);
     }
 
     void GameScene::updateChunks()

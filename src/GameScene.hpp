@@ -38,13 +38,19 @@ namespace game
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
-            uint8_t getBlockAt(int x, int y, int z);
-            void clearAllChunks();
-            void renderWorld(const Shader &shader);
-
         private:
+
+            //rendering
             void updateChunks();
+            void renderWorld(const Shader &shader);
+            void renderShadowMap();
+            void renderShadowMapQuad();
+            void renderCursorQuad();
+            //dda
             void dda();
+            uint8_t getBlockAt(int x, int y, int z);
+            //utils
+            void clearAllChunks();
         private:
             Camera3D camera;
             CameraOrtho camera_ortho;
@@ -78,7 +84,7 @@ namespace game
 
             Shader cube_shadow;
             Shader depth_shader;
-            Shader debug_depth_shader;
+            Shader quad_depth_shader;
             Rectangle depth_quad;
 
             struct DDA_Data
