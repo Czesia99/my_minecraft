@@ -51,6 +51,7 @@ namespace game
             uint8_t getBlockAt(int x, int y, int z);
             //utils
             void clearAllChunks();
+            void createDepthQuadTexture();
         private:
             Camera3D camera;
             CameraOrtho camera_ortho;
@@ -80,7 +81,6 @@ namespace game
             glm::mat4 lightProjection = glm::ortho(-32.0f, 32.0f, -32.0f, 32.0f, near_plane, far_plane);
             glm::mat4 lightView = glm::lookAt(-lightDir, glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
             glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-            // glm::vec3 lightDir = glm::vec3(-2.0, 4.0, -1.0);
 
             Shader cube_shadow;
             Shader depth_shader;

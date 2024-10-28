@@ -17,7 +17,7 @@ namespace game
             ctx.run();
             return;
         }
-        std::cout << "in game scene2" << std::endl;
+
         camera.setCameraSpeed(100.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
@@ -36,28 +36,8 @@ namespace game
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
 
-        glCreateFramebuffers(1, &depthMapFBO);
-        glCreateTextures(GL_TEXTURE_2D, 1, &depthMap);
-        // glBindTexture(GL_TEXTURE_2D, depthMap);
-        // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        glTextureParameteri(depthMap, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTextureParameteri(depthMap, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTextureParameteri(depthMap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTextureParameteri(depthMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        createDepthQuadTexture();
 
-        glTextureStorage2D(depthMap, 1, GL_DEPTH_COMPONENT24, shadow_width, shadow_height);
-
-        // glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-        glNamedFramebufferTexture(depthMapFBO, GL_DEPTH_ATTACHMENT, depthMap, 0);
-        glNamedFramebufferDrawBuffer(depthMapFBO, GL_NONE);
-        glNamedFramebufferReadBuffer(depthMapFBO, GL_NONE);
-        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-        depth_quad.texture = depthMap;
-        quad_depth_shader.use();
-        quad_depth_shader.setInt("texture0", 0);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
@@ -66,8 +46,7 @@ namespace game
 
     GameScene::~GameScene()
     {
-        // printf("%s\n", "game scene destructor");
-        // clearAllChunks();
+        client_thread.join();
     }
 
     void GameScene::storeSceneInCtx() 
@@ -84,6 +63,29 @@ namespace game
     void GameScene::closeScene()
     {
         return;
+    }
+
+    void GameScene::createDepthQuadTexture()
+    {
+        glCreateFramebuffers(1, &depthMapFBO);
+        glCreateTextures(GL_TEXTURE_2D, 1, &depthMap);
+
+        glTextureParameteri(depthMap, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTextureParameteri(depthMap, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTextureParameteri(depthMap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTextureParameteri(depthMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+        glTextureStorage2D(depthMap, 1, GL_DEPTH_COMPONENT24, shadow_width, shadow_height);
+    
+        glNamedFramebufferTexture(depthMapFBO, GL_DEPTH_ATTACHMENT, depthMap, 0);
+        glNamedFramebufferDrawBuffer(depthMapFBO, GL_NONE);
+        glNamedFramebufferReadBuffer(depthMapFBO, GL_NONE);
+
+        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+        quad_depth_shader.use();
+        quad_depth_shader.setInt("texture0", 0);
     }
 
     void GameScene::renderCursorQuad()
