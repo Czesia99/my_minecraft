@@ -55,7 +55,6 @@ namespace game
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + chunk_pos;
             
-            glm::ivec3 front_face {0, 0, -1};
             loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
             loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
             loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);

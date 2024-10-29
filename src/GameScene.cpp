@@ -36,7 +36,7 @@ namespace game
 
         createDepthQuadTexture();
 
-        client.sendRenderDistance(5);
+        client.sendRenderDistance(10);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
@@ -117,7 +117,7 @@ namespace game
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        renderWorld(depth_shader);
+        renderTerrain(depth_shader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0); //unbind
 
         //reset viewport
@@ -125,7 +125,7 @@ namespace game
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void GameScene::renderWorld(const Shader &shader)
+    void GameScene::renderTerrain(const Shader &shader)
     {
         for (auto &it : chunks)
         {
@@ -133,15 +133,8 @@ namespace game
         }
     }
 
-    void GameScene::update()
+    void GameScene::renderWorld()
     {
-        clock.update();
-        
-        renderShadowMap();
-
-        // renderShadowMapQuad();
-
-        //render game
         glEnable(GL_CULL_FACE);
         cube_shadow.use();
         cube_shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
@@ -150,8 +143,16 @@ namespace game
         glBindTextureUnit(1, depthMap);
         glBindTextureUnit(0, block_textures);
 
-        renderWorld(cube_shadow);
+        renderTerrain(cube_shadow);
+    }
 
+    void GameScene::update()
+    {
+        clock.update();
+        
+        renderShadowMap();
+        // renderShadowMapQuad();
+        renderWorld();
         sky.render(camera);
         renderCursorQuad();
 
@@ -163,11 +164,6 @@ namespace game
         }
 
         updateChunks();
-
-        for (auto &[key, value] : chunks)
-        {
-            assert ((key.x == value->chunk_pos.x && key.y == value->chunk_pos.y && key.z == value->chunk_pos.z));
-        }
     }
 
     void GameScene::updateChunks()

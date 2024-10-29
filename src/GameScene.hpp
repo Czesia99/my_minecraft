@@ -39,13 +39,13 @@ namespace game
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
         private:
-
             //rendering
             void updateChunks();
-            void renderWorld(const Shader &shader);
-            void renderShadowMap();
-            void renderShadowMapQuad();
             void renderCursorQuad();
+            void renderShadowMapQuad();
+            void renderShadowMap();
+            void renderWorld();
+            void renderTerrain(const Shader &shader);
             //dda
             void dda();
             uint8_t getBlockAt(int x, int y, int z);
@@ -62,8 +62,6 @@ namespace game
             Client client;
             GLuint block_textures;
 
-            // Shader test_cube_shader;
-            // Cube test_cube;
             Rectangle cursor_img;
             Shader cursor_shader;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
@@ -85,6 +83,7 @@ namespace game
             Shader depth_shader;
             Shader quad_depth_shader;
             Rectangle depth_quad;
+            std::thread render_thread;
 
             struct DDA_Data
             {
