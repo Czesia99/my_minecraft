@@ -1,7 +1,6 @@
 #include "Client.hpp"
 #include <cstring>
 #include <arpa/inet.h>
-#include <thread>
 
 void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 {
@@ -14,8 +13,9 @@ void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 
 namespace game
 {
-    Client::Client()
+    Client::Client() : stop_flag(false)
     {
+        // stop_flag = false;
         client_socket = socket(AF_INET, SOCK_STREAM, 0);
     
         // specifying address 
@@ -35,41 +35,85 @@ namespace game
         // close(client_socket); 
     }
 
-    void Client::receiveThread()
+    Client::~Client()
     {
-        while(1)
-        {
-            receive();
+        stopThread();
+        printf("%s \n", "stoped");
+        if (client_thread.joinable()) {
+            printf("%s \n", "joinable");
+            client_thread.join();
         }
     }
 
-    void Client::receive()
+    void Client::clientThread()
     {
-        recv(client_socket, buffer, 1, 0);
-        uint8_t id = buffer[0];
-
-        switch (id)
+        while(!stop_flag)
         {
-            case 0x00:
-                myEntityID();
-                break;
-            case 0x01:
-                addEntity();
-                break;
-            case 0x02:
-                receiveRemoveEntity();
-                break;
-            case 0x03:
-                receiveUpdateEntity();
-                break;
-            case 0x04:
-                receiveChunk();
-                break;
-            case 0x05:
-                receiveMonoTypeChunk();
-                break;
-            default:
-                break;
+            if (!receive()) {
+                continue;
+            }
+        }
+    }
+
+    void Client::startThread()
+    {
+        client_thread = std::thread(&Client::clientThread, this);
+    }
+
+    void Client::stopThread()
+    {
+        stop_flag = true;
+    }
+
+    bool Client::receive()
+    {
+        fd_set readfds;
+        struct timeval timeout;
+
+        FD_ZERO(&readfds);
+        FD_SET(client_socket, &readfds);
+
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+
+        int result = select(client_socket + 1, &readfds, NULL, NULL, &timeout);
+
+        if (result > 0) {
+            recv(client_socket, buffer, 1, 0);
+            uint8_t id = buffer[0];
+
+            switch (id)
+            {
+                case 0x00:
+                    myEntityID();
+                    break;
+                case 0x01:
+                    addEntity();
+                    break;
+                case 0x02:
+                    receiveRemoveEntity();
+                    break;
+                case 0x03:
+                    receiveUpdateEntity();
+                    break;
+                case 0x04:
+                    receiveChunk();
+                    break;
+                case 0x05:
+                    receiveMonoTypeChunk();
+                    break;
+                default:
+                    break;
+            }
+            // Data available to read
+            // Read data from socket and handle as needed
+            return true;
+        } else if (result == 0) {
+            // Timeout, nothing to read
+            return false;
+        } else {
+            // Handle error if needed
+            return false;
         }
     }
 

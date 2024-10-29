@@ -9,6 +9,9 @@
 #include <glm/glm.hpp>
 #include <mutex>
 
+#include <thread>
+#include <condition_variable>
+
 namespace game
 {
     struct ChunkData 
@@ -58,9 +61,12 @@ namespace game
             std::mutex mtx_chunk_data;
         public:
             Client();
-            void receive();
+            ~Client();
+            bool receive();
             void receiveAll(size_t len);
-            void receiveThread();
+            void clientThread();
+            void startThread();
+            void stopThread();
 
             //receive (CLIENT BOUND)
             void myEntityID();
@@ -81,6 +87,9 @@ namespace game
             UpdateEntityData ued = {};
             UpdateBlockData ubd = {};
             char name[64] = "Czesia";
+
+            std::thread client_thread;
+            std::atomic<bool> stop_flag;
             // sockaddr_in server_adress;
     };
 

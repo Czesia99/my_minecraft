@@ -30,8 +30,9 @@ namespace game
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
-        if (client.status != -1)
-            client_thread = std::thread(&Client::receiveThread, &client);
+        // if (client.status != -1)
+        //     client_thread = std::thread(&Client::clientThread, &client);
+        client.startThread();
 
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
@@ -46,7 +47,7 @@ namespace game
 
     GameScene::~GameScene()
     {
-        client_thread.join();
+
     }
 
     void GameScene::storeSceneInCtx() 
