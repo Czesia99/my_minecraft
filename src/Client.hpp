@@ -7,10 +7,8 @@
 #include <vector>
 #include <deque>
 #include <glm/glm.hpp>
-#include <mutex>
-
 #include <thread>
-#include <condition_variable>
+#include <mutex>
 
 namespace game
 {
@@ -53,6 +51,13 @@ namespace game
         uint32_t zpos;
     } __attribute__((packed));
 
+    struct UpdateMetaData
+    {
+        uint8_t id;
+        uint8_t render_distance;
+        std::vector<uint8_t> name;
+    } __attribute__((packed));
+
     class Client
     {
         public:
@@ -79,15 +84,16 @@ namespace game
             //send (SERVER BOUND)
             void sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch);
             void sendUpdateBlock(uint8_t block_type, int xpos, int ypos, int zpos);
-            
+            void sendRenderDistance(uint8_t distance);
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;
             int entity_id;
             UpdateEntityData ued = {};
             UpdateBlockData ubd = {};
-            char name[64] = "Czesia";
+            UpdateMetaData umd = {};
 
+            char name[64] = "Czesia";
             std::thread client_thread;
             std::atomic<bool> stop_flag;
             // sockaddr_in server_adress;

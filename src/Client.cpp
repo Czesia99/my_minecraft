@@ -38,9 +38,7 @@ namespace game
     Client::~Client()
     {
         stopThread();
-        printf("%s \n", "stoped");
         if (client_thread.joinable()) {
-            printf("%s \n", "joinable");
             client_thread.join();
         }
     }
@@ -105,14 +103,12 @@ namespace game
                 default:
                     break;
             }
-            // Data available to read
-            // Read data from socket and handle as needed
+
             return true;
+    
         } else if (result == 0) {
-            // Timeout, nothing to read
             return false;
         } else {
-            // Handle error if needed
             return false;
         }
     }
@@ -259,5 +255,19 @@ namespace game
         ubd.zpos = htobe32(*(uint32_t*)&zpos);
 
         send(client_socket, &ubd, sizeof(ubd), 0);
+    }
+
+    void Client::sendRenderDistance(uint8_t distance)
+    {
+        uint8_t id = 0x04;
+
+        umd.id = id;
+        umd.render_distance = distance;
+
+        for (auto &n : name) {
+            umd.name.push_back(n);
+        }
+
+        send(client_socket, &umd, sizeof(umd), 0);
     }
 }

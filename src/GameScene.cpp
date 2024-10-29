@@ -1,6 +1,5 @@
 #include "GameScene.hpp"
 #include "MYGL/Texture.hpp"
-#include <thread>
 #include "memory.hpp"
 
 #include <algorithm>
@@ -30,8 +29,6 @@ namespace game
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
-        // if (client.status != -1)
-        //     client_thread = std::thread(&Client::clientThread, &client);
         client.startThread();
 
         cursor_img.transform.scale.x = ctx.win_width;
@@ -39,6 +36,7 @@ namespace game
 
         createDepthQuadTexture();
 
+        client.sendRenderDistance(5);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
@@ -154,9 +152,9 @@ namespace game
 
         renderWorld(cube_shadow);
 
+        sky.render(camera);
         renderCursorQuad();
 
-        sky.render(camera);
 
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
