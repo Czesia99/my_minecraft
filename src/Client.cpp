@@ -264,9 +264,8 @@ namespace game
         umd.id = id;
         umd.render_distance = distance;
 
-        for (auto &n : name) {
-            umd.name.push_back(n);
-        }
+        memcpy(umd.name, &name, sizeof(umd.name));
+        umd.name[sizeof(umd.name) - 1] = '\0';
 
         send(client_socket, &umd, sizeof(umd), 0);
     }

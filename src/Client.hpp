@@ -55,7 +55,7 @@ namespace game
     {
         uint8_t id;
         uint8_t render_distance;
-        std::vector<uint8_t> name;
+        uint8_t name[64];
     } __attribute__((packed));
 
     class Client
