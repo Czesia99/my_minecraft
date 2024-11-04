@@ -34,7 +34,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightDir = normalize(lightDir - fs_in.FragPos);
-    float bias = max(0.001 * (1.0 - dot(normal, lightDir)), 0.005);
+    float bias = max(0.0005 * (1.0 - dot(normal, lightDir)), 0.005);
 
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
@@ -45,7 +45,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            vec2 offset = vec2(x, y) + rand(projCoords.xy * 0.1 + vec2(x, y) * 0.05);
+            vec2 offset = vec2(x, y) + rand(projCoords.xy + vec2(x, y));
             float pcfDepth = texture(shadowMap, projCoords.xy + offset * texelSize).r;
             shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
         }
