@@ -37,7 +37,7 @@ namespace game
 
         createDepthQuadTexture();
 
-        client.sendRenderDistance(10);
+        client.sendRenderDistance(5);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
@@ -140,7 +140,7 @@ namespace game
             minZ = std::min(minZ, trf.z);
             maxZ = std::max(maxZ, trf.z);
         }
-        constexpr float zMult = 10.0f;
+        constexpr float zMult = 1.0f;
         if (minZ < 0)
         {
             minZ *= zMult;
@@ -215,7 +215,7 @@ namespace game
         sky.render(camera);
         renderCursorQuad();
 
-        camera.setCameraNearFarPlanes(0.1f, 50.0f);
+        camera.setCameraNearFarPlanes(0.1f, 75.0f);
         frustrum_corners = getFrustumCornersWorldSpace(camera.getProjectionMatrix(), camera.getViewMatrix());
         camera.setCameraNearFarPlanes(0.1f, 1000.0f);
         request_interval += clock.delta_time;
