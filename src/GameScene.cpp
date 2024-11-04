@@ -80,8 +80,8 @@ namespace game
         glNamedFramebufferDrawBuffer(depthMapFBO, GL_NONE);
         glNamedFramebufferReadBuffer(depthMapFBO, GL_NONE);
 
-        float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, borderColor);
+        float border_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, border_color);
 
         quad_depth_shader.use();
         quad_depth_shader.setInt("texture0", 0);
@@ -111,7 +111,12 @@ namespace game
 
     void GameScene::renderShadowMap()
     {
+        glm::vec3 campos_xz = glm::vec3(camera.position.x, 0.0, camera.position.z);
         depth_shader.use();
+        lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
+        lightProjection = glm::ortho(-64.0f, 64.0f, -64.0f, 64.0f, near_plane, far_plane);
+        lightView = glm::lookAt(campos_xz - lightDir, campos_xz, glm::vec3( 0.0f, 1.0f,  0.0f));
+        lightSpaceMatrix = lightProjection * lightView;
         depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
