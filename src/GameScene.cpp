@@ -18,6 +18,7 @@ namespace game
         }
 
         camera.setCameraSpeed(100.0f);
+        // camera.setCameraNearFarPlanes(0.1f, 50.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
         loadTextureArray(block_textures_path2, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
@@ -41,6 +42,7 @@ namespace game
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
         cursor_shader.setInt("texture0", 0);
+
     }
 
     GameScene::~GameScene()
@@ -109,14 +111,66 @@ namespace game
         depth_quad.render(quad_depth_shader, camera_ortho);
     }
 
+    glm::mat4 GameScene::computeLightSpaceMatrix()
+    {
+        lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
+
+        glm::vec3 center = glm::vec3(0, 0, 0);
+        for (const auto& v : frustrum_corners)
+        {
+            center += glm::vec3(v);
+        }
+        center /= frustrum_corners.size();
+            
+        const auto lightView = glm::lookAt(center - lightDir, center, glm::vec3(0.0f, 1.0f, 0.0f));
+
+        float minX = std::numeric_limits<float>::max();
+        float maxX = std::numeric_limits<float>::lowest();
+        float minY = std::numeric_limits<float>::max();
+        float maxY = std::numeric_limits<float>::lowest();
+        float minZ = std::numeric_limits<float>::max();
+        float maxZ = std::numeric_limits<float>::lowest();
+        for (const auto& v : frustrum_corners)
+        {
+            const auto trf = lightView * v;
+            minX = std::min(minX, trf.x);
+            maxX = std::max(maxX, trf.x);
+            minY = std::min(minY, trf.y);
+            maxY = std::max(maxY, trf.y);
+            minZ = std::min(minZ, trf.z);
+            maxZ = std::max(maxZ, trf.z);
+        }
+        constexpr float zMult = 10.0f;
+        if (minZ < 0)
+        {
+            minZ *= zMult;
+        }
+        else
+        {
+            minZ /= zMult;
+        }
+        if (maxZ < 0)
+        {
+            maxZ /= zMult;
+        }
+        else
+        {
+            maxZ *= zMult;
+        }
+   
+        lightProjection = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
+
+        return lightSpaceMatrix = lightProjection * lightView;
+    }
+
     void GameScene::renderShadowMap()
     {
-        glm::vec3 campos_xz = glm::vec3(camera.position.x, 0.0, camera.position.z);
         depth_shader.use();
-        lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
-        lightProjection = glm::ortho(-64.0f, 64.0f, -64.0f, 64.0f, near_plane, far_plane);
-        lightView = glm::lookAt(campos_xz - lightDir, campos_xz, glm::vec3( 0.0f, 1.0f,  0.0f));
-        lightSpaceMatrix = lightProjection * lightView;
+
+        // glm::vec3 campos_xz = glm::vec3(camera.position.x, 0.0, camera.position.z);
+        // lightView = glm::lookAt(campos_xz - lightDir, campos_xz, glm::vec3( 0.0f, 1.0f,  0.0f));
+        // lightProjection = glm::ortho(-64.0f, 64.0f, -64.0f, 64.0f, near_plane, far_plane);
+        lightSpaceMatrix = computeLightSpaceMatrix(); //to fit in camera frustrum
         depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -161,7 +215,9 @@ namespace game
         sky.render(camera);
         renderCursorQuad();
 
-
+        camera.setCameraNearFarPlanes(0.1f, 50.0f);
+        frustrum_corners = getFrustumCornersWorldSpace(camera.getProjectionMatrix(), camera.getViewMatrix());
+        camera.setCameraNearFarPlanes(0.1f, 1000.0f);
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
             request_interval = 0;
@@ -169,6 +225,31 @@ namespace game
         }
 
         updateChunks();
+    }
+
+    std::vector<glm::vec4> GameScene::getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
+    {
+        const auto inv = glm::inverse(proj * view);
+        
+        std::vector<glm::vec4> frustumCorners;
+        for (unsigned int x = 0; x < 2; ++x)
+        {
+            for (unsigned int y = 0; y < 2; ++y)
+            {
+                for (unsigned int z = 0; z < 2; ++z)
+                {
+                    const glm::vec4 pt = 
+                        inv * glm::vec4(
+                            2.0f * x - 1.0f,
+                            2.0f * y - 1.0f,
+                            2.0f * z - 1.0f,
+                            1.0f);
+                    frustumCorners.push_back(pt / pt.w);
+                }
+            }
+        }
+        
+        return frustumCorners;
     }
 
     void GameScene::updateChunks()

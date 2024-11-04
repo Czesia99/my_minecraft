@@ -52,6 +52,8 @@ namespace game
             //utils
             void clearAllChunks();
             void createDepthQuadTexture();
+            std::vector<glm::vec4> getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view);
+            glm::mat4 computeLightSpaceMatrix();
         private:
             Camera3D camera;
             CameraOrtho camera_ortho;
@@ -83,7 +85,8 @@ namespace game
             Shader depth_shader;
             Shader quad_depth_shader;
             Rectangle depth_quad;
-            std::thread render_thread;
+
+            std::vector<glm::vec4> frustrum_corners;
 
             struct DDA_Data
             {
