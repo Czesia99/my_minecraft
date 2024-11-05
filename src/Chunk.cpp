@@ -11,38 +11,44 @@ namespace game
         return pos.x + pos.y * 16 + pos.z*16*16;
     }
 
-    Chunk::Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes) : blocktypes(blocktypes)
+    Chunk::Chunk(glm::ivec3 pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes)
     {
-        chunk_pos = pos;
-        createChunkVertices();
-
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-        glBufferData(GL_ARRAY_BUFFER, chunk_vertices.size() * sizeof(float), chunk_vertices.data(), GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(5 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
-        glEnableVertexAttribArray(3);
-
-        // chunk_vertices.erase(chunk_vertices.begin(), chunk_vertices.end());
-        // chunk_vertices.shrink_to_fit();
+        // createChunkVertices(pos);
+        // createChunkMesh();
     }
 
-    void Chunk::createChunkVertices()
+    void Chunk::createChunkMesh()
     {
+        if (vao == 0) {
+            glGenVertexArrays(1, &vao);
+            glBindVertexArray(vao);
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(5 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+
+            glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
+            glEnableVertexAttribArray(3);
+        }
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, chunk_vertices.size() * sizeof(float), chunk_vertices.data(), GL_STATIC_DRAW);
+    }
+
+    void Chunk::createChunkVertices(glm::ivec3 chunk_pos)
+    {
+        chunk_worldpos = chunk_pos;
         vertex_count = 0;
-        
+
+        chunk_vertices.clear();
+
+
         for (int z = 0; z < size; z++) {
         for (int y = 0; y < size; y++) {
         for (int x = 0; x < size; x++) {
@@ -54,7 +60,7 @@ namespace game
 
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + chunk_pos;
-            
+
             loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
             loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
             loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);
@@ -73,7 +79,7 @@ namespace game
         glm::mat4 view = camera.getViewMatrix();
         glm::mat3 normal = glm::transpose(glm::inverse(model));
 
-        shader.setMat4("model", model); 
+        shader.setMat4("model", model);
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         shader.setMat3("normal", normal);
@@ -88,7 +94,7 @@ namespace game
         glm::ivec3 ndir = direction + local_pos;
         int neighbor = positionToIndex(ndir);
 
-        if (neighbor == -1 || blocktypes[neighbor] == 0) 
+        if (neighbor == -1 || blocktypes[neighbor] == 0)
         {
             for (int i = 0; i < vertices.size(); i+= 8)
             {
@@ -107,7 +113,7 @@ namespace game
 
                 //block textures
                 chunk_vertices.push_back(findBlockTextures(getBlockType(blocktypes[index]), orientation));
-                
+
                 vertex_count += 1;
             }
         }

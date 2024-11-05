@@ -12,6 +12,7 @@
 
 #include "Chunk.hpp"
 #include "Client.hpp"
+#include "Threadpool.hpp"
 #include "glm/gtx/hash.hpp"
 #include <unordered_map>
 #include <map>
@@ -39,6 +40,8 @@ namespace game
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
         private:
+            //create chunks
+            Chunk *createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes);
             //rendering
             void updateChunks();
             void renderCursorQuad();
@@ -87,6 +90,9 @@ namespace game
             Rectangle depth_quad;
 
             std::vector<glm::vec4> frustrum_corners;
+
+            ThreadPool tp {10};
+            TaskQueue tq;
 
             struct DDA_Data
             {

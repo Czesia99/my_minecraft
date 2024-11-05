@@ -12,7 +12,7 @@
 
 namespace game
 {
-    struct ChunkData 
+    struct ChunkData
     {
         glm::ivec3 pos;
         std::vector<uint8_t>blocktypes;

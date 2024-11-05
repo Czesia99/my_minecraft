@@ -22,12 +22,13 @@ namespace game
             Transform transform;
             std::vector<float> chunk_vertices;
             std::vector<uint8_t>blocktypes;
-            glm::ivec3 chunk_pos;
+            glm::ivec3 chunk_worldpos;
             // GLuint diffuse_texture;
         public:
-            Chunk(glm::ivec3 pos, std::vector<uint8_t>&blocktypes);
+            Chunk(glm::ivec3 pos, const std::vector<uint8_t>&blocktypes);
             // ~Chunk() = default;
-            void createChunkVertices();
+            void createChunkVertices(glm::ivec3 pos);
+            void createChunkMesh();
             void render(const Shader &shader, const ICamera &camera);
             void deleteChunk();
             int positionToIndex(glm::ivec3 pos);
@@ -37,12 +38,12 @@ namespace game
             int findBlockTextures(BlockType type, FaceOrientation orientation);
 
         private:
-            GLuint vao;
-            GLuint vbo;
+            GLuint vao = 0;
+            GLuint vbo = 0;
 
             int size = 16;
-            int vertex_count;
-            
+            int vertex_count = 0;
+
             std::thread thread_chunk_vertices;
 
             //Blocktype, {top, side, bottom}
@@ -71,7 +72,7 @@ namespace game
                 1.0f, 1.0f, 1.0f,      1.0f, 1.0f,    0.0f, 0.0f, 1.0f,
                 1.0f, 1.0f, 1.0f,      1.0f, 1.0f,    0.0f, 0.0f, 1.0f,
                 0.0f, 1.0f, 1.0f,     0.0f, 1.0f,    0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f,    0.0f, 0.0f,    0.0f, 0.0f, 1.0f, 
+                0.0f, 0.0f, 1.0f,    0.0f, 0.0f,    0.0f, 0.0f, 1.0f,
             };
             std::vector<float> left_face_vertices {
                 //left face -X
@@ -89,7 +90,7 @@ namespace game
                 1.0f,  1.0f, 0.0f,    1.0f, 1.0f,    1.0f, 0.0f,  0.0f,
                 1.0f, 0.0f, 0.0f,    1.0f, 0.0f,    1.0f, 0.0f,  0.0f,
                 1.0f,  1.0f,  1.0f,    0.0f, 1.0f,    1.0f, 0.0f,  0.0f,
-                1.0f, 0.0f,  1.0f,    0.0f, 0.0f,    1.0f, 0.0f,  0.0f, 
+                1.0f, 0.0f,  1.0f,    0.0f, 0.0f,    1.0f, 0.0f,  0.0f,
             };
             std::vector<float> bottom_face_vertices {
                 // bottom face -Y

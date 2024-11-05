@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include "Blocktype.h"
-namespace game 
+namespace game
 {
     GameScene::GameScene(Context &ctx) : Scene(ctx)
     {
@@ -37,7 +37,7 @@ namespace game
 
         createDepthQuadTexture();
 
-        client.sendRenderDistance(5);
+        client.sendRenderDistance(10);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
@@ -50,7 +50,7 @@ namespace game
 
     }
 
-    void GameScene::storeSceneInCtx() 
+    void GameScene::storeSceneInCtx()
     {
         ctx.scenes.push_back(this);
     }
@@ -77,7 +77,7 @@ namespace game
         glTextureParameteri(depthMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
         glTextureStorage2D(depthMap, 1, GL_DEPTH_COMPONENT24, shadow_width, shadow_height);
-    
+
         glNamedFramebufferTexture(depthMapFBO, GL_DEPTH_ATTACHMENT, depthMap, 0);
         glNamedFramebufferDrawBuffer(depthMapFBO, GL_NONE);
         glNamedFramebufferReadBuffer(depthMapFBO, GL_NONE);
@@ -106,7 +106,7 @@ namespace game
         quad_depth_shader.use();
         quad_depth_shader.setFloat("near_plane", near_plane);
         quad_depth_shader.setFloat("far_plane", far_plane);
-        
+
         glBindTextureUnit(0, depthMap);
         depth_quad.render(quad_depth_shader, camera_ortho);
     }
@@ -121,7 +121,7 @@ namespace game
             center += glm::vec3(v);
         }
         center /= frustrum_corners.size();
-            
+
         const auto lightView = glm::lookAt(center - lightDir, center, glm::vec3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
@@ -157,7 +157,7 @@ namespace game
         {
             maxZ *= zMult;
         }
-   
+
         lightProjection = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
 
         return lightSpaceMatrix = lightProjection * lightView;
@@ -167,9 +167,6 @@ namespace game
     {
         depth_shader.use();
 
-        // glm::vec3 campos_xz = glm::vec3(camera.position.x, 0.0, camera.position.z);
-        // lightView = glm::lookAt(campos_xz - lightDir, campos_xz, glm::vec3( 0.0f, 1.0f,  0.0f));
-        // lightProjection = glm::ortho(-64.0f, 64.0f, -64.0f, 64.0f, near_plane, far_plane);
         lightSpaceMatrix = computeLightSpaceMatrix(); //to fit in camera frustrum
         depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
@@ -208,7 +205,7 @@ namespace game
     void GameScene::update()
     {
         clock.update();
-        
+
         renderShadowMap();
         // renderShadowMapQuad();
         renderWorld();
@@ -225,12 +222,13 @@ namespace game
         }
 
         updateChunks();
+        tq.execute();
     }
 
     std::vector<glm::vec4> GameScene::getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
     {
         const auto inv = glm::inverse(proj * view);
-        
+
         std::vector<glm::vec4> frustumCorners;
         for (unsigned int x = 0; x < 2; ++x)
         {
@@ -238,7 +236,7 @@ namespace game
             {
                 for (unsigned int z = 0; z < 2; ++z)
                 {
-                    const glm::vec4 pt = 
+                    const glm::vec4 pt =
                         inv * glm::vec4(
                             2.0f * x - 1.0f,
                             2.0f * y - 1.0f,
@@ -248,27 +246,41 @@ namespace game
                 }
             }
         }
-        
+
         return frustumCorners;
     }
 
     void GameScene::updateChunks()
     {
-        if (client.data.chunks.size() != 0)
+        client.mtx_chunk_data.lock();
+        while (client.data.chunks.size() != 0)
         {
             //lockmutex
-            client.mtx_chunk_data.lock();
-            ChunkData chunk = client.data.chunks.front();
+            ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
-            auto it = chunks.find(chunk.pos);
-            if (it != chunks.end())
-            {
-                it->second->deleteChunk();
-                delete it->second;
-            }
-            chunks[chunk.pos] = new Chunk(chunk.pos, chunk.blocktypes);
+
+            tp.enqueue([chunk_data, this] {
+                Chunk *chunk = createChunk(chunk_data.pos, chunk_data.blocktypes);
+                chunk->createChunkVertices(chunk_data.pos);
+                tq.enqueue([chunk] {
+                    chunk->createChunkMesh();
+                });
+            });
         }
         client.mtx_chunk_data.unlock();
+    }
+
+    Chunk *GameScene::createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes)
+    {
+        auto it = chunks.find(pos);
+        if (it != chunks.end())
+        {
+            it->second->blocktypes = blocktypes;
+            return it->second;
+        }
+        Chunk *chunk = new Chunk(pos, blocktypes);
+        chunks[pos] = chunk;
+        return chunk;
     }
 
     void GameScene::dda()
@@ -276,9 +288,9 @@ namespace game
         glm::ivec3 mapPos = glm::ivec3(floor(camera.position));
         glm::vec3 deltaDist = abs(length(camera.front) / camera.front);
         glm::ivec3 rayStep = glm::ivec3(sign(camera.front));
-        glm::vec3 sideDist = (sign(camera.front) * (glm::vec3(mapPos) - camera.position) + (sign(camera.front) * glm::vec3(0.5)) + glm::vec3(0.5)) * deltaDist; 
+        glm::vec3 sideDist = (sign(camera.front) * (glm::vec3(mapPos) - camera.position) + (sign(camera.front) * glm::vec3(0.5)) + glm::vec3(0.5)) * deltaDist;
         glm::ivec3 mask;
-        
+
         for (int i = 0; i < 100; i++) {
             uint8_t bt = getBlockAt(mapPos.x, mapPos.y, mapPos.z);
             if (bt != 0)
@@ -330,7 +342,7 @@ namespace game
         auto it =  chunks.find(chunk_pos);
         if (it != chunks.end())
         {
-            uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];       
+            uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
             return blocktype;
         } else
             return 0;
@@ -346,7 +358,7 @@ namespace game
         if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(ctx.window, true);
 
-        if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS) 
+        if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
         {
             camera.processKeyboard(FORWARD, clock.delta_time);
         }
