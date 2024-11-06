@@ -27,7 +27,7 @@ namespace game
         public:
             Chunk(glm::ivec3 pos, const std::vector<uint8_t>&blocktypes);
             // ~Chunk() = default;
-            void createChunkVertices(glm::ivec3 pos);
+            void createChunkVertices();
             void createChunkMesh();
             void render(const Shader &shader, const ICamera &camera);
             void deleteChunk();

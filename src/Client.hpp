@@ -26,7 +26,7 @@ namespace game
         float pitch;
     };
 
-    struct Data 
+    struct Data
     {
         std::deque<ChunkData> chunks;
         std::deque<EntityData> entitys;
@@ -93,7 +93,7 @@ namespace game
             UpdateBlockData ubd = {};
             UpdateMetaData umd = {};
 
-            char name[64] = "Czesia";
+            char name[64] = "CzesiaLa";
             std::thread client_thread;
             std::atomic<bool> stop_flag;
             // sockaddr_in server_adress;

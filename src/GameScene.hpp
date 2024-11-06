@@ -91,7 +91,7 @@ namespace game
 
             std::vector<glm::vec4> frustrum_corners;
 
-            ThreadPool tp {10};
+            ThreadPool tp = {4};
             TaskQueue tq;
 
             struct DDA_Data

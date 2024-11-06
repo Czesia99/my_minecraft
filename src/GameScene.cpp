@@ -31,13 +31,13 @@ namespace game
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
         client.startThread();
+        client.sendRenderDistance(16);
 
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
 
         createDepthQuadTexture();
 
-        client.sendRenderDistance(10);
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
@@ -261,9 +261,21 @@ namespace game
 
             tp.enqueue([chunk_data, this] {
                 Chunk *chunk = createChunk(chunk_data.pos, chunk_data.blocktypes);
-                chunk->createChunkVertices(chunk_data.pos);
-                tq.enqueue([chunk] {
+                chunk->createChunkVertices();
+                tq.enqueue([chunk, this] {
+
                     chunk->createChunkMesh();
+
+                    auto it = chunks.find(chunk->chunk_worldpos);
+                    if (it != chunks.end())
+                    {
+                        auto old_chunk = it->second;
+                        it->second = chunk;
+                        old_chunk->deleteChunk();
+                        free(old_chunk);
+                    } else {
+                        chunks[chunk->chunk_worldpos] = chunk;
+                    }
                 });
             });
         }
@@ -272,14 +284,14 @@ namespace game
 
     Chunk *GameScene::createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes)
     {
-        auto it = chunks.find(pos);
-        if (it != chunks.end())
-        {
-            it->second->blocktypes = blocktypes;
-            return it->second;
-        }
+        // auto it = chunks.find(pos);
+        // if (it != chunks.end())
+        // {
+        //     it->second->blocktypes = blocktypes;
+        //     return it->second;
+        // }
         Chunk *chunk = new Chunk(pos, blocktypes);
-        chunks[pos] = chunk;
+        // chunks[pos] = chunk;
         return chunk;
     }
 

@@ -36,16 +36,19 @@ namespace game
 
             glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
             glEnableVertexAttribArray(3);
+
+            // glBindVertexArray(0);
         }
+        glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, chunk_vertices.size() * sizeof(float), chunk_vertices.data(), GL_STATIC_DRAW);
+        // glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbind VBO
+        // glBindVertexArray(0);
     }
 
-    void Chunk::createChunkVertices(glm::ivec3 chunk_pos)
+    void Chunk::createChunkVertices()
     {
-        chunk_worldpos = chunk_pos;
         vertex_count = 0;
-
         chunk_vertices.clear();
 
 
@@ -59,7 +62,7 @@ namespace game
             bool display = false;
 
             glm::ivec3 local_pos = {x, y, z};
-            glm::ivec3 world_pos = local_pos + chunk_pos;
+            glm::ivec3 world_pos = local_pos + chunk_worldpos;
 
             loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
             loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
