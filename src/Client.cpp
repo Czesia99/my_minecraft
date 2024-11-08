@@ -128,6 +128,14 @@ namespace game
         entity_id = be32toh(*(int*)&buffer);
     }
 
+    void Client::convertToFloat(float &hfloat, const void *data)
+    {
+        uint32_t nint;
+        std::memcpy(&nint, data, sizeof(uint32_t));
+        nint = be32toh(nint);
+        std::memcpy(&hfloat, &nint, sizeof(float));
+    }
+
     void Client::addEntity()
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
@@ -139,24 +147,24 @@ namespace game
         entity.id = be32toh(entity.id);
         ptr += sizeof(int);
 
-        memcpy(&entity.pos.x, ptr, sizeof(float));
-        entity.pos.x = be32toh(entity.pos.x);
+        memcpy(&entity.xpos, ptr, sizeof(float));
+        convertToFloat(entity.xpos, &entity.xpos);
         ptr += sizeof(float);
 
-        memcpy(&entity.pos.y, ptr, sizeof(float));
-        entity.pos.y = be32toh(entity.pos.y);
+        memcpy(&entity.ypos, ptr, sizeof(float));
+        convertToFloat(entity.ypos, &entity.ypos);
         ptr += sizeof(float);
 
-        memcpy(&entity.pos.z, ptr, sizeof(float));
-        entity.pos.z = be32toh(entity.pos.z);
+        memcpy(&entity.zpos, ptr, sizeof(float));
+        convertToFloat(entity.zpos, &entity.zpos);
         ptr += sizeof(float);
 
         memcpy(&entity.yaw, ptr, sizeof(float));
-        entity.yaw = be32toh(entity.yaw);
+        convertToFloat(entity.yaw, &entity.yaw);
         ptr += sizeof(float);
 
         memcpy(&entity.pitch, ptr, sizeof(float));
-        entity.pitch = be32toh(entity.pitch);
+        convertToFloat(entity.pitch, &entity.pitch);
         ptr += sizeof(float);
 
         data.entities.push_back(entity);
@@ -225,7 +233,9 @@ namespace game
         chunk.blocktypes.resize(4096);
         std::fill(std::begin(chunk.blocktypes), std::end(chunk.blocktypes), blocktype);
 
+        mtx_chunk_data.lock();
         data.chunks.push_back(chunk);
+        mtx_chunk_data.unlock();
     }
 
     void Client::sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch)

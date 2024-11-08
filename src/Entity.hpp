@@ -23,12 +23,13 @@ namespace game
             void setValues(glm::vec3 npos, float npitch, float nyaw);
         public:
             Shader entity_shader;
-        private:
-
             int id;
             glm::vec3 pos;
             float pitch;
             float yaw;
+        private:
+
+
 
             Cube cube;
     };

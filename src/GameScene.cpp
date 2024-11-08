@@ -206,6 +206,7 @@ namespace game
     {
         for (auto &it : entities)
         {
+            // std::cout << "id == " << it.second->id << std::endl;
             it.second->render(it.second->entity_shader, camera);
         }
     }
@@ -217,7 +218,7 @@ namespace game
         renderShadowMap();
         // renderShadowMapQuad();
         renderWorld();
-        renderEntities();
+        // renderEntities();
         sky.render(camera);
         renderCursorQuad();
 
@@ -231,17 +232,17 @@ namespace game
         }
 
         updateChunks();
-        updateEntities();
+        // updateEntities();
         tq.execute();
 
-        std::cout << "entities size = " << client.data.entities.size() << std::endl;
         if (!client.data.entities.empty()) {
-            std::cout << "entity id = " << client.data.entities[0].id << std::endl;
-            std::cout << "entity pos x = " << client.data.entities[0].pos.x << std::endl;
-            std::cout << "entity pos y = " << client.data.entities[0].pos.y << std::endl;
-            std::cout << "entity pos z = " << client.data.entities[0].pos.z << std::endl;
-            std::cout << "entity pitch = " << client.data.entities[0].pitch << std::endl;
-            std::cout << "entity yaw = " << client.data.entities[0].yaw << std::endl;
+            std::cout << "entities size = " << client.data.entities.size() << std::endl;
+            std::cout << "entity id = " << (client.data.entities[0].id) << std::endl;
+            std::cout << "entity pos x = " << (client.data.entities[0].xpos) << std::endl;
+            std::cout << "entity pos y = " << (client.data.entities[0].ypos) << std::endl;
+            std::cout << "entity pos z = " << (client.data.entities[0].zpos) << std::endl;
+            std::cout << "entity pitch = " << (client.data.entities[0].pitch) << std::endl;
+            std::cout << "entity yaw = " << (client.data.entities[0].yaw) << std::endl;
         }
     }
 
@@ -272,7 +273,6 @@ namespace game
 
     void GameScene::updateEntities()
     {
-
         while (client.data.entities.size() != 0)
         {
             client.mtx_chunk_data.lock();
@@ -280,13 +280,14 @@ namespace game
             client.data.entities.pop_front();
             client.mtx_chunk_data.unlock();
 
+            glm::vec3 pos = {data.xpos, data.ypos, data.zpos};
             auto it = entities.find(data.id);
             if (it != entities.end())
             {
-                entities.at(data.id)->setValues(data.pos, data.pitch, data.yaw);
+                entities.at(data.id)->setValues(pos, data.pitch, data.yaw);
             } else
             {
-                Entity *entity = new Entity(data.id, data.pos, data.pitch, data.yaw);
+                Entity *entity = new Entity(data.id, pos, data.pitch, data.yaw);
                 entities[data.id] = entity;
             }
         }

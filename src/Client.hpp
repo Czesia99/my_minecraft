@@ -21,7 +21,9 @@ namespace game
     struct EntityData
     {
         int id;
-        glm::ivec3 pos;
+        float xpos;
+        float ypos;
+        float zpos;
         float yaw;
         float pitch;
     };
@@ -97,6 +99,8 @@ namespace game
             std::thread client_thread;
             std::atomic<bool> stop_flag;
             // sockaddr_in server_adress;
+
+            void convertToFloat(float &hfloat, const void *data);
     };
 
 }
