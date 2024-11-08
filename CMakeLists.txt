@@ -20,6 +20,7 @@ set(SRC_FILES
     ${SRC}/GameScene.cpp
     ${SRC}/Chunk.cpp
     ${SRC}/Client.cpp
+    ${SRC}/Entity.cpp
 )
 
 set(LINK_LIB

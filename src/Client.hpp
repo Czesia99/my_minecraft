@@ -29,10 +29,10 @@ namespace game
     struct Data
     {
         std::deque<ChunkData> chunks;
-        std::deque<EntityData> entitys;
+        std::deque<EntityData> entities;
     };
 
-    struct UpdateEntityData
+    struct UpdateMyEntityData
     {
         uint8_t id;
         uint32_t xpos;
@@ -89,7 +89,7 @@ namespace game
             uint8_t buffer[5000] = {0};
             int client_socket;
             int entity_id;
-            UpdateEntityData ued = {};
+            UpdateMyEntityData ued = {};
             UpdateBlockData ubd = {};
             UpdateMetaData umd = {};
 

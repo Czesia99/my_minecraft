@@ -3,7 +3,7 @@
 #include "memory.hpp"
 
 #include <algorithm>
-#include "Blocktype.h"
+
 namespace game
 {
     GameScene::GameScene(Context &ctx) : Scene(ctx)
@@ -202,6 +202,14 @@ namespace game
         renderTerrain(cube_shadow);
     }
 
+    void GameScene::renderEntities()
+    {
+        for (auto &it : entities)
+        {
+            it.second->render(it.second->entity_shader, camera);
+        }
+    }
+
     void GameScene::update()
     {
         clock.update();
@@ -209,6 +217,7 @@ namespace game
         renderShadowMap();
         // renderShadowMapQuad();
         renderWorld();
+        renderEntities();
         sky.render(camera);
         renderCursorQuad();
 
@@ -222,7 +231,18 @@ namespace game
         }
 
         updateChunks();
+        updateEntities();
         tq.execute();
+
+        std::cout << "entities size = " << client.data.entities.size() << std::endl;
+        if (!client.data.entities.empty()) {
+            std::cout << "entity id = " << client.data.entities[0].id << std::endl;
+            std::cout << "entity pos x = " << client.data.entities[0].pos.x << std::endl;
+            std::cout << "entity pos y = " << client.data.entities[0].pos.y << std::endl;
+            std::cout << "entity pos z = " << client.data.entities[0].pos.z << std::endl;
+            std::cout << "entity pitch = " << client.data.entities[0].pitch << std::endl;
+            std::cout << "entity yaw = " << client.data.entities[0].yaw << std::endl;
+        }
     }
 
     std::vector<glm::vec4> GameScene::getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
@@ -250,6 +270,28 @@ namespace game
         return frustumCorners;
     }
 
+    void GameScene::updateEntities()
+    {
+
+        while (client.data.entities.size() != 0)
+        {
+            client.mtx_chunk_data.lock();
+            EntityData data = client.data.entities.front();
+            client.data.entities.pop_front();
+            client.mtx_chunk_data.unlock();
+
+            auto it = entities.find(data.id);
+            if (it != entities.end())
+            {
+                entities.at(data.id)->setValues(data.pos, data.pitch, data.yaw);
+            } else
+            {
+                Entity *entity = new Entity(data.id, data.pos, data.pitch, data.yaw);
+                entities[data.id] = entity;
+            }
+        }
+    }
+
     void GameScene::updateChunks()
     {
         client.mtx_chunk_data.lock();
@@ -260,7 +302,7 @@ namespace game
             client.data.chunks.pop_front();
 
             tp.enqueue([chunk_data, this] {
-                Chunk *chunk = createChunk(chunk_data.pos, chunk_data.blocktypes);
+                Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
                 chunk->createChunkVertices();
                 tq.enqueue([chunk, this] {
 
@@ -284,14 +326,7 @@ namespace game
 
     Chunk *GameScene::createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes)
     {
-        // auto it = chunks.find(pos);
-        // if (it != chunks.end())
-        // {
-        //     it->second->blocktypes = blocktypes;
-        //     return it->second;
-        // }
         Chunk *chunk = new Chunk(pos, blocktypes);
-        // chunks[pos] = chunk;
         return chunk;
     }
 

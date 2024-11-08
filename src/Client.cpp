@@ -15,24 +15,23 @@ namespace game
 {
     Client::Client() : stop_flag(false)
     {
-        // stop_flag = false;
         client_socket = socket(AF_INET, SOCK_STREAM, 0);
-    
-        // specifying address 
+
+        // specifying address
         sockaddr_in server_adress;
         server_adress.sin_family = AF_INET;
         server_adress.sin_port = htons(15000);
         // server_adress.sin_addr.s_addr = inet_addr("127.0.0.1"); //local server
         server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
-    
+
         // sending connection request
         status = connect(client_socket, (struct sockaddr*)&server_adress, sizeof(server_adress));
-        
+
         if (status == -1)
         {
             std::cout << "can't connect to game server" << std::endl;
         }
-        // close(client_socket); 
+        // close(client_socket);
     }
 
     Client::~Client()
@@ -105,7 +104,7 @@ namespace game
             }
 
             return true;
-    
+
         } else if (result == 0) {
             return false;
         } else {
@@ -116,7 +115,7 @@ namespace game
     void Client::receiveAll(size_t len)
     {
         size_t bytes = 0;
-        
+
         while (bytes != len){
             bytes += recv(client_socket, &buffer[bytes], len - bytes, 0);
         }
@@ -160,7 +159,7 @@ namespace game
         entity.pitch = be32toh(entity.pitch);
         ptr += sizeof(float);
 
-        data.entitys.push_back(entity);
+        data.entities.push_back(entity);
     }
 
     void Client::receiveRemoveEntity()
@@ -169,10 +168,10 @@ namespace game
         receiveAll(4);
     }
 
-    void Client::receiveUpdateEntity() 
+    void Client::receiveUpdateEntity()
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        receiveAll(24);
+        addEntity(); // since it's doing the same thing lol
     }
 
     void Client::receiveChunk()

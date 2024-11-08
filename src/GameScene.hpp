@@ -9,15 +9,15 @@
 #include "MYGL/Shape.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
-
-#include "Chunk.hpp"
-#include "Client.hpp"
-#include "Threadpool.hpp"
-#include "glm/gtx/hash.hpp"
 #include <unordered_map>
 #include <map>
 #include <thread>
 
+#include "Chunk.hpp"
+#include "Entity.hpp"
+#include "Client.hpp"
+#include "Threadpool.hpp"
+#include "glm/gtx/hash.hpp"
 #include "Blocktype.h"
 
 namespace game
@@ -40,14 +40,15 @@ namespace game
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
         private:
-            //create chunks
             Chunk *createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes);
-            //rendering
             void updateChunks();
+            void updateEntities();
+            //rendering
             void renderCursorQuad();
             void renderShadowMapQuad();
             void renderShadowMap();
             void renderWorld();
+            void renderEntities();
             void renderTerrain(const Shader &shader);
             //dda
             void dda();
@@ -69,7 +70,10 @@ namespace game
 
             Rectangle cursor_img;
             Shader cursor_shader;
+
             std::unordered_map<glm::ivec3, Chunk*> chunks;
+            std::unordered_map<int, Entity*> entities;
+
             float request_interval = 0.0;
             float peak_rss;
             float current_rss;
