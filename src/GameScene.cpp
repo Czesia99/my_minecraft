@@ -218,7 +218,7 @@ namespace game
         renderShadowMap();
         // renderShadowMapQuad();
         renderWorld();
-        // renderEntities();
+        renderEntities();
         sky.render(camera);
         renderCursorQuad();
 
@@ -232,17 +232,19 @@ namespace game
         }
 
         updateChunks();
-        // updateEntities();
+        updateEntities();
         tq.execute();
 
         if (!client.data.entities.empty()) {
-            std::cout << "entities size = " << client.data.entities.size() << std::endl;
+            // std::cout << "entities size = " << client.data.entities.size() << std::endl;
             std::cout << "entity id = " << (client.data.entities[0].id) << std::endl;
-            std::cout << "entity pos x = " << (client.data.entities[0].xpos) << std::endl;
-            std::cout << "entity pos y = " << (client.data.entities[0].ypos) << std::endl;
-            std::cout << "entity pos z = " << (client.data.entities[0].zpos) << std::endl;
+            std::cout << "entity pos x = " << (client.data.entities[0].pos.x) << std::endl;
+            std::cout << "entity pos y = " << (client.data.entities[0].pos.y) << std::endl;
+            std::cout << "entity pos z = " << (client.data.entities[0].pos.z) << std::endl;
             std::cout << "entity pitch = " << (client.data.entities[0].pitch) << std::endl;
             std::cout << "entity yaw = " << (client.data.entities[0].yaw) << std::endl;
+        } else {
+            std::cout << "empty" << std::endl;
         }
     }
 
@@ -275,12 +277,16 @@ namespace game
     {
         while (client.data.entities.size() != 0)
         {
+            std::cout << "in while server pop entities" << std::endl;
             client.mtx_chunk_data.lock();
             EntityData data = client.data.entities.front();
             client.data.entities.pop_front();
             client.mtx_chunk_data.unlock();
 
-            glm::vec3 pos = {data.xpos, data.ypos, data.zpos};
+            glm::vec3 pos = {data.pos.x, data.pos.y, data.pos.z};
+            std::cout << "data pos x = " << data.pos.x << std::endl;
+            std::cout << "data pos y = " << data.pos.y << std::endl;
+            std::cout << "data pos z = " << data.pos.z << std::endl;
             auto it = entities.find(data.id);
             if (it != entities.end())
             {

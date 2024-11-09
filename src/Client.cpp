@@ -77,6 +77,7 @@ namespace game
 
         if (result > 0) {
             recv(client_socket, buffer, 1, 0);
+
             uint8_t id = buffer[0];
 
             switch (id)
@@ -98,6 +99,12 @@ namespace game
                     break;
                 case 0x05:
                     receiveMonoTypeChunk();
+                    break;
+                case 0x06:
+                    receiveChat();
+                    break;
+                case 0x07:
+                    receiveMetaData();
                     break;
                 default:
                     break;
@@ -123,49 +130,64 @@ namespace game
 
     void Client::myEntityID()
     {
+        std::cout << "receive my entity id" << std::endl;
         //entityID[int]
         receiveAll(4);
         entity_id = be32toh(*(int*)&buffer);
+        std::cout << "my entity id == " << entity_id << std::endl;
     }
 
-    void Client::convertToFloat(float &hfloat, const void *data)
+    void Client::convertToFloat(float &hfloat, uint32_t data)
     {
-        uint32_t nint;
-        std::memcpy(&nint, data, sizeof(uint32_t));
-        nint = be32toh(nint);
-        std::memcpy(&hfloat, &nint, sizeof(float));
+
+        // uint32_t nint;
+        // std::memcpy(&nint, data, sizeof(uint32_t));
+        data = be32toh(data);
+        std::memcpy(&hfloat, &data, sizeof(float));
     }
 
     void Client::addEntity()
     {
+        std::cout << "ADD ENTITY" << std::endl;
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        receiveAll(24);
+        receiveAll(24 + 64);
         EntityData entity;
         uint8_t *ptr = &buffer[0];
 
         memcpy(&entity.id, ptr, sizeof(int));
+        // std::cout << "ID without conversion: " << entity.id << std::endl;
         entity.id = be32toh(entity.id);
+        std::cout << "ID with conversion: " << entity.id << std::endl;
         ptr += sizeof(int);
 
-        memcpy(&entity.xpos, ptr, sizeof(float));
-        convertToFloat(entity.xpos, &entity.xpos);
-        ptr += sizeof(float);
+        uint32_t hold_posx;
+        memcpy(&hold_posx, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pos.x, hold_posx);
+        ptr += sizeof(uint32_t);
 
-        memcpy(&entity.ypos, ptr, sizeof(float));
-        convertToFloat(entity.ypos, &entity.ypos);
-        ptr += sizeof(float);
+        uint32_t hold_posy;
+        memcpy(&hold_posy, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pos.y, hold_posy);
+        ptr += sizeof(uint32_t);
 
-        memcpy(&entity.zpos, ptr, sizeof(float));
-        convertToFloat(entity.zpos, &entity.zpos);
-        ptr += sizeof(float);
+        uint32_t hold_posz;
+        memcpy(&hold_posz, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pos.z, hold_posy);
+        ptr += sizeof(uint32_t);
 
-        memcpy(&entity.yaw, ptr, sizeof(float));
-        convertToFloat(entity.yaw, &entity.yaw);
-        ptr += sizeof(float);
+        uint32_t hold_yaw;
+        memcpy(&hold_yaw, ptr, sizeof(uint32_t));
+        convertToFloat(entity.yaw, hold_yaw);
+        ptr += sizeof(uint32_t);
 
-        memcpy(&entity.pitch, ptr, sizeof(float));
-        convertToFloat(entity.pitch, &entity.pitch);
-        ptr += sizeof(float);
+        uint32_t hold_pitch;
+        memcpy(&entity.pitch, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pitch, hold_pitch);
+        ptr += sizeof(uint32_t);
+
+        // memcpy(&entity.name, ptr, sizeof(uint8_t) * 64);
+        // entity.name = be32toh(*(uint8_t *)entity.name);
+        // ptr += sizeof((uint8_t) * 64);
 
         data.entities.push_back(entity);
     }
@@ -178,8 +200,43 @@ namespace game
 
     void Client::receiveUpdateEntity()
     {
+        std::cout << "UPDATE ENTITY" << std::endl;
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        addEntity(); // since it's doing the same thing lol
+        receiveAll(24);
+        EntityData entity;
+        uint8_t *ptr = &buffer[0];
+
+        memcpy(&entity.id, ptr, sizeof(int));
+        // std::cout << "ID without conversion: " << entity.id << std::endl;
+        entity.id = be32toh(entity.id);
+        std::cout << "ID with conversion: " << entity.id << std::endl;
+        ptr += sizeof(int);
+
+        uint32_t hold_posx;
+        memcpy(&hold_posx, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pos.x, hold_posx);
+        ptr += sizeof(uint32_t);
+
+        uint32_t hold_posy;
+        memcpy(&hold_posy, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pos.y, hold_posy);
+        ptr += sizeof(uint32_t);
+
+        uint32_t hold_posz;
+        memcpy(&hold_posz, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pos.z, hold_posy);
+        ptr += sizeof(uint32_t);
+
+        uint32_t hold_yaw;
+        memcpy(&hold_yaw, ptr, sizeof(uint32_t));
+        convertToFloat(entity.yaw, hold_yaw);
+        ptr += sizeof(uint32_t);
+
+        uint32_t hold_pitch;
+        memcpy(&entity.pitch, ptr, sizeof(uint32_t));
+        convertToFloat(entity.pitch, hold_pitch);
+
+        data.entities.push_back(entity);
     }
 
     void Client::receiveChunk()
@@ -236,6 +293,16 @@ namespace game
         mtx_chunk_data.lock();
         data.chunks.push_back(chunk);
         mtx_chunk_data.unlock();
+    }
+
+    void Client::receiveChat()
+    {
+        receiveAll(4096);
+    }
+
+    void Client::receiveMetaData()
+    {
+        receiveAll(68);
     }
 
     void Client::sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch)

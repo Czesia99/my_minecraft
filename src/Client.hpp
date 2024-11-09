@@ -21,11 +21,10 @@ namespace game
     struct EntityData
     {
         int id;
-        float xpos;
-        float ypos;
-        float zpos;
+        glm::vec3 pos;
         float yaw;
         float pitch;
+        uint8_t name[64];
     };
 
     struct Data
@@ -82,6 +81,8 @@ namespace game
             void receiveUpdateEntity();
             void receiveChunk();
             void receiveMonoTypeChunk();
+            void receiveChat();
+            void receiveMetaData();
 
             //send (SERVER BOUND)
             void sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch);
@@ -100,7 +101,7 @@ namespace game
             std::atomic<bool> stop_flag;
             // sockaddr_in server_adress;
 
-            void convertToFloat(float &hfloat, const void *data);
+            void convertToFloat(float &hfloat, uint32_t data);
     };
 
 }
