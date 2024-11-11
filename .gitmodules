@@ -4,6 +4,3 @@
 [submodule "include/MYGL"]
 	path = include/MYGL
 	url = https://github.com/Czesia99/MYGL.git
-[submodule "include/imgui"]
-	path = include/imgui
-	url = https://github.com/ocornut/imgui.git
