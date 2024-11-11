@@ -21,7 +21,7 @@ namespace game
         sockaddr_in server_adress;
         server_adress.sin_family = AF_INET;
         server_adress.sin_port = htons(15000);
-        // server_adress.sin_addr.s_addr = inet_addr("127.0.0.1"); //local server
+        // server_adress.sin_addr.s_addr = inet_addr("127.0.0.1");
         server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
 
         // sending connection request
@@ -148,7 +148,6 @@ namespace game
 
     void Client::addEntity()
     {
-        std::cout << "ADD ENTITY" << std::endl;
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
         receiveAll(24 + 64);
         EntityData entity;
@@ -172,7 +171,7 @@ namespace game
 
         uint32_t hold_posz;
         memcpy(&hold_posz, ptr, sizeof(uint32_t));
-        convertToFloat(entity.pos.z, hold_posy);
+        convertToFloat(entity.pos.z, hold_posz);
         ptr += sizeof(uint32_t);
 
         uint32_t hold_yaw;
@@ -200,7 +199,6 @@ namespace game
 
     void Client::receiveUpdateEntity()
     {
-        std::cout << "UPDATE ENTITY" << std::endl;
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
         receiveAll(24);
         EntityData entity;
@@ -209,7 +207,6 @@ namespace game
         memcpy(&entity.id, ptr, sizeof(int));
         // std::cout << "ID without conversion: " << entity.id << std::endl;
         entity.id = be32toh(entity.id);
-        std::cout << "ID with conversion: " << entity.id << std::endl;
         ptr += sizeof(int);
 
         uint32_t hold_posx;
@@ -224,7 +221,7 @@ namespace game
 
         uint32_t hold_posz;
         memcpy(&hold_posz, ptr, sizeof(uint32_t));
-        convertToFloat(entity.pos.z, hold_posy);
+        convertToFloat(entity.pos.z, hold_posz);
         ptr += sizeof(uint32_t);
 
         uint32_t hold_yaw;

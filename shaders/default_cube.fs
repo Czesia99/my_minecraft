@@ -3,7 +3,6 @@
 out vec4 FragColor;
 
 in vec3 FragPos;
-in vec3 ourPosition;
 in vec2 TexCoords;
 in flat int BlockType;
 

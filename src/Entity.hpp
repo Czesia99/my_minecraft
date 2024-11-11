@@ -28,9 +28,7 @@ namespace game
             float pitch;
             float yaw;
         private:
-
-
-
             Cube cube;
+            Cube cube2;
     };
 }

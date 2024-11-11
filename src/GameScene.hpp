@@ -128,5 +128,8 @@ namespace game
                 "../assets/textures/default/oak_log.png",
                 "../assets/textures/default/oak_log_top.png",
             };
+
+            Cube testcube;
+            Shader test_cube_shader;
     };
 }

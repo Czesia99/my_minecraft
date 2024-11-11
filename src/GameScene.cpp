@@ -29,6 +29,7 @@ namespace game
         cursor_shader = Shader("cursor.vs", "cursor.fs");
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
+        test_cube_shader = Shader("entity_shader.vs", "entity_shader.fs");
 
         client.startThread();
         client.sendRenderDistance(16);
@@ -206,7 +207,6 @@ namespace game
     {
         for (auto &it : entities)
         {
-            // std::cout << "id == " << it.second->id << std::endl;
             it.second->render(it.second->entity_shader, camera);
         }
     }
@@ -220,7 +220,7 @@ namespace game
         renderWorld();
         renderEntities();
         sky.render(camera);
-        renderCursorQuad();
+        // renderCursorQuad();
 
         camera.setCameraNearFarPlanes(0.1f, 75.0f);
         frustrum_corners = getFrustumCornersWorldSpace(camera.getProjectionMatrix(), camera.getViewMatrix());
@@ -234,18 +234,6 @@ namespace game
         updateChunks();
         updateEntities();
         tq.execute();
-
-        if (!client.data.entities.empty()) {
-            // std::cout << "entities size = " << client.data.entities.size() << std::endl;
-            std::cout << "entity id = " << (client.data.entities[0].id) << std::endl;
-            std::cout << "entity pos x = " << (client.data.entities[0].pos.x) << std::endl;
-            std::cout << "entity pos y = " << (client.data.entities[0].pos.y) << std::endl;
-            std::cout << "entity pos z = " << (client.data.entities[0].pos.z) << std::endl;
-            std::cout << "entity pitch = " << (client.data.entities[0].pitch) << std::endl;
-            std::cout << "entity yaw = " << (client.data.entities[0].yaw) << std::endl;
-        } else {
-            std::cout << "empty" << std::endl;
-        }
     }
 
     std::vector<glm::vec4> GameScene::getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
@@ -277,16 +265,13 @@ namespace game
     {
         while (client.data.entities.size() != 0)
         {
-            std::cout << "in while server pop entities" << std::endl;
             client.mtx_chunk_data.lock();
             EntityData data = client.data.entities.front();
             client.data.entities.pop_front();
             client.mtx_chunk_data.unlock();
 
             glm::vec3 pos = {data.pos.x, data.pos.y, data.pos.z};
-            std::cout << "data pos x = " << data.pos.x << std::endl;
-            std::cout << "data pos y = " << data.pos.y << std::endl;
-            std::cout << "data pos z = " << data.pos.z << std::endl;
+
             auto it = entities.find(data.id);
             if (it != entities.end())
             {
