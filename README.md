@@ -3,6 +3,7 @@ OpenGL Minecraft Client to play in custom server with friends with there own cli
 
 <p align="center">
     <img src = "screenshots/showcase.png">
-</p>a
+    <img src = "screenshots/showcase2.png">
+</p>
 
 server: https://github.com/Blackoutburst/3D-multi-test
