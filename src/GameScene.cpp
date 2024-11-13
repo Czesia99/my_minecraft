@@ -17,11 +17,11 @@ namespace game
             return;
         }
 
-        camera.setCameraSpeed(100.0f);
+        camera.setCameraSpeed(30.0f);
         // camera.setCameraNearFarPlanes(0.1f, 50.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
-        loadTextureArray(block_textures_path2, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
+        loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
         cube_shader = Shader("cube_shadow.vs", "cube_shadow.fs");
@@ -29,10 +29,9 @@ namespace game
         cursor_shader = Shader("cursor.vs", "cursor.fs");
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
-        test_cube_shader = Shader("entity_shader.vs", "entity_shader.fs");
 
         client.startThread();
-        client.sendRenderDistance(16);
+        client.sendRenderDistance(8);
 
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
@@ -46,10 +45,7 @@ namespace game
 
     }
 
-    GameScene::~GameScene()
-    {
-
-    }
+    GameScene::~GameScene() {}
 
     void GameScene::storeSceneInCtx()
     {
@@ -65,6 +61,92 @@ namespace game
     void GameScene::closeScene()
     {
         return;
+    }
+
+    void GameScene::update()
+    {
+        clock.update();
+
+        renderShadowMap();
+        // renderShadowMapQuad();
+        renderWorld();
+        renderEntities();
+        sky.render(camera);
+        renderCursorQuad();
+
+        camera.setCameraNearFarPlanes(0.1f, 75.0f);
+        frustrum_corners = getFrustumCornersWorldSpace(camera.getProjectionMatrix(), camera.getViewMatrix());
+        camera.setCameraNearFarPlanes(0.1f, 1000.0f);
+        request_interval += clock.delta_time;
+        if (request_interval >= 1.0f/20.0f) {
+            request_interval = 0;
+            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        }
+
+        updateChunks();
+        updateEntities();
+        tq.execute();
+    }
+
+    void GameScene::sceneClear()
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void GameScene::processInput()
+    {
+        if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(ctx.window, true);
+
+        if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            camera.processKeyboard(FORWARD, clock.delta_time);
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            camera.processKeyboard(BACKWARD, clock.delta_time);
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            camera.processKeyboard(LEFT, clock.delta_time);
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            camera.processKeyboard(RIGHT, clock.delta_time);
+        }
+    }
+
+    void GameScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)
+    {
+        camera.processMouseMovement(dx, -dy);
+    }
+
+    void GameScene::leftClickCallback(GLFWwindow* window, int button, int action, int mods)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS)
+        {
+            dda();
+            client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
+        }
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && action==GLFW_PRESS)
+        {
+            dda();
+            client.sendUpdateBlock(BlockType::Grass, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
+        }
+    }
+
+    void GameScene::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    {
+        camera.processMouseScroll(static_cast<float>(yoffset));
+    }
+
+    void GameScene::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+    {
+        glViewport(0, 0, width, height);
+        camera.width = width;
+        camera.height = height;
     }
 
     void GameScene::createDepthQuadTexture()
@@ -211,32 +293,7 @@ namespace game
         }
     }
 
-    void GameScene::update()
-    {
-        clock.update();
-
-        renderShadowMap();
-        // renderShadowMapQuad();
-        renderWorld();
-        renderEntities();
-        sky.render(camera);
-        // renderCursorQuad();
-
-        camera.setCameraNearFarPlanes(0.1f, 75.0f);
-        frustrum_corners = getFrustumCornersWorldSpace(camera.getProjectionMatrix(), camera.getViewMatrix());
-        camera.setCameraNearFarPlanes(0.1f, 1000.0f);
-        request_interval += clock.delta_time;
-        if (request_interval >= 1.0f/20.0f) {
-            request_interval = 0;
-            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
-        }
-
-        updateChunks();
-        updateEntities();
-        tq.execute();
-    }
-
-    std::vector<glm::vec4> GameScene::getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view)
+    std::vector<glm::vec4> GameScene::getFrustumCornersWorldSpace(const glm::mat4 &proj, const glm::mat4 &view)
     {
         const auto inv = glm::inverse(proj * view);
 
@@ -385,67 +442,6 @@ namespace game
             return blocktype;
         } else
             return 0;
-    }
-
-    void GameScene::sceneClear()
-    {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-
-    void GameScene::processInput()
-    {
-        if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(ctx.window, true);
-
-        if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
-        {
-            camera.processKeyboard(FORWARD, clock.delta_time);
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
-        {
-            camera.processKeyboard(BACKWARD, clock.delta_time);
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            camera.processKeyboard(LEFT, clock.delta_time);
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            camera.processKeyboard(RIGHT, clock.delta_time);
-        }
-    }
-
-    void GameScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)
-    {
-        camera.processMouseMovement(dx, -dy);
-    }
-
-    void GameScene::leftClickCallback(GLFWwindow* window, int button, int action, int mods)
-    {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS)
-        {
-            dda();
-            client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
-        }
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && action==GLFW_PRESS)
-        {
-            dda();
-            client.sendUpdateBlock(BlockType::Grass, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
-        }
-    }
-
-    void GameScene::scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-    {
-        camera.processMouseScroll(static_cast<float>(yoffset));
-    }
-
-    void GameScene::framebufferSizeCallback(GLFWwindow* window, int width, int height)
-    {
-        glViewport(0, 0, width, height);
-        camera.width = width;
-        camera.height = height;
     }
 
     void GameScene::clearAllChunks()

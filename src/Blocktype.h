@@ -10,16 +10,26 @@ enum BlockType
     Stone,
     Oak_log,
     Oak_leaves,
+    Glass,
+    Water,
+    Sand,
+    Snow,
+    Undefined,
 };
 
 enum BlockTextures
 {
+    UndefinedTex,
     GrassTop,
     GrassSide,
     DirtTex,
     StoneTex,
     OakLogSide,
     OakLogTop,
+    GlassTex,
+    WaterTex,
+    SandTex,
+    SnowTex,
 };
 
 enum FaceOrientation
@@ -42,7 +52,11 @@ constexpr BlockType getBlockType(uint8_t bt)
         case 3: return BlockType::Stone;
         case 4: return BlockType::Oak_log;
         case 5: return BlockType::Oak_leaves;
-        default: return BlockType::Air;
+        case 6: return BlockType::Glass;
+        case 7: return BlockType::Water;
+        case 8: return BlockType::Sand;
+        case 9: return BlockType::Snow;
+        default: return BlockType::Undefined;
     }
 }
 

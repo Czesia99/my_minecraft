@@ -49,11 +49,16 @@ namespace game
             //Blocktype, {top, side, bottom}
             std::unordered_map<BlockType, std::array<BlockTextures, 3>> textures_umap =
             {
+                {BlockType::Undefined, {BlockTextures::UndefinedTex, BlockTextures::UndefinedTex, BlockTextures::UndefinedTex}},
                 {BlockType::Grass, {BlockTextures::GrassTop, BlockTextures::GrassSide, BlockTextures::DirtTex}},
                 {BlockType::Dirt, {BlockTextures::DirtTex, BlockTextures::DirtTex, BlockTextures::DirtTex}},
                 {BlockType::Stone, {BlockTextures::StoneTex, BlockTextures::StoneTex, BlockTextures::StoneTex}},
                 {BlockType::Oak_log, {BlockTextures::OakLogTop, BlockTextures::OakLogSide, BlockTextures::OakLogTop}},
                 {BlockType::Oak_leaves, {BlockTextures::GrassTop, BlockTextures::GrassTop, BlockTextures::GrassTop}},
+                {BlockType::Glass, {BlockTextures::GlassTex, BlockTextures::GlassTex, BlockTextures::GlassTex}},
+                {BlockType::Water, {BlockTextures::WaterTex, BlockTextures::WaterTex, BlockTextures::WaterTex}},
+                {BlockType::Sand, {BlockTextures::SandTex, BlockTextures::SandTex, BlockTextures::SandTex}},
+                {BlockType::Snow, {BlockTextures::SnowTex, BlockTextures::SnowTex, BlockTextures::SnowTex}},
             };
 
             std::vector<float> front_face_vertices {
