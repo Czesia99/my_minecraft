@@ -54,7 +54,7 @@ namespace game
                 {BlockType::Dirt, {BlockTextures::DirtTex, BlockTextures::DirtTex, BlockTextures::DirtTex}},
                 {BlockType::Stone, {BlockTextures::StoneTex, BlockTextures::StoneTex, BlockTextures::StoneTex}},
                 {BlockType::Oak_log, {BlockTextures::OakLogTop, BlockTextures::OakLogSide, BlockTextures::OakLogTop}},
-                {BlockType::Oak_leaves, {BlockTextures::GrassTop, BlockTextures::GrassTop, BlockTextures::GrassTop}},
+                {BlockType::Oak_leaves, {BlockTextures::LeavesOakTex, BlockTextures::LeavesOakTex, BlockTextures::LeavesOakTex}},
                 {BlockType::Glass, {BlockTextures::GlassTex, BlockTextures::GlassTex, BlockTextures::GlassTex}},
                 {BlockType::Water, {BlockTextures::WaterTex, BlockTextures::WaterTex, BlockTextures::WaterTex}},
                 {BlockType::Sand, {BlockTextures::SandTex, BlockTextures::SandTex, BlockTextures::SandTex}},

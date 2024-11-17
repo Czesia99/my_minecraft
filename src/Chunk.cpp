@@ -97,7 +97,7 @@ namespace game
         glm::ivec3 ndir = direction + local_pos;
         int neighbor = positionToIndex(ndir);
 
-        if (neighbor == -1 || blocktypes[neighbor] == 0)
+        if (neighbor == -1 || blocktypes[neighbor] == 0 || blocktypes[neighbor] == 5)
         {
             for (int i = 0; i < vertices.size(); i+= 8)
             {

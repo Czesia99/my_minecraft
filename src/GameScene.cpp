@@ -31,7 +31,7 @@ namespace game
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
         client.startThread();
-        client.sendRenderDistance(8);
+        client.sendRenderDistance(16);
 
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;

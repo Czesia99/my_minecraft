@@ -119,6 +119,7 @@ namespace game
                 "../assets/textures/default/stone.png",
                 "../assets/textures/default/oak_log.png",
                 "../assets/textures/default/oak_log_top.png",
+                "../assets/textures/default/leaves_oak.png",
                 "../assets/textures/default/glass.png",
                 "../assets/textures/default/water.png",
                 "../assets/textures/default/sand.png",

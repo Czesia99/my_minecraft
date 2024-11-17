@@ -26,6 +26,7 @@ enum BlockTextures
     StoneTex,
     OakLogSide,
     OakLogTop,
+    LeavesOakTex,
     GlassTex,
     WaterTex,
     SandTex,
