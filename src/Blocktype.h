@@ -61,6 +61,24 @@ constexpr BlockType getBlockType(uint8_t bt)
     }
 }
 
+constexpr uint8_t getBlockByte(BlockType bt)
+{
+    switch (bt)
+    {
+        case BlockType::Air: return 0;
+        case BlockType::Grass: return 1;
+        case BlockType::Dirt: return 2;
+        case BlockType::Stone: return 3;
+        case BlockType::Oak_log: return 4;
+        case BlockType::Oak_leaves: return 5;
+        case BlockType::Glass: return 6;
+        case BlockType::Water: return 7;
+        case BlockType::Sand: return 8;
+        case BlockType::Snow: return 9;
+        default: return BlockType::Undefined;
+    }
+}
+
 constexpr glm::ivec3 getFaceOrientationVector(FaceOrientation orientation)
 {
     switch (orientation)
