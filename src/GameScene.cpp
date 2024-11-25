@@ -82,7 +82,7 @@ namespace game
         imguiConfig();
 
         camera.setCameraNearFarPlanes(0.1f, 75.0f);
-        frustrum_corners = getFrustumCornersWorldSpace(camera.getProjectionMatrix(), camera.getViewMatrix());
+        frustrum_corners = camera.getFrustumCornersWorldSpace();
         camera.setCameraNearFarPlanes(0.1f, 1000.0f);
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
@@ -313,31 +313,6 @@ namespace game
         {
             it.second->render(it.second->entity_shader, camera);
         }
-    }
-
-    std::vector<glm::vec4> GameScene::getFrustumCornersWorldSpace(const glm::mat4 &proj, const glm::mat4 &view)
-    {
-        const auto inv = glm::inverse(proj * view);
-
-        std::vector<glm::vec4> frustumCorners;
-        for (unsigned int x = 0; x < 2; ++x)
-        {
-            for (unsigned int y = 0; y < 2; ++y)
-            {
-                for (unsigned int z = 0; z < 2; ++z)
-                {
-                    const glm::vec4 pt =
-                        inv * glm::vec4(
-                            2.0f * x - 1.0f,
-                            2.0f * y - 1.0f,
-                            2.0f * z - 1.0f,
-                            1.0f);
-                    frustumCorners.push_back(pt / pt.w);
-                }
-            }
-        }
-
-        return frustumCorners;
     }
 
     void GameScene::updateEntities()

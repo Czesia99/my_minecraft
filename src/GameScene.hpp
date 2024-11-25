@@ -57,7 +57,6 @@ namespace game
             void imguiConfig();
             void clearAllChunks();
             void createDepthQuadTexture();
-            std::vector<glm::vec4> getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view);
             glm::mat4 computeLightSpaceMatrix();
         private:
             Camera3D camera;
