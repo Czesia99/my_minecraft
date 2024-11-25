@@ -54,6 +54,7 @@ namespace game
             void dda();
             uint8_t getBlockAt(int x, int y, int z);
             //utils
+            void imguiConfig();
             void clearAllChunks();
             void createDepthQuadTexture();
             std::vector<glm::vec4> getFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view);
@@ -77,7 +78,7 @@ namespace game
             float request_interval = 0.0;
             float peak_rss;
             float current_rss;
-
+            int cursor_input_mode;
             unsigned int depthMapFBO;
             unsigned int depthMap;
             const unsigned int shadow_width = 4096, shadow_height = 4096;

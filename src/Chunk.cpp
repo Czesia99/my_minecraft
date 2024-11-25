@@ -97,8 +97,11 @@ namespace game
         glm::ivec3 ndir = direction + local_pos;
         int neighbor = positionToIndex(ndir);
 
-        if (neighbor == -1 || blocktypes[neighbor] == BlockType::Air || blocktypes[neighbor] == BlockType::Oak_leaves)
-        {
+        if (neighbor == -1
+        || blocktypes[neighbor] == BlockType::Air
+        || blocktypes[neighbor] == BlockType::Oak_leaves
+        || blocktypes[neighbor] == BlockType::Glass
+        ) {
             for (int i = 0; i < vertices.size(); i+= 8)
             {
                 chunk_vertices.push_back(vertices[i] + world_pos.x);

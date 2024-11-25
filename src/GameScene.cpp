@@ -4,6 +4,10 @@
 
 #include <algorithm>
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 namespace game
 {
     GameScene::GameScene(Context &ctx) : Scene(ctx)
@@ -17,7 +21,7 @@ namespace game
             return;
         }
 
-        camera.setCameraSpeed(30.0f);
+        camera.setCameraSpeed(200.0f);
         // camera.setCameraNearFarPlanes(0.1f, 50.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
@@ -56,6 +60,7 @@ namespace game
     {
         glEnable(GL_DEPTH_TEST);
         glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        cursor_input_mode = GLFW_CURSOR_DISABLED;
     }
 
     void GameScene::closeScene()
@@ -73,6 +78,8 @@ namespace game
         renderEntities();
         sky.render(camera);
         renderCursorQuad();
+
+        imguiConfig();
 
         camera.setCameraNearFarPlanes(0.1f, 75.0f);
         frustrum_corners = getFrustumCornersWorldSpace(camera.getProjectionMatrix(), camera.getViewMatrix());
@@ -96,7 +103,7 @@ namespace game
     void GameScene::processInput()
     {
         if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(ctx.window, true);
+            glfwSetWindowShouldClose(ctx.window, true);
 
         if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
         {
@@ -114,6 +121,20 @@ namespace game
         {
             camera.processKeyboard(RIGHT, clock.delta_time);
         }
+
+        if (glfwGetKey(ctx.window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+        {
+            if (cursor_input_mode == GLFW_CURSOR_DISABLED)
+            {
+                camera.setCameraLock(true);
+                cursor_input_mode = GLFW_CURSOR_NORMAL;
+                glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            } else {
+                camera.setCameraLock(false);
+                cursor_input_mode = GLFW_CURSOR_DISABLED;
+                glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
+        }
     }
 
     void GameScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)
@@ -127,6 +148,7 @@ namespace game
         glfwGetCursorPos(window, &xpos, &ypos);
         if (button == GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS)
         {
+            // clearAllChunks();
             dda();
             client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
         }
@@ -442,6 +464,20 @@ namespace game
             return blocktype;
         } else
             return 0;
+    }
+
+    void GameScene::imguiConfig()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+
+        ImGui::NewFrame();
+        ImGui::SetNextWindowSize(ImVec2(400, 300));
+        ImGui::Begin("Settings");
+        ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
+        ImGui::End();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     void GameScene::clearAllChunks()
