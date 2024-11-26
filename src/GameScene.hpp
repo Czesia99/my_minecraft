@@ -75,8 +75,8 @@ namespace game
             std::unordered_map<int, Entity*> entities;
 
             float request_interval = 0.0;
-            float peak_rss;
-            float current_rss;
+            // float peak_rss;
+            // float current_rss;
             int cursor_input_mode;
             unsigned int depthMapFBO;
             unsigned int depthMap;

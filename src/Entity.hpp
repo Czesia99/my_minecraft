@@ -17,7 +17,7 @@ namespace game
 
     class Entity {
         public:
-            Entity(int id, glm::vec3 pos, float pitch, float yaw);
+            Entity(int id, glm::vec3 pos, float pitch, float yaw, std::string name);
             ~Entity();
             void render(const Shader &shader, const ICamera &camera);
             void setValues(glm::vec3 npos, float npitch, float nyaw);
@@ -27,6 +27,7 @@ namespace game
             glm::vec3 pos;
             float pitch;
             float yaw;
+            std::string name;
         private:
             Cube cube;
             Cube cube2;

@@ -3,6 +3,7 @@
 #include "memory.hpp"
 
 #include <algorithm>
+#include <string>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -22,7 +23,6 @@ namespace game
         }
 
         camera.setCameraSpeed(200.0f);
-        // camera.setCameraNearFarPlanes(0.1f, 50.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
@@ -81,9 +81,6 @@ namespace game
 
         imguiConfig();
 
-        camera.setCameraNearFarPlanes(0.1f, 75.0f);
-        frustrum_corners = camera.getFrustumCornersWorldSpace();
-        camera.setCameraNearFarPlanes(0.1f, 1000.0f);
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
             request_interval = 0;
@@ -218,6 +215,10 @@ namespace game
 
     glm::mat4 GameScene::computeLightSpaceMatrix()
     {
+        camera.setCameraNearFarPlanes(0.1f, 75.0f);
+        frustrum_corners = camera.getFrustumCornersWorldSpace();
+        camera.setCameraNearFarPlanes(0.1f, 1000.0f);
+
         lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
 
         glm::vec3 center = glm::vec3(0, 0, 0);
@@ -332,8 +333,9 @@ namespace game
                 entities.at(data.id)->setValues(pos, data.pitch, data.yaw);
             } else
             {
-                Entity *entity = new Entity(data.id, pos, data.pitch, data.yaw);
+                Entity *entity = new Entity(data.id, pos, data.pitch, data.yaw, std::string(data.name));
                 entities[data.id] = entity;
+                std::cout << "name in entities == " << entities[data.id]->name << std::endl;
             }
         }
     }
@@ -450,6 +452,16 @@ namespace game
         ImGui::SetNextWindowSize(ImVec2(400, 300));
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
+        ImGui::Text("PLAYERS CONNECTED :");
+        if (entities.size() > 0) {
+            std::cout << "entities size = " << entities.size() << std::endl;
+            // std::cout << "entitiy name = " << entities[0]->name << std::endl;
+            for (auto &it : entities)
+            {
+                std::cout << "name == " << it.second->name << std::endl;
+                ImGui::Text("%s\n", it.second->name.c_str());
+            }
+        }
         ImGui::End();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

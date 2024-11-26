@@ -24,7 +24,7 @@ namespace game
         glm::vec3 pos;
         float yaw;
         float pitch;
-        uint8_t name[64];
+        char name[64] = {};
     };
 
     struct Data

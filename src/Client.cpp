@@ -139,9 +139,6 @@ namespace game
 
     void Client::convertToFloat(float &hfloat, uint32_t data)
     {
-
-        // uint32_t nint;
-        // std::memcpy(&nint, data, sizeof(uint32_t));
         data = be32toh(data);
         std::memcpy(&hfloat, &data, sizeof(float));
     }
@@ -150,7 +147,7 @@ namespace game
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
         receiveAll(24 + 64);
-        EntityData entity;
+        EntityData entity {};
         uint8_t *ptr = &buffer[0];
 
         memcpy(&entity.id, ptr, sizeof(int));
@@ -184,9 +181,7 @@ namespace game
         convertToFloat(entity.pitch, hold_pitch);
         ptr += sizeof(uint32_t);
 
-        // memcpy(&entity.name, ptr, sizeof(uint8_t) * 64);
-        // entity.name = be32toh(*(uint8_t *)entity.name);
-        // ptr += sizeof((uint8_t) * 64);
+        memcpy(&entity.name, ptr, sizeof(uint8_t) * 64);
 
         data.entities.push_back(entity);
     }
