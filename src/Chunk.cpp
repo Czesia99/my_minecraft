@@ -19,6 +19,9 @@ namespace game
 
     void Chunk::createChunkMesh()
     {
+        // 1 byte = 8 bits
+        // 1 int = 32 bits = 4bytes
+
         if (vao == 0) {
             glGenVertexArrays(1, &vao);
             glBindVertexArray(vao);
