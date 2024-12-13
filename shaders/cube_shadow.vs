@@ -1,9 +1,11 @@
 #version 460 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoords;
-layout (location = 2) in vec3 aNormal;
-layout (location = 3) in float aBlockType;
+// layout (location = 0) in vec3 aPos;
+// layout (location = 1) in vec2 aTexCoords;
+// layout (location = 2) in vec3 aNormal;
+// layout (location = 3) in float aBlockType;
+
+layout (location = 0) in uint aPackedData;
 
 out VS_OUT {
     vec3 FragPos;
@@ -18,6 +20,14 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat3 normal;
 uniform mat4 lightSpaceMatrix;
+
+vec3 unpackPosition()
+{
+    uint y = (aPackedData >> 24) & 0xFu;
+    uint x = (aPackedData >> 28) & 0xFu;
+    uint z = (aPackedData >> 20) & 0xFu;
+    return vec3(float(x), float(y), float(z));
+}
 
 void main()
 {
