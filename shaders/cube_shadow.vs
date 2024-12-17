@@ -29,6 +29,21 @@ vec3 unpackPosition()
     return vec3(float(x), float(y), float(z));
 }
 
+vec2 unpackTexCoords() {
+    uint u = (aPackedData >> 16) & 0xFu;
+    uint v = (aPackedData >> 12) & 0xFu;
+    return vec2(float(u) / 15.0, float(v) / 15.0);
+}
+
+vec3 unpackNormal() {
+    uint normalIdx = (aPackedData >> 9) & 0x7u;
+    vec3 normals[6] = vec3[](
+        vec3(0,0,-1), vec3(0,0,1), vec3(-1,0,0),
+        vec3(1,0,0), vec3(0,1,0), vec3(0,-1,0)
+    );
+    return normals[normalIdx];
+}
+
 void main()
 {
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
