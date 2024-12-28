@@ -41,6 +41,10 @@ set(LINK_LIB
     OpenGL::GL
     mygl
 )
+
+if (WIN32)
+    add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN)
+endif()
 # set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(${INCLUDE_DIR})

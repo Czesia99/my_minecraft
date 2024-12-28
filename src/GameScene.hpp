@@ -41,8 +41,8 @@ namespace game
 
         private:
             Chunk *createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes);
-            void updateChunks();
-            void updateEntities();
+            //void updateChunks();
+            //void updateEntities();
             //rendering
             void renderCursorQuad();
             void renderShadowMapQuad();
@@ -65,7 +65,7 @@ namespace game
             Clock clock;
             Chunk *chunk;
             Shader cube_shader;
-            Client client;
+            //Client client;
             GLuint block_textures;
 
             Rectangle cursor_img;

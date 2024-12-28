@@ -14,13 +14,13 @@ namespace game
     GameScene::GameScene(Context &ctx) : Scene(ctx)
     {
         storeSceneInCtx();
-        if (client.status == -1)
-        {
-            std::cout << "connexion failed: loading default scene" << std::endl;
-            ctx.loadScene(ctx.default_scene);
-            ctx.run();
-            return;
-        }
+        //if (client.status == -1)
+        //{
+        std::cout << "connexion failed: loading default scene" << std::endl;
+        ctx.loadScene(ctx.default_scene);
+        ctx.run();
+        //    return;
+        //}
 
         camera.setCameraSpeed(200.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
@@ -34,8 +34,8 @@ namespace game
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
-        client.startThread();
-        client.sendRenderDistance(16);
+        //client.startThread();
+        //client.sendRenderDistance(16);
 
         cursor_img.transform.scale.x = ctx.win_width;
         cursor_img.transform.scale.y = ctx.win_height;
@@ -81,11 +81,11 @@ namespace game
 
         imguiConfig();
 
-        request_interval += clock.delta_time;
-        if (request_interval >= 1.0f/20.0f) {
-            request_interval = 0;
-            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
-        }
+        //request_interval += clock.delta_time;
+        //if (request_interval >= 1.0f/20.0f) {
+        //    request_interval = 0;
+        //    client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        //}
 
         updateChunks();
         updateEntities();
@@ -147,12 +147,12 @@ namespace game
         {
             // clearAllChunks();
             dda();
-            client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
+            //client.sendUpdateBlock(BlockType::Air, dda_data.xpos, dda_data.ypos, dda_data.zpos);
         }
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action==GLFW_PRESS)
         {
             dda();
-            client.sendUpdateBlock(BlockType::Grass, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
+            //client.sendUpdateBlock(BlockType::Grass, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
         }
     }
 
@@ -316,61 +316,61 @@ namespace game
         }
     }
 
-    void GameScene::updateEntities()
-    {
-        while (client.data.entities.size() != 0)
-        {
-            client.mtx_chunk_data.lock();
-            EntityData data = client.data.entities.front();
-            client.data.entities.pop_front();
-            client.mtx_chunk_data.unlock();
+    //void GameScene::updateEntities()
+    //{
+    //    while (client.data.entities.size() != 0)
+    //    {
+    //        client.mtx_chunk_data.lock();
+    //        EntityData data = client.data.entities.front();
+    //        client.data.entities.pop_front();
+    //        client.mtx_chunk_data.unlock();
 
-            glm::vec3 pos = {data.pos.x, data.pos.y, data.pos.z};
+    //        glm::vec3 pos = {data.pos.x, data.pos.y, data.pos.z};
 
-            auto it = entities.find(data.id);
-            if (it != entities.end())
-            {
-                entities.at(data.id)->setValues(pos, data.pitch, data.yaw);
-            } else
-            {
-                Entity *entity = new Entity(data.id, pos, data.pitch, data.yaw, std::string(data.name));
-                entities[data.id] = entity;
-                std::cout << "name in entities == " << entities[data.id]->name << std::endl;
-            }
-        }
-    }
+    //        auto it = entities.find(data.id);
+    //        if (it != entities.end())
+    //        {
+    //            entities.at(data.id)->setValues(pos, data.pitch, data.yaw);
+    //        } else
+    //        {
+    //            Entity *entity = new Entity(data.id, pos, data.pitch, data.yaw, std::string(data.name));
+    //            entities[data.id] = entity;
+    //            std::cout << "name in entities == " << entities[data.id]->name << std::endl;
+    //        }
+    //    }
+    //}
 
-    void GameScene::updateChunks()
-    {
-        client.mtx_chunk_data.lock();
-        while (client.data.chunks.size() != 0)
-        {
-            //lockmutex
-            ChunkData chunk_data = client.data.chunks.front();
-            client.data.chunks.pop_front();
+    //void GameScene::updateChunks()
+    //{
+    //    client.mtx_chunk_data.lock();
+    //    while (client.data.chunks.size() != 0)
+    //    {
+    //        //lockmutex
+    //        ChunkData chunk_data = client.data.chunks.front();
+    //        client.data.chunks.pop_front();
 
-            tp.enqueue([chunk_data, this] {
-                Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
-                chunk->createChunkVertices();
-                tq.enqueue([chunk, this] {
+    //        tp.enqueue([chunk_data, this] {
+    //            Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
+    //            chunk->createChunkVertices();
+    //            tq.enqueue([chunk, this] {
 
-                    chunk->createChunkMesh();
+    //                chunk->createChunkMesh();
 
-                    auto it = chunks.find(chunk->chunk_worldpos);
-                    if (it != chunks.end())
-                    {
-                        auto old_chunk = it->second;
-                        it->second = chunk;
-                        old_chunk->deleteChunk();
-                        free(old_chunk);
-                    } else {
-                        chunks[chunk->chunk_worldpos] = chunk;
-                    }
-                });
-            });
-        }
-        client.mtx_chunk_data.unlock();
-    }
+    //                auto it = chunks.find(chunk->chunk_worldpos);
+    //                if (it != chunks.end())
+    //                {
+    //                    auto old_chunk = it->second;
+    //                    it->second = chunk;
+    //                    old_chunk->deleteChunk();
+    //                    free(old_chunk);
+    //                } else {
+    //                    chunks[chunk->chunk_worldpos] = chunk;
+    //                }
+    //            });
+    //        });
+    //    }
+    //    client.mtx_chunk_data.unlock();
+    //}
 
     Chunk *GameScene::createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes)
     {
