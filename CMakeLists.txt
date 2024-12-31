@@ -4,7 +4,7 @@ set(PROJECT_MINECRAFT "my_minecraft")
 
 project(${PROJECT_MINECRAFT} VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 find_package(OpenGL REQUIRED)
 
@@ -14,6 +14,11 @@ set(SRC ./src)
 
 add_subdirectory(include/glfw)
 add_subdirectory(include/MYGL)
+
+# Set GLFW options
+set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "Disable GLFW examples")
+set(GLFW_BUILD_TESTS OFF CACHE INTERNAL "Disable GLFW tests")
+set(GLFW_BUILD_DOCS OFF CACHE INTERNAL "Disable GLFW documentation")
 
 set(IMGUI_DIR "./include/imgui")
 set(IMGUI_DIR_BACK "./include/imgui/backends")
@@ -42,13 +47,14 @@ set(LINK_LIB
     mygl
 )
 
-if (WIN32)
-    add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN)
-endif()
 # set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(${INCLUDE_DIR})
 add_executable(${PROJECT_MINECRAFT} ${SRC_FILES})
+
+if (WIN32)
+    add_definitions(-DNOMINMAX -DWIN32_LEAN_AND_MEAN)
+endif()
 
 target_link_libraries(${PROJECT_MINECRAFT} ${LINK_LIB})
 target_include_directories(${PROJECT_MINECRAFT} PRIVATE ${IMGUI_DIR} ${IMGUI_DIR_BACK})

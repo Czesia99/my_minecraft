@@ -87,8 +87,8 @@ namespace game
         //    client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
         //}
 
-        updateChunks();
-        updateEntities();
+        //updateChunks();
+        //updateEntities();
         tq.execute();
     }
 

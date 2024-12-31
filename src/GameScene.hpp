@@ -68,7 +68,7 @@ namespace game
             //Client client;
             GLuint block_textures;
 
-            Rectangle cursor_img;
+            mygl::Rectangle cursor_img;
             Shader cursor_shader;
 
             std::unordered_map<glm::ivec3, Chunk*> chunks;
@@ -91,7 +91,7 @@ namespace game
             Shader cube_shadow;
             Shader depth_shader;
             Shader quad_depth_shader;
-            Rectangle depth_quad;
+            mygl::Rectangle depth_quad;
 
             std::vector<glm::vec4> frustrum_corners;
 
