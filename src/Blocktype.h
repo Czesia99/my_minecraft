@@ -43,7 +43,7 @@ enum FaceOrientation
     Bottom,
 };
 
-constexpr BlockType getBlockType(uint8_t bt)
+inline BlockType getBlockType(uint8_t bt)
 {
     switch (bt)
     {
@@ -61,7 +61,7 @@ constexpr BlockType getBlockType(uint8_t bt)
     }
 }
 
-constexpr uint8_t getBlockByte(BlockType bt)
+inline uint8_t getBlockByte(BlockType bt)
 {
     switch (bt)
     {
@@ -79,7 +79,7 @@ constexpr uint8_t getBlockByte(BlockType bt)
     }
 }
 
-constexpr glm::ivec3 getFaceOrientationVector(FaceOrientation orientation)
+inline glm::ivec3 getFaceOrientationVector(FaceOrientation orientation)
 {
     switch (orientation)
     {
