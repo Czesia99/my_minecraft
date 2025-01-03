@@ -10,6 +10,8 @@
 #include <thread>
 #include <mutex>
 
+#include <asio.hpp>
+
 namespace game
 {
     struct ChunkData
@@ -63,6 +65,7 @@ namespace game
     {
         public:
             int status;
+            int asio_status;
             Data data;
             std::mutex mtx_chunk_data;
         public:
@@ -91,6 +94,7 @@ namespace game
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;
+            asio::ip::tcp::socket *asio_socket;
             int entity_id;
             UpdateMyEntityData ued = {};
             UpdateBlockData ubd = {};

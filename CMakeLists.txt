@@ -12,6 +12,9 @@ set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
 set(SRC ./src)
 
+
+set(ASIO_INCLUDE_DIR ${INCLUDE_DIR}/asio-1.30.2/include)
+
 add_subdirectory(include/glfw)
 add_subdirectory(include/MYGL)
 
@@ -44,6 +47,7 @@ set(LINK_LIB
 # set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(${INCLUDE_DIR})
+include_directories(${ASIO_INCLUDE_DIR})
 add_executable(${PROJECT_MINECRAFT} ${SRC_FILES})
 
 target_link_libraries(${PROJECT_MINECRAFT} ${LINK_LIB})
