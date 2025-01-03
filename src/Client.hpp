@@ -94,7 +94,8 @@ namespace game
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;
-            asio::ip::tcp::socket *asio_socket;
+            asio::io_context io_context; 
+            asio::ip::tcp::socket asio_socket;
             int entity_id;
             UpdateMyEntityData ued = {};
             UpdateBlockData ubd = {};
