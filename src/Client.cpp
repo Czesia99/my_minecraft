@@ -119,7 +119,6 @@ namespace game
         asio::error_code ec;
 
         asio::read(asio_socket, asio::buffer(buffer, len), ec);
-        std::cout << "receive all" << std::endl;
 
         if (ec) {
             throw std::runtime_error("Error receiving data: " + ec.message());
@@ -231,7 +230,6 @@ namespace game
 
     void Client::receiveChunk()
     {
-        std::cout << "receive Chunk" << std::endl;
         //chunk xpos[int] chunk ypos[int] chunk zpos[int] blocktypes[bytes[4096]]
         receiveAll(12 + 4096);
         ChunkData chunk;

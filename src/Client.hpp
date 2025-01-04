@@ -58,6 +58,7 @@ namespace game
         uint8_t name[64];
     };
     #pragma pack(pop)
+
     class Client
     {
         public:
