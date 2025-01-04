@@ -12,7 +12,7 @@ void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 
 namespace game
 {
-    Client::Client() : stop_flag(false), asio_socket(io_context)
+    Client::Client() : stop_flag(false)
     {
         client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
