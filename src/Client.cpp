@@ -14,6 +14,22 @@ namespace game
 {
     Client::Client() : stop_flag(false), asio_socket(io_context)
     {
+
+        // try {
+        //     // asio::io_context io_context;
+
+        //     asio::ip::tcp::resolver resolver(io_context);
+        //     auto endpoints = resolver.resolve("127.0.0.1", "15000");
+        //     // Create a socket and connect to the resolved endpoint
+        //     // asio_socket = asio::ip::tcp::socket socket(io_context);
+        //     asio_status = 0;
+        //     asio::connect(asio_socket, endpoints);
+        //     std::cout << "asio connected" << std::endl;
+        // } catch (const std::exception& e) {
+        //     asio_status = -1;
+        //     std::cerr << "Error: " << e.what() << std::endl;
+        // }
+
         client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
         // specifying address
