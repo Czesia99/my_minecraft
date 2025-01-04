@@ -1,5 +1,5 @@
 #include "Client.hpp"
-#include <cstring>
+#include "Endian.h"
 
 void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 {
