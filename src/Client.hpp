@@ -96,7 +96,7 @@ namespace game
             int client_socket;
             int entity_id;
 
-            asio::io_context io_context; 
+            asio::io_context io_context;
             asio::ip::tcp::socket asio_socket;
 
             UpdateMyEntityData ued = {};

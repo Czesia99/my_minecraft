@@ -14,7 +14,7 @@ namespace game
     GameScene::GameScene(Context &ctx) : Scene(ctx)
     {
         storeSceneInCtx();
-        if (client.status == -1)
+        if (client.asio_status == -1)
         {
             std::cout << "connexion failed: loading default scene" << std::endl;
             ctx.loadScene(ctx.default_scene);
