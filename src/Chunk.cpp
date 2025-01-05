@@ -47,6 +47,8 @@ namespace game
         glBufferData(GL_ARRAY_BUFFER, chunk_vertices.size() * sizeof(float), chunk_vertices.data(), GL_STATIC_DRAW);
         // glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbind VBO
         // glBindVertexArray(0);
+        chunk_vertices.clear();
+        chunk_vertices.shrink_to_fit();
     }
 
     void Chunk::createChunkVertices()

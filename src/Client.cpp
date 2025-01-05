@@ -17,7 +17,7 @@ namespace game
 
         try {
             asio::ip::tcp::resolver resolver(io_context);
-            auto endpoints = resolver.resolve("127.0.0.1", "15000");
+            auto endpoints = resolver.resolve("162.19.137.231", "15000");
             asio_status = 0;
             asio::connect(asio_socket, endpoints);
             std::cout << "asio connected" << std::endl;
