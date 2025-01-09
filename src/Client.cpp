@@ -1,5 +1,5 @@
 #include "Client.hpp"
-#include <cstring>
+#include "Endian.h"
 
 void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 {
@@ -14,23 +14,17 @@ namespace game
 {
     Client::Client() : stop_flag(false)
     {
-        client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
-        // specifying address
-        sockaddr_in server_adress;
-        server_adress.sin_family = AF_INET;
-        server_adress.sin_port = htons(15000);
-        // server_adress.sin_addr.s_addr = inet_addr("127.0.0.1");
-        server_adress.sin_addr.s_addr = inet_addr("162.19.137.231");
-
-        // sending connection request
-        status = connect(client_socket, (struct sockaddr*)&server_adress, sizeof(server_adress));
-
-        if (status == -1)
-        {
-            std::cout << "can't connect to game server" << std::endl;
+        try {
+            asio::ip::tcp::resolver resolver(io_context);
+            auto endpoints = resolver.resolve("162.19.137.231", "15000");
+            asio_status = 0;
+            asio::connect(asio_socket, endpoints);
+            std::cout << "asio connected" << std::endl;
+        } catch (const std::exception& e) {
+            asio_status = -1;
+            std::cerr << "Error: " << e.what() << std::endl;
         }
-        // close(client_socket);
     }
 
     Client::~Client()
@@ -63,23 +57,27 @@ namespace game
 
     bool Client::receive()
     {
-        // asio::ip::tcp::socket socket = asio_socket;
-        // uint8_t buffer[1];
+        asio::error_code ec;
+        asio::steady_timer t(io_context, asio::chrono::seconds(1));
 
-        fd_set readfds;
-        struct timeval timeout;
+        if (ec && ec != asio::error::operation_aborted) {
+            // Handle timer-related error (e.g., if the timer fails to wait)
+            return false;
+        }
 
-        FD_ZERO(&readfds);
-        FD_SET(client_socket, &readfds);
+        size_t bytes_received = asio_socket.receive(asio::buffer(buffer, 1), 0, ec);
 
-        timeout.tv_sec = 1;
-        timeout.tv_usec = 0;
+        if (ec) {
+            if (ec == asio::error::operation_aborted) {
+                // Operation was canceled due to timeout
+                return false;
+            } else {
+                // Other errors (e.g., network errors)
+                return false;
+            }
+        }
 
-        int result = select(client_socket + 1, &readfds, NULL, NULL, &timeout);
-
-        if (result > 0) {
-            recv(client_socket, buffer, 1, 0);
-
+        if (bytes_received > 0) {
             uint8_t id = buffer[0];
 
             switch (id)
@@ -111,22 +109,19 @@ namespace game
                 default:
                     break;
             }
-
             return true;
-
-        } else if (result == 0) {
-            return false;
-        } else {
-            return false;
         }
+        return false;
     }
 
     void Client::receiveAll(size_t len)
     {
-        size_t bytes = 0;
+        asio::error_code ec;
 
-        while (bytes != len){
-            bytes += recv(client_socket, &buffer[bytes], len - bytes, 0);
+        asio::read(asio_socket, asio::buffer(buffer, len), ec);
+
+        if (ec) {
+            throw std::runtime_error("Error receiving data: " + ec.message());
         }
     }
 
@@ -311,7 +306,12 @@ namespace game
         ued.yaw = htobe32(*(uint32_t*)&yaw);
         ued.pitch = htobe32(*(uint32_t*)&pitch);
 
-        send(client_socket, &ued, sizeof(ued), 0);
+        asio::error_code ec;
+        asio::write(asio_socket, asio::buffer(&ued, sizeof(ued)), ec);
+        if (ec) {
+            throw std::runtime_error("Error send update entity: " + ec.message());
+        }
+
     }
 
     void Client::sendUpdateBlock(uint8_t block_type, int xpos, int ypos, int zpos)
@@ -324,7 +324,11 @@ namespace game
         ubd.ypos = htobe32(*(uint32_t*)&ypos);
         ubd.zpos = htobe32(*(uint32_t*)&zpos);
 
-        send(client_socket, &ubd, sizeof(ubd), 0);
+        asio::error_code ec;
+        asio::write(asio_socket, asio::buffer(&ubd, sizeof(ubd)), ec);
+        if (ec) {
+            throw std::runtime_error("Error send update block: " + ec.message());
+        }
     }
 
     void Client::sendRenderDistance(uint8_t distance)
@@ -337,6 +341,10 @@ namespace game
         memcpy(umd.name, &name, sizeof(umd.name));
         umd.name[sizeof(umd.name) - 1] = '\0';
 
-        send(client_socket, &umd, sizeof(umd), 0);
+        asio::error_code ec;
+        asio::write(asio_socket, asio::buffer(&umd, sizeof(umd)), ec);
+        if (ec) {
+            throw std::runtime_error("Error send render distance: " + ec.message());
+        }
     }
 }

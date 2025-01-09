@@ -1,15 +1,11 @@
 #pragma once
 #include <iostream>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <vector>
 #include <deque>
 #include <glm/glm.hpp>
 #include <thread>
 #include <mutex>
-
 #include <asio.hpp>
 
 namespace game
@@ -35,6 +31,7 @@ namespace game
         std::deque<EntityData> entities;
     };
 
+    #pragma pack(push, 1)
     struct UpdateMyEntityData
     {
         uint8_t id;
@@ -43,7 +40,7 @@ namespace game
         uint32_t zpos;
         uint32_t yaw;
         uint32_t pitch;
-    } __attribute__((packed));
+    };
 
     struct UpdateBlockData
     {
@@ -52,14 +49,15 @@ namespace game
         uint32_t xpos;
         uint32_t ypos;
         uint32_t zpos;
-    } __attribute__((packed));
+    };
 
     struct UpdateMetaData
     {
         uint8_t id;
         uint8_t render_distance;
         uint8_t name[64];
-    } __attribute__((packed));
+    };
+    #pragma pack(pop)
 
     class Client
     {
@@ -95,6 +93,10 @@ namespace game
             uint8_t buffer[5000] = {0};
             int client_socket;
             int entity_id;
+
+            asio::io_context io_context;
+            asio::ip::tcp::socket asio_socket;
+
             UpdateMyEntityData ued = {};
             UpdateBlockData ubd = {};
             UpdateMetaData umd = {};
