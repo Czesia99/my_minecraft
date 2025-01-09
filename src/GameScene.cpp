@@ -87,16 +87,16 @@ namespace game
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
         }
 
-        for (auto &c : chunks)
-        {
-            glm::vec3 pos = c.first;
-            if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 2.0f)
-            {
-                c.second->deleteChunk();
-                free(c.second);
-                chunks.erase(c.first);
-            }
-        }
+        // for (auto &c : chunks)
+        // {
+        //     glm::vec3 pos = c.first;
+        //     if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 2.0f)
+        //     {
+        //         c.second->deleteChunk();
+        //         free(c.second);
+        //         chunks.erase(c.first);
+        //     }
+        // }
         updateChunks();
         updateEntities();
         tq.execute();
