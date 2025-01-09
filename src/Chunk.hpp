@@ -25,7 +25,7 @@ namespace game
             glm::ivec3 chunk_worldpos;
             // GLuint diffuse_texture;
         public:
-            Chunk(glm::ivec3 pos, const std::vector<uint8_t>&blocktypes);
+            Chunk(const glm::ivec3 &pos, const std::vector<uint8_t> &blocktypes);
             // ~Chunk() = default;
             void createChunkVertices();
             void createChunkMesh();
@@ -34,7 +34,7 @@ namespace game
             int positionToIndex(glm::ivec3 pos);
 
         private:
-            void loadFaceVertices(std::vector<float> vertices, FaceOrientation orientation, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index);
+            void loadFaceVertices(std::vector<float> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index);
             int findBlockTextures(BlockType type, FaceOrientation orientation);
 
         private:

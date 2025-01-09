@@ -50,5 +50,17 @@ include_directories(${INCLUDE_DIR})
 include_directories(${ASIO_INCLUDE_DIR})
 add_executable(${PROJECT_MINECRAFT} ${SRC_FILES})
 
+if (MSVC)
+    target_compile_options(${PROJECT_MINECRAFT} PRIVATE
+    #-W -Wall -Wextra -Wpedantic
+    # -Wno-unused-variable
+    # -Wno-unused-parameter
+    # -Wno-strict-aliasing
+    #-fno-omit-frame-pointer
+    /W3
+    #-g3
+    )
+endif()
+
 target_link_libraries(${PROJECT_MINECRAFT} ${LINK_LIB})
 target_include_directories(${PROJECT_MINECRAFT} PRIVATE ${IMGUI_DIR} ${IMGUI_DIR_BACK})

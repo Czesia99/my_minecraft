@@ -12,9 +12,8 @@ void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 
 namespace game
 {
-    Client::Client() : stop_flag(false)
+    Client::Client() : stop_flag(false), asio_socket(io_context)
     {
-
         try {
             asio::ip::tcp::resolver resolver(io_context);
             auto endpoints = resolver.resolve("162.19.137.231", "15000");

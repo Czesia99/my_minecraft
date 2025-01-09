@@ -87,16 +87,16 @@ namespace game
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
         }
 
-        // for (auto &c : chunks)
-        // {
-        //     glm::vec3 pos = c.first;
-        //     if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 2.0f)
-        //     {
-        //         c.second->deleteChunk();
-        //         free(c.second);
-        //         chunks.erase(c.first);
-        //     }
-        // }
+        for (auto &c : chunks)
+        {
+            glm::vec3 pos = c.first;
+            if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 3.0f)
+            {
+                c.second->deleteChunk();
+                free(c.second);
+                chunks.erase(c.first);
+            }
+        }
         updateChunks();
         updateEntities();
         tq.execute();
@@ -359,10 +359,10 @@ namespace game
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
+
             // glm::vec3 pos = chunk_data.pos;
             // if (glm::distance(camera.position, pos) >= (16.0 * 16.0) * 2.0f) {
-            //     client.mtx_chunk_data.unlock();
-            //     return;
+            //     continue;
             // }
 
             tp.enqueue([chunk_data, this] {
@@ -371,6 +371,7 @@ namespace game
                 tq.enqueue([chunk, this] {
 
                     chunk->createChunkMesh();
+
 
                     auto it = chunks.find(chunk->chunk_worldpos);
                     if (it != chunks.end())
@@ -385,6 +386,7 @@ namespace game
                 });
             });
         }
+        client.data.chunks.shrink_to_fit();
         client.mtx_chunk_data.unlock();
     }
 

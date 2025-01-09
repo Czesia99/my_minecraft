@@ -11,7 +11,7 @@ namespace game
         return pos.x + pos.y * 16 + pos.z*16*16;
     }
 
-    Chunk::Chunk(glm::ivec3 pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes)
+    Chunk::Chunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes)
     {
         // createChunkVertices(pos);
         // createChunkMesh();
@@ -96,10 +96,10 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    void Chunk::loadFaceVertices(std::vector<float> vertices, FaceOrientation orientation, glm::ivec3 &local_pos, glm::ivec3 &world_pos, int index)
+    void Chunk::loadFaceVertices(std::vector<float> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
     {
-        glm::ivec3 direction = getFaceOrientationVector(orientation);
-        glm::ivec3 ndir = direction + local_pos;
+        const glm::ivec3 direction = getFaceOrientationVector(orientation);
+        const glm::ivec3 ndir = direction + local_pos;
         int neighbor = positionToIndex(ndir);
 
         if (neighbor == -1
