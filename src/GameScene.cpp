@@ -22,7 +22,7 @@ namespace game
             return;
         }
 
-        camera.setCameraSpeed(200.0f);
+        camera.setMovementSpeed(50.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
 
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
@@ -92,9 +92,9 @@ namespace game
         //     glm::vec3 pos = c.first;
         //     if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 3.0f)
         //     {
+        //         chunks.erase(c.first);
         //         c.second->deleteChunk();
         //         delete(c.second);
-        //         chunks.erase(c.first);
         //     }
         // }
         updateChunks();
@@ -500,6 +500,7 @@ namespace game
         ImGui::SetNextWindowSize(ImVec2(400, 300));
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
+        ImGui::Text("Chunks Loaded: %d", chunks.size());
         ImGui::Text("PLAYERS CONNECTED :");
         if (entities.size() > 0) {
             std::cout << "entities size = " << entities.size() << std::endl;
@@ -510,6 +511,7 @@ namespace game
                 ImGui::Text("%s\n", it.second->name.c_str());
             }
         }
+        // ImGui::Image((ImTextureID)(intptr_t), ImVec2(200, 200));
         ImGui::End();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
