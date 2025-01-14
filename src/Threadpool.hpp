@@ -5,6 +5,8 @@
 #include <queue>
 #include <thread>
 
+#include <exception>
+
 using namespace std;
 
 class TaskQueue {
@@ -47,6 +49,7 @@ public:
                         });
 
                         if (stop_ && tasks_.empty()) {
+                            std::cout << "THRAD STOOOOOOOOOOOOOOOOOOOOOOOOOOOOP2" << std::endl;
                             return;
                         }
 
@@ -59,7 +62,8 @@ public:
         }
     }
 
-    ~ThreadPool() {
+    void stop() {
+        std::cout << "THRADPOOL DESTRUCTOR" << std::endl;
         {
             unique_lock<mutex> lock(queue_mutex_);
             stop_ = true;
@@ -68,7 +72,13 @@ public:
         cv_.notify_all();
 
         for (auto& thread : threads_) {
-            thread.join();
+            std::cout << "before joinable" << std::endl;
+            if (thread.joinable()) {
+                thread.join();
+                std::cout << "after joinable" << std::endl;
+            } else {
+                std::cout << "thread not joinable" << std::endl;
+            }
         }
     }
 
