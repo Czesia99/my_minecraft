@@ -53,6 +53,8 @@ namespace game
             //dda
             void dda();
             uint8_t getBlockAt(int x, int y, int z);
+            //player related
+            void selectCube();
             //utils
             void imguiConfig();
             void clearAllChunks();
@@ -63,10 +65,10 @@ namespace game
             CameraOrtho camera_ortho;
             Skybox sky;
             Clock clock;
-            Chunk *chunk;
             Shader cube_shader;
             Client client;
             GLuint block_textures;
+            BlockType selected_cube = BlockType::Grass;
 
             mygl::Rectangle cursor_img;
             Shader cursor_shader;

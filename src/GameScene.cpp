@@ -65,7 +65,7 @@ namespace game
 
     void GameScene::closeScene()
     {
-        return;
+        tp.stop();
     }
 
     void GameScene::update()
@@ -87,16 +87,16 @@ namespace game
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
         }
 
-        for (auto &c : chunks)
-        {
-            glm::vec3 pos = c.first;
-            if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 3.0f)
-            {
-                c.second->deleteChunk();
-                free(c.second);
-                chunks.erase(c.first);
-            }
-        }
+        // for (auto &c : chunks)
+        // {
+        //     glm::vec3 pos = c.first;
+        //     if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 3.0f)
+        //     {
+        //         c.second->deleteChunk();
+        //         delete(c.second);
+        //         chunks.erase(c.first);
+        //     }
+        // }
         updateChunks();
         updateEntities();
         tq.execute();
@@ -128,6 +128,8 @@ namespace game
         {
             camera.processKeyboard(RIGHT, clock.delta_time);
         }
+
+        selectCube();
 
         if (glfwGetKey(ctx.window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
         {
@@ -162,7 +164,7 @@ namespace game
         if (button == GLFW_MOUSE_BUTTON_RIGHT && action==GLFW_PRESS)
         {
             dda();
-            client.sendUpdateBlock(BlockType::Grass, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
+            client.sendUpdateBlock(selected_cube, dda_data.xpos + dda_data.face.x, dda_data.ypos + dda_data.face.y, dda_data.zpos + dda_data.face.z);
         }
     }
 
@@ -379,14 +381,14 @@ namespace game
                         auto old_chunk = it->second;
                         it->second = chunk;
                         old_chunk->deleteChunk();
-                        free(old_chunk);
+                        delete(old_chunk);
                     } else {
                         chunks[chunk->chunk_worldpos] = chunk;
                     }
                 });
             });
         }
-        client.data.chunks.shrink_to_fit();
+        // client.data.chunks.shrink_to_fit();
         client.mtx_chunk_data.unlock();
     }
 
@@ -459,6 +461,34 @@ namespace game
             return blocktype;
         } else
             return 0;
+    }
+
+    void GameScene::selectCube()
+    {
+        if (glfwGetKey(ctx.window, GLFW_KEY_1) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Stone;
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_2) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Grass;
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_3) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Dirt;
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_4) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Oak_log;
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_5) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Sand;
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_6) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Snow;
+        }
     }
 
     void GameScene::imguiConfig()
