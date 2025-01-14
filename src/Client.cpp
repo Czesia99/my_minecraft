@@ -286,6 +286,10 @@ namespace game
     void Client::receiveChat()
     {
         receiveAll(4096);
+        ChatData cd;
+        uint8_t *ptr = &buffer[0];
+        cd.text.assign((char*)buffer);
+        data.chat_history.push_back(cd);
     }
 
     void Client::receiveMetaData()
@@ -345,5 +349,19 @@ namespace game
         if (ec) {
             throw std::runtime_error("Error send render distance: " + ec.message());
         }
+    }
+
+    void Client::sendTextChat(const char *input)
+    {
+        sendChatData scd;
+
+        scd.id = 0x03;
+        memcpy(scd.message, input, 4096);
+        asio::error_code ec;
+        asio::write(asio_socket, asio::buffer(&scd, sizeof(scd)), ec);
+        if (ec) {
+            throw std::runtime_error("Error send render distance: " + ec.message());
+        }
+
     }
 }

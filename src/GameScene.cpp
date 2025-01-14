@@ -66,6 +66,7 @@ namespace game
     void GameScene::closeScene()
     {
         tp.stop();
+        clearAllChunks();
     }
 
     void GameScene::update()
@@ -497,10 +498,10 @@ namespace game
         ImGui_ImplGlfw_NewFrame();
 
         ImGui::NewFrame();
-        ImGui::SetNextWindowSize(ImVec2(400, 300));
+        // ImGui::SetNextWindowSize(ImVec2(400, 300));
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
-        ImGui::Text("Chunks Loaded: %d", chunks.size());
+        ImGui::Text("Chunks Loaded: %ld", chunks.size());
         ImGui::Text("PLAYERS CONNECTED :");
         if (entities.size() > 0) {
             std::cout << "entities size = " << entities.size() << std::endl;
@@ -511,7 +512,22 @@ namespace game
                 ImGui::Text("%s\n", it.second->name.c_str());
             }
         }
-        // ImGui::Image((ImTextureID)(intptr_t), ImVec2(200, 200));
+        ImGui::InputText("##chat", input_chat, 4096);
+        ImGui::SameLine();
+        if (ImGui::Button("send"))
+        {
+            client.sendTextChat(input_chat);
+            std::memset(input_chat, 0, 4096);
+        };
+        ImGui::BeginChild("chatbox", ImVec2(ImGui::GetContentRegionAvail()), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar);
+
+        for (const auto &c : client.data.chat_history) {
+            ImGui::TextWrapped("%s", c.text.c_str());
+            // ImGui::Spacing();
+        }
+
+        ImGui::EndChild();
+
         ImGui::End();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -69,7 +69,7 @@ namespace game
             Client client;
             GLuint block_textures;
             BlockType selected_cube = BlockType::Grass;
-
+            char input_chat[4096] = {};
             mygl::Rectangle cursor_img;
             Shader cursor_shader;
 

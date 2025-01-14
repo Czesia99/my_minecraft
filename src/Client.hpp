@@ -25,10 +25,16 @@ namespace game
         char name[64] = {};
     };
 
+    struct ChatData
+    {
+        std::string text;
+    };
+
     struct Data
     {
         std::deque<ChunkData> chunks;
         std::deque<EntityData> entities;
+        std::deque<ChatData> chat_history;
     };
 
     #pragma pack(push, 1)
@@ -57,6 +63,13 @@ namespace game
         uint8_t render_distance;
         uint8_t name[64];
     };
+
+    struct sendChatData
+    {
+        uint8_t id;
+        char message[4096];
+    };
+
     #pragma pack(pop)
 
     class Client
@@ -89,6 +102,7 @@ namespace game
             void sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch);
             void sendUpdateBlock(uint8_t block_type, int xpos, int ypos, int zpos);
             void sendRenderDistance(uint8_t distance);
+            void sendTextChat(const char *input);
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;
