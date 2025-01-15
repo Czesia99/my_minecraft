@@ -85,7 +85,7 @@ namespace game
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
             request_interval = 0;
-            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
         }
 
         // for (auto &c : chunks)
@@ -351,6 +351,18 @@ namespace game
                 std::cout << "name in entities == " << entities[data.id]->name << std::endl;
             }
         }
+
+        while(client.data.rm_entity.size() != 0)
+        {
+            client.mtx_chunk_data.lock();
+
+            int id = client.data.rm_entity.front();
+            client.data.rm_entity.pop_front();
+
+            client.mtx_chunk_data.unlock();
+
+            entities.erase(id);
+        }
     }
 
     void GameScene::updateChunks()
@@ -461,7 +473,7 @@ namespace game
             uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
             return blocktype;
         } else
-            return 0;
+            return -1;
     }
 
     void GameScene::selectCube()
@@ -502,6 +514,7 @@ namespace game
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
         ImGui::Text("Chunks Loaded: %ld", chunks.size());
+        ImGui::Text("FPS: %f", (1 / clock.delta_time));
         ImGui::Text("PLAYERS CONNECTED :");
         if (entities.size() > 0) {
             std::cout << "entities size = " << entities.size() << std::endl;

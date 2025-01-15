@@ -88,7 +88,7 @@ namespace game
                     addEntity();
                     break;
                 case 0x02:
-                    receiveRemoveEntity();
+                    removeEntity();
                     break;
                 case 0x03:
                     receiveUpdateEntity();
@@ -103,7 +103,7 @@ namespace game
                     receiveChat();
                     break;
                 case 0x07:
-                    receiveMetaData();
+                    receiveEntityMetaData();
                     break;
                 default:
                     break;
@@ -182,10 +182,15 @@ namespace game
         data.entities.push_back(entity);
     }
 
-    void Client::receiveRemoveEntity()
+    void Client::removeEntity()
     {
         //entityID[int]
         receiveAll(4);
+        int id;
+        uint8_t *ptr = &buffer[0];
+        memcpy(&id, ptr, sizeof(int));
+        id = be32toh(id);
+        data.rm_entity.push_back(id);
     }
 
     void Client::receiveUpdateEntity()
@@ -292,7 +297,7 @@ namespace game
         data.chat_history.push_back(cd);
     }
 
-    void Client::receiveMetaData()
+    void Client::receiveEntityMetaData()
     {
         receiveAll(68);
     }

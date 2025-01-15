@@ -35,6 +35,7 @@ namespace game
         std::deque<ChunkData> chunks;
         std::deque<EntityData> entities;
         std::deque<ChatData> chat_history;
+        std::deque<int> rm_entity;
     };
 
     #pragma pack(push, 1)
@@ -91,12 +92,12 @@ namespace game
             //receive (CLIENT BOUND)
             void myEntityID();
             void addEntity();
-            void receiveRemoveEntity();
+            void removeEntity();
             void receiveUpdateEntity();
             void receiveChunk();
             void receiveMonoTypeChunk();
             void receiveChat();
-            void receiveMetaData();
+            void receiveEntityMetaData();
 
             //send (SERVER BOUND)
             void sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch);
