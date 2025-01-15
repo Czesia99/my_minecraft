@@ -62,7 +62,12 @@ if (MSVC)
     )
 endif()
 
-# target_compile_options(${PROJECT_MINECRAFT} PRIVATE -fsanitize=address -fno-omit-frame-pointer -g3)
+target_compile_options(${PROJECT_MINECRAFT} PRIVATE
+    # -fsanitize=address
+    # -fno-omit-frame-pointer
+    # -g3
+    -O3
+)
 # target_compile_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address)
 # target_link_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address)
 

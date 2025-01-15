@@ -47,8 +47,8 @@ public:
                         cv_.wait(lock, [this] {
                             return !tasks_.empty() || stop_;
                         });
-
-                        if (stop_ && tasks_.empty()) {
+                        //if (stop_ && tasks_.empty())
+                        if (stop_) {
                             std::cout << "THRAD STOOOOOOOOOOOOOOOOOOOOOOOOOOOOP2" << std::endl;
                             return;
                         }
@@ -76,8 +76,6 @@ public:
             if (thread.joinable()) {
                 thread.join();
                 std::cout << "after joinable" << std::endl;
-            } else {
-                std::cout << "thread not joinable" << std::endl;
             }
         }
     }

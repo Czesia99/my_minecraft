@@ -517,11 +517,9 @@ namespace game
         ImGui::Text("FPS: %f", (1 / clock.delta_time));
         ImGui::Text("PLAYERS CONNECTED :");
         if (entities.size() > 0) {
-            std::cout << "entities size = " << entities.size() << std::endl;
             // std::cout << "entitiy name = " << entities[0]->name << std::endl;
             for (auto &it : entities)
             {
-                std::cout << "name == " << it.second->name << std::endl;
                 ImGui::Text("%s\n", it.second->name.c_str());
             }
         }
