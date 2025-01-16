@@ -20,7 +20,8 @@ namespace game
     {
         public:
             Transform transform;
-            std::vector<float> chunk_vertices;
+            // std::vector<float> chunk_vertices;
+            std::vector<uint32_t> packed_vertices;
             std::vector<uint8_t>blocktypes;
             glm::ivec3 chunk_worldpos;
             // GLuint diffuse_texture;
@@ -34,8 +35,9 @@ namespace game
             int positionToIndex(glm::ivec3 pos);
 
         private:
-            void loadFaceVertices(std::vector<float> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index);
-            int findBlockTextures(BlockType type, FaceOrientation orientation);
+            void loadFaceVertices(std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index);
+            uint32_t packVerticesData();
+            uint8_t findBlockTextures(BlockType type, FaceOrientation orientation);
 
         private:
             GLuint vao = 0;
@@ -46,59 +48,65 @@ namespace game
 
             std::thread thread_chunk_vertices;
 
-            std::vector<float> front_face_vertices {
+            std::vector<uint8_t> front_face_vertices {
                 //front face -Z
-                0.0f, 0.0f, 0.0f,    1.0f, 0.0f,    0.0f, 0.0f, -1.0f,
-                1.0f, 1.0f, 0.0f,      0.0f, 1.0f,    0.0f, 0.0f, -1.0f,
-                1.0f, 0.0f, 0.0f,     0.0f, 0.0f,    0.0f, 0.0f, -1.0f,
-                1.0f, 1.0f, 0.0f,      0.0f, 1.0f,    0.0f, 0.0f, -1.0f,
-                0.0f, 0.0f, 0.0f,    1.0f, 0.0f,    0.0f, 0.0f, -1.0f,
-                0.0f, 1.0f, 0.0f,     1.0f, 1.0f,    0.0f, 0.0f, -1.0f,
+                //normal : 0.0, 0.0, -1.0
+                0, 0, 0,    1, 0,   0,
+                1, 1, 0,    0, 1,   0,
+                1, 0, 0,    0, 0,   0,
+                1, 1, 0,    0, 1,   0,
+                0, 0, 0,    1, 0,   0,
+                0, 1, 0,    1, 1,   0,
             };
-            std::vector<float> back_face_vertices {
+            std::vector<uint8_t> back_face_vertices {
                 //back face +Z
-                0.0f, 0.0f, 1.0f,    0.0f, 0.0f,    0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 1.0f,     1.0f, 0.0f,    0.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,      1.0f, 1.0f,    0.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,      1.0f, 1.0f,    0.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 1.0f,     0.0f, 1.0f,    0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f,    0.0f, 0.0f,    0.0f, 0.0f, 1.0f,
+                //normal : 0.0, 0.0, 1.0
+                0, 0, 1,    0, 0,    1,
+                1, 0, 1,    1, 0,    1,
+                1, 1, 1,    1, 1,    1,
+                1, 1, 1,    1, 1,    1,
+                0, 1, 1,    0, 1,    1,
+                0, 0, 1,    0, 0,    1,
             };
-            std::vector<float> left_face_vertices {
+            std::vector<uint8_t> left_face_vertices {
                 //left face -X
-                0.0f,  1.0f,  1.0f,    1.0f, 1.0f,    -1.0f, 0.0f,  0.0f,
-                0.0f,  1.0f, 0.0f,    0.0f, 1.0f,    -1.0f, 0.0f,  0.0f,
-                0.0f, 0.0f, 0.0f,    0.0f, 0.0f,    -1.0f, 0.0f,  0.0f,
-                0.0f, 0.0f, 0.0f,    0.0f, 0.0f,    -1.0f, 0.0f,  0.0f,
-                0.0f, 0.0f,  1.0f,    1.0f, 0.0f,    -1.0f, 0.0f,  0.0f,
-                0.0f,  1.0f,  1.0f,    1.0f, 1.0f,    -1.0f, 0.0f,  0.0f,
+                //normal : -1.0, 0.0, 0.0
+                0, 1, 1,    1, 1,    2,
+                0, 1, 0,    0, 1,    2,
+                0, 0, 0,    0, 0,    2,
+                0, 0, 0,    0, 0,    2,
+                0, 0, 1,    1, 0,    2,
+                0, 1, 1,    1, 1,    2,
             };
-            std::vector<float> right_face_vertices {
+            std::vector<uint8_t> right_face_vertices {
                 //right face +X
-                1.0f,  1.0f,  1.0f,    0.0f, 1.0f,    1.0f, 0.0f,  0.0f,
-                1.0f, 0.0f, 0.0f,    1.0f, 0.0f,    1.0f, 0.0f,  0.0f,
-                1.0f,  1.0f, 0.0f,    1.0f, 1.0f,    1.0f, 0.0f,  0.0f,
-                1.0f, 0.0f, 0.0f,    1.0f, 0.0f,    1.0f, 0.0f,  0.0f,
-                1.0f,  1.0f,  1.0f,    0.0f, 1.0f,    1.0f, 0.0f,  0.0f,
-                1.0f, 0.0f,  1.0f,    0.0f, 0.0f,    1.0f, 0.0f,  0.0f,
+                //normal: 1.0, 0.0, 0.0
+                1, 1, 1,    0, 1,    3,
+                1, 0, 0,    1, 0,    3,
+                1, 1, 0,    1, 1,    3,
+                1, 0, 0,    1, 0,    3,
+                1, 1, 1,    0, 1,    3,
+                1, 0, 1,    0, 0,    3,
             };
-            std::vector<float> bottom_face_vertices {
+            std::vector<uint8_t> bottom_face_vertices {
                 // bottom face -Y
-                0.0f, 0.0f, 0.0f,    1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-                1.0f, 0.0f, 0.0f,     0.0f, 1.0f,    0.0f, -1.0f,  0.0f,
-                1.0f, 0.0f,  1.0f,     0.0f, 0.0f,    0.0f, -1.0f,  0.0f,
-                1.0f, 0.0f,  1.0f,     0.0f, 0.0f,    0.0f, -1.0f,  0.0f,
-                0.0f, 0.0f,  1.0f,    1.0f, 0.0f,    0.0f, -1.0f,  0.0f,
-                0.0f, 0.0f, 0.0f,    1.0f, 1.0f,    0.0f, -1.0f,  0.0f,
+                //normal: 0.0, -1.0, 0.0
+                0, 0, 0,    1, 1,    4,
+                1, 0, 0,    0, 1,    4,
+                1, 0, 1,    0, 0,    4,
+                1, 0, 1,    0, 0,    4,
+                0, 0, 1,    1, 0,    4,
+                0, 0, 0,    1, 1,    4,
             };
-            std::vector<float> top_face_vertices {
+            std::vector<uint8_t> top_face_vertices {
                 //top face +Y
-                0.0f, 1.0f, 0.0f,    1.0f, 0.0f,    0.0f, 1.0f,  0.0f,
-                1.0f, 1.0f, 1.0f,      0.0f, 1.0f,    0.0f, 1.0f,  0.0f,
-                1.0f, 1.0f, 0.0f,     0.0f, 0.0f,    0.0f, 1.0f,  0.0f,
-                0.0f, 1.0f, 1.0f,     1.0f, 1.0f,    0.0f, 1.0f,  0.0f,
-                1.0f, 1.0f, 1.0f,      0.0f, 1.0f,    0.0f, 1.0f,  0.0f,
-                0.0f, 1.0f, 0.0f,    1.0f, 0.0f,    0.0f, 1.0f,  0.0f,
+                //normal: 0.0, 1.0, 0.0
+                0, 1, 0,    1, 0,    5,
+                1, 1, 1,    0, 1,    5,
+                1, 1, 0,    0, 0,    5,
+                0, 1, 1,    1, 1,    5,
+                1, 1, 1,    0, 1,    5,
+                0, 1, 0,    1, 0,    5,
             };
     };
 }

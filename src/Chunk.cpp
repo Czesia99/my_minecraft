@@ -19,42 +19,31 @@ namespace game
 
     void Chunk::createChunkMesh()
     {
-        // 1 byte = 8 bits
-        // 1 int = 32 bits = 4bytes
-
         if (vao == 0) {
             glGenVertexArrays(1, &vao);
             glBindVertexArray(vao);
             glGenBuffers(1, &vbo);
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+            glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void*)0);
             glEnableVertexAttribArray(0);
-
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(5 * sizeof(float)));
-            glEnableVertexAttribArray(2);
-
-            glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(8 * sizeof(float)));
-            glEnableVertexAttribArray(3);
 
             // glBindVertexArray(0);
         }
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, chunk_vertices.size() * sizeof(float), chunk_vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, packed_vertices.size() * sizeof(uint32_t), packed_vertices.data(), GL_STATIC_DRAW);
         // glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbind VBO
         // glBindVertexArray(0);
-        chunk_vertices.clear();
-        chunk_vertices.shrink_to_fit();
+        // packed_vertices.clear();
+        packed_vertices.shrink_to_fit();
     }
 
     void Chunk::createChunkVertices()
     {
         vertex_count = 0;
-        chunk_vertices.clear();
+        // chunk_vertices.clear();
+        packed_vertices.clear();
 
 
         for (int z = 0; z < size; z++) {
@@ -96,7 +85,14 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    void Chunk::loadFaceVertices(std::vector<float> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
+    // uint32_t Chunk::packVerticesData(uint8_t x, uint8_t y, uint8_t z, uint8_t tx, )
+    // {
+    //     uint32_t packed;
+
+
+    // }
+
+    void Chunk::loadFaceVertices(std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
     {
         const glm::ivec3 direction = getFaceOrientationVector(orientation);
         const glm::ivec3 ndir = direction + local_pos;
@@ -107,30 +103,27 @@ namespace game
         || blocktypes[neighbor] == BlockType::Oak_leaves
         || blocktypes[neighbor] == BlockType::Glass
         ) {
-            for (int i = 0; i < vertices.size(); i+= 8)
+            for (int i = 0; i < vertices.size(); i+= 6)
             {
-                chunk_vertices.push_back(vertices[i] + world_pos.x);
-                chunk_vertices.push_back(vertices[i + 1] + world_pos.y);
-                chunk_vertices.push_back(vertices[i + 2] + world_pos.z);
+                std::cout << "worldpos x = " << world_pos.x << std::endl;
+                uint32_t packed;
+                uint8_t block_texture = findBlockTextures(getBlockType(blocktypes[index]), orientation);
+                packed = ((vertices[i] + world_pos.x) & 0b11111) << 0     |
+                         ((vertices[i + 1] + world_pos.y) & 0b11111) << 5 |
+                         ((vertices[i + 2] + world_pos.z) & 0b11111) << 10|
+                         ((vertices[i + 3]) & 0b1) << 11                  |
+                         ((vertices[i + 4]) & 0b1) << 12                  |
+                         ((vertices[i + 5]) & 0b111) << 13                |
+                         (block_texture & 0b11111) << 16;
 
-                //tex coords
-                chunk_vertices.push_back(vertices[i + 3]);
-                chunk_vertices.push_back(vertices[i + 4]);
-
-                //normals
-                chunk_vertices.push_back(vertices[i + 5]);
-                chunk_vertices.push_back(vertices[i + 6]);
-                chunk_vertices.push_back(vertices[i + 7]);
-
-                //block textures
-                chunk_vertices.push_back(findBlockTextures(getBlockType(blocktypes[index]), orientation));
-
+                // std::cout << "Packed value: " << packed << std::endl;
+                packed_vertices.push_back(packed);
                 vertex_count += 1;
             }
         }
     }
 
-    int Chunk::findBlockTextures(BlockType type, FaceOrientation orientation)
+    uint8_t Chunk::findBlockTextures(BlockType type, FaceOrientation orientation)
     {
         if (orientation == FaceOrientation::Front || orientation == FaceOrientation::Back || orientation == FaceOrientation::Left || orientation == FaceOrientation::Right)
         {
