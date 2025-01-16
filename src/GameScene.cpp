@@ -33,7 +33,7 @@ namespace game
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
-        cube_shader = Shader("cube_shadow.vs", "cube_shadow.fs");
+        // cube_shader = Shader("cube_shadow.vs", "cube_shadow.fs");
         cube_shadow = Shader("cube_shadow.vs", "cube_shadow.fs");
         cursor_shader = Shader("cursor.vs", "cursor.fs");
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
@@ -337,6 +337,8 @@ namespace game
         cube_shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         cube_shadow.setVec3("lightDir", lightDir);
         cube_shadow.setVec3("viewPos", camera.position);
+        cube_shadow.setMat4("projection", camera.getProjectionMatrix());
+        cube_shadow.setMat4("view", camera.getViewMatrix());
         glBindTextureUnit(1, depthMap);
         glBindTextureUnit(0, block_textures);
 

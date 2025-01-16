@@ -10,10 +10,9 @@ out VS_OUT {
     vec4 FragPosLightSpace;
 } vs_out;
 
-uniform mat4 model;
+uniform ivec3 chunkpos;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat3 normal;
 uniform mat4 lightSpaceMatrix;
 
 vec3 unpackPosition()
@@ -27,8 +26,8 @@ vec3 unpackPosition()
 
 vec2 unpackTexCoords()
 {
-    uint x = (aPackedData >> 11) & 1;
-    uint y = (aPackedData >> 12) & 1;
+    uint x = (aPackedData >> 15) & 1;
+    uint y = (aPackedData >> 16) & 1;
 
     return vec2(float(x), float(y));
 }
@@ -44,14 +43,14 @@ vec3 unpackNormal()
         vec3(0.0, 1.0, 0.0)
     };
 
-    uint normalIndex = (aPackedData >> 13) & 8;
+    uint normalIndex = (aPackedData >> 17) & 7;
 
     return normals[normalIndex];
 }
 
 uint unpackBlockType()
 {
-    uint bt = (aPackedData >> 16) & 31;
+    uint bt = (aPackedData >> 20) & 31;
     return bt;
 }
 
@@ -63,12 +62,13 @@ void main()
     uint aBlockType = unpackBlockType();
 
 
-    vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
+    vec3 worldpos = aPos + chunkpos;
+    vs_out.FragPos = worldpos;
     vs_out.TexCoords = aTexCoords;
-    vs_out.Normal = normal * aNormal;
+    vs_out.Normal = aNormal;
     vs_out.BlockType = int(aBlockType);
-    vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
+    vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(worldpos, 1.0);
 
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    gl_Position = projection * view * vec4(worldpos, 1.0);
     // gl_Position = vec4(aPos, 1.0);
 }

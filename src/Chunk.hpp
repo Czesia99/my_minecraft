@@ -19,7 +19,7 @@ namespace game
     class Chunk
     {
         public:
-            Transform transform;
+            // Transform transform;
             // std::vector<float> chunk_vertices;
             std::vector<uint32_t> packed_vertices;
             std::vector<uint8_t>blocktypes;
@@ -35,7 +35,7 @@ namespace game
             int positionToIndex(glm::ivec3 pos);
 
         private:
-            void loadFaceVertices(std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index);
+            void loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index);
             uint32_t packVerticesData();
             uint8_t findBlockTextures(BlockType type, FaceOrientation orientation);
 

@@ -69,17 +69,7 @@ namespace game
 
     void Chunk::render(const Shader &shader, const ICamera &camera)
     {
-        shader.use();
-
-        glm::mat4 model = transform.getModelMatrix();
-        glm::mat4 projection = camera.getProjectionMatrix();
-        glm::mat4 view = camera.getViewMatrix();
-        glm::mat3 normal = glm::transpose(glm::inverse(model));
-
-        shader.setMat4("model", model);
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", view);
-        shader.setMat3("normal", normal);
+        shader.setVec3i("chunkpos", chunk_worldpos);
 
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
@@ -92,7 +82,7 @@ namespace game
 
     // }
 
-    void Chunk::loadFaceVertices(std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
+    void Chunk::loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
     {
         const glm::ivec3 direction = getFaceOrientationVector(orientation);
         const glm::ivec3 ndir = direction + local_pos;
@@ -105,16 +95,15 @@ namespace game
         ) {
             for (int i = 0; i < vertices.size(); i+= 6)
             {
-                std::cout << "worldpos x = " << world_pos.x << std::endl;
                 uint32_t packed;
                 uint8_t block_texture = findBlockTextures(getBlockType(blocktypes[index]), orientation);
-                packed = ((vertices[i] + world_pos.x) & 0b11111) << 0     |
-                         ((vertices[i + 1] + world_pos.y) & 0b11111) << 5 |
-                         ((vertices[i + 2] + world_pos.z) & 0b11111) << 10|
-                         ((vertices[i + 3]) & 0b1) << 11                  |
-                         ((vertices[i + 4]) & 0b1) << 12                  |
-                         ((vertices[i + 5]) & 0b111) << 13                |
-                         (block_texture & 0b11111) << 16;
+                packed = ((vertices[i] + local_pos.x) & 0b11111) << 0       |
+                         ((vertices[i + 1] + local_pos.y) & 0b11111) << 5   |
+                         ((vertices[i + 2] + local_pos.z) & 0b11111) << 10  |
+                         ((vertices[i + 3]) & 0b1) << 15                    |
+                         ((vertices[i + 4]) & 0b1) << 16                    |
+                         ((vertices[i + 5]) & 0b111) << 17                  |
+                         (block_texture & 0b11111) << 20;
 
                 // std::cout << "Packed value: " << packed << std::endl;
                 packed_vertices.push_back(packed);
