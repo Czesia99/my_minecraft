@@ -47,7 +47,7 @@ namespace game
         scube_shader.setVec3i("BlockTextures", blocktex);
 
         client.startThread();
-        client.sendRenderDistance(16);
+        client.sendRenderDistance(6);
 
         cursor_img.transform.scale.x = static_cast<float>(ctx.win_width);
         cursor_img.transform.scale.y = static_cast<float>(ctx.win_height);
@@ -140,6 +140,14 @@ namespace game
         if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
         {
             camera.processKeyboard(RIGHT, clock.delta_time);
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        {
+            camera.processKeyboard(UP, clock.delta_time);
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        {
+            camera.processKeyboard(DOWN, clock.delta_time);
         }
 
         selectCube();
@@ -324,7 +332,7 @@ namespace game
 
     void GameScene::renderTerrain(const Shader &shader)
     {
-        for (auto &it : chunks)
+        for (const auto &it : chunks)
         {
             it.second->render(shader, camera);
         }

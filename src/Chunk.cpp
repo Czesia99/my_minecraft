@@ -69,6 +69,9 @@ namespace game
 
     void Chunk::render(const Shader &shader, const ICamera &camera)
     {
+        if (vertex_count == 0)
+            return;
+
         shader.setVec3i("chunkpos", chunk_worldpos);
 
         glBindVertexArray(vao);
