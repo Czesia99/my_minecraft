@@ -34,7 +34,7 @@ namespace game
             void update() override;
             void sceneClear() override;
             void processInput() override;
-            void mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy);
+            void mouseCallback(GLFWwindow* window, int x, int y, float dx, float dy);
             void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override;
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
@@ -45,6 +45,7 @@ namespace game
             void updateEntities();
             //rendering
             void renderCursorQuad();
+            void renderSCubeQuad();
             void renderShadowMapQuad();
             void renderShadowMap();
             void renderWorld();
@@ -63,12 +64,18 @@ namespace game
         private:
             Camera3D camera;
             CameraOrtho camera_ortho;
+            Camera3D scube_cam = {glm::vec3(0.0f, 0.0f, -5.0f), 200, 200};
+
             Skybox sky;
             Clock clock;
             Shader cube_shader;
             Client client;
             GLuint block_textures;
             BlockType selected_cube = BlockType::Grass;
+
+            Cube scube;
+            Shader scube_shader;
+
             char input_chat[4096] = {};
             mygl::Rectangle cursor_img;
             Shader cursor_shader;
@@ -76,7 +83,7 @@ namespace game
             std::unordered_map<glm::ivec3, Chunk*> chunks;
             std::unordered_map<int, Entity*> entities;
 
-            float request_interval = 0.0;
+            double request_interval = 0.0;
             // float peak_rss;
             // float current_rss;
             int cursor_input_mode;
@@ -103,9 +110,9 @@ namespace game
             struct DDA_Data
             {
                 uint8_t blocktype;
-                float xpos;
-                float ypos;
-                float zpos;
+                int xpos;
+                int ypos;
+                int zpos;
                 glm::ivec3 face;
             };
 

@@ -173,7 +173,7 @@ namespace game
         ptr += sizeof(uint32_t);
 
         uint32_t hold_pitch;
-        memcpy(&entity.pitch, ptr, sizeof(uint32_t));
+        memcpy(&hold_pitch, ptr, sizeof(uint32_t));
         convertToFloat(entity.pitch, hold_pitch);
         ptr += sizeof(uint32_t);
 
@@ -226,7 +226,7 @@ namespace game
         ptr += sizeof(uint32_t);
 
         uint32_t hold_pitch;
-        memcpy(&entity.pitch, ptr, sizeof(uint32_t));
+        memcpy(&hold_pitch, ptr, sizeof(uint32_t));
         convertToFloat(entity.pitch, hold_pitch);
 
         data.entities.push_back(entity);

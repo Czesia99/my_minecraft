@@ -47,9 +47,7 @@ public:
                         cv_.wait(lock, [this] {
                             return !tasks_.empty() || stop_;
                         });
-                        //if (stop_ && tasks_.empty())
-                        if (stop_) {
-                            std::cout << "THRAD STOOOOOOOOOOOOOOOOOOOOOOOOOOOOP2" << std::endl;
+                        if (stop_ && tasks_.empty()) {
                             return;
                         }
 
@@ -63,7 +61,6 @@ public:
     }
 
     void stop() {
-        std::cout << "THRADPOOL DESTRUCTOR" << std::endl;
         {
             unique_lock<mutex> lock(queue_mutex_);
             stop_ = true;
@@ -72,10 +69,8 @@ public:
         cv_.notify_all();
 
         for (auto& thread : threads_) {
-            std::cout << "before joinable" << std::endl;
             if (thread.joinable()) {
                 thread.join();
-                std::cout << "after joinable" << std::endl;
             }
         }
     }

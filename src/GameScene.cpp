@@ -24,6 +24,11 @@ namespace game
 
         camera.setMovementSpeed(50.0f);
         camera_ortho = CameraOrtho(glm::vec3(0.0f, 0.0f, 0.0f), ctx.win_width, ctx.win_height);
+        scube_cam.yaw = 90.0f;
+        scube_cam.position.y += 2.0f;
+        scube_cam.pitch -= 25.0f;
+        scube_cam.updateCameraVectors();
+
 
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
@@ -34,11 +39,18 @@ namespace game
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
+        //show selected cube
+        scube_shader = Shader("cube.vs", "cube.fs");
+        scube.transform.position = glm::vec3(0.0, 0.0, 0.0);
+        scube_shader.use();
+        glm::ivec3 blocktex = {textures_umap.at(selected_cube).at(0), textures_umap.at(selected_cube).at(1), textures_umap.at(selected_cube).at(2)};
+        scube_shader.setVec3i("BlockTextures", blocktex);
+
         client.startThread();
         client.sendRenderDistance(16);
 
-        cursor_img.transform.scale.x = ctx.win_width;
-        cursor_img.transform.scale.y = ctx.win_height;
+        cursor_img.transform.scale.x = static_cast<float>(ctx.win_width);
+        cursor_img.transform.scale.y = static_cast<float>(ctx.win_height);
 
         createDepthQuadTexture();
 
@@ -46,7 +58,6 @@ namespace game
         cube_shadow.setInt("shadowMap", 1);
         cursor_shader.use();
         cursor_shader.setInt("texture0", 0);
-
     }
 
     GameScene::~GameScene() {}
@@ -78,6 +89,7 @@ namespace game
         renderWorld();
         renderEntities();
         sky.render(camera);
+        renderSCubeQuad();
         renderCursorQuad();
 
         imguiConfig();
@@ -87,7 +99,7 @@ namespace game
             request_interval = 0;
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
         }
-
+        scube.transform.rotation.y += 0.05f;
         // for (auto &c : chunks)
         // {
         //     glm::vec3 pos = c.first;
@@ -147,7 +159,7 @@ namespace game
         }
     }
 
-    void GameScene::mouseCallback(GLFWwindow* window, int x, int y, int dx, int dy)
+    void GameScene::mouseCallback(GLFWwindow* window, int x, int y, float dx, float dy)
     {
         camera.processMouseMovement(dx, -dy);
     }
@@ -214,6 +226,16 @@ namespace game
         cursor_img.render(cursor_shader, camera_ortho);
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
+    }
+
+    void GameScene::renderSCubeQuad()
+    {
+        glDisable(GL_DEPTH_TEST);
+        glViewport(0, 0, 200, 200);
+        glBindTextureUnit(0, block_textures);
+        scube.render(scube_shader, scube_cam);
+        glViewport(0, 0, ctx.win_width, ctx.win_height);
+        glEnable(GL_DEPTH_TEST);
     }
 
     void GameScene::renderShadowMapQuad()
@@ -502,6 +524,10 @@ namespace game
         {
             selected_cube = BlockType::Snow;
         }
+        // scube_shader.setInt("BlockType", selected_cube);
+        scube_shader.use();
+        glm::ivec3 blocktex = {textures_umap.at(selected_cube).at(0), textures_umap.at(selected_cube).at(1), textures_umap.at(selected_cube).at(2)};
+        scube_shader.setVec3i("BlockTextures", blocktex);
     }
 
     void GameScene::imguiConfig()
