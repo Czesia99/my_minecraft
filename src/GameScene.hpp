@@ -40,7 +40,6 @@ namespace game
             void framebufferSizeCallback(GLFWwindow* window, int width, int height) override;
 
         private:
-            Chunk *createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes);
             void updateChunks();
             void updateEntities();
             //rendering
@@ -74,6 +73,7 @@ namespace game
             BlockType selected_cube = BlockType::Grass;
 
             Cube scube;
+            float scube_rotspeed = 1.0f;
             Shader scube_shader;
 
             char input_chat[4096] = {};

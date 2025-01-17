@@ -11,11 +11,7 @@ namespace game
         return pos.x + pos.y * 16 + pos.z*16*16;
     }
 
-    Chunk::Chunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes)
-    {
-        // createChunkVertices(pos);
-        // createChunkMesh();
-    }
+    Chunk::Chunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes) {}
 
     void Chunk::createChunkMesh()
     {
@@ -33,9 +29,6 @@ namespace game
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, packed_vertices.size() * sizeof(uint32_t), packed_vertices.data(), GL_STATIC_DRAW);
-        // glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbind VBO
-        // glBindVertexArray(0);
-        // packed_vertices.clear();
         packed_vertices.shrink_to_fit();
     }
 

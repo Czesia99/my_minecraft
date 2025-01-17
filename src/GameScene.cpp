@@ -99,7 +99,7 @@ namespace game
             request_interval = 0;
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
         }
-        scube.transform.rotation.y += 0.05f;
+
         // for (auto &c : chunks)
         // {
         //     glm::vec3 pos = c.first;
@@ -127,27 +127,27 @@ namespace game
 
         if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
         {
-            camera.processKeyboard(FORWARD, clock.delta_time);
+            camera.processKeyboardMovement(FORWARD, clock.delta_time);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_S) == GLFW_PRESS)
         {
-            camera.processKeyboard(BACKWARD, clock.delta_time);
+            camera.processKeyboardMovement(BACKWARD, clock.delta_time);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_A) == GLFW_PRESS)
         {
-            camera.processKeyboard(LEFT, clock.delta_time);
+            camera.processKeyboardMovement(LEFT, clock.delta_time);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_D) == GLFW_PRESS)
         {
-            camera.processKeyboard(RIGHT, clock.delta_time);
+            camera.processKeyboardMovement(RIGHT, clock.delta_time);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            camera.processKeyboard(UP, clock.delta_time);
+            camera.processKeyboardMovement(UP, clock.delta_time);
         }
         if (glfwGetKey(ctx.window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         {
-            camera.processKeyboard(DOWN, clock.delta_time);
+            camera.processKeyboardMovement(DOWN, clock.delta_time);
         }
 
         selectCube();
@@ -156,11 +156,11 @@ namespace game
         {
             if (cursor_input_mode == GLFW_CURSOR_DISABLED)
             {
-                camera.setCameraLock(true);
+                camera.setLock(true);
                 cursor_input_mode = GLFW_CURSOR_NORMAL;
                 glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             } else {
-                camera.setCameraLock(false);
+                camera.setLock(false);
                 cursor_input_mode = GLFW_CURSOR_DISABLED;
                 glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
@@ -241,6 +241,7 @@ namespace game
         glDisable(GL_DEPTH_TEST);
         glViewport(0, 0, 200, 200);
         glBindTextureUnit(0, block_textures);
+        scube.transform.rotation.y += scube_rotspeed * static_cast<float>(clock.delta_time);
         scube.render(scube_shader, scube_cam);
         glViewport(0, 0, ctx.win_width, ctx.win_height);
         glEnable(GL_DEPTH_TEST);
@@ -258,9 +259,9 @@ namespace game
 
     glm::mat4 GameScene::computeLightSpaceMatrix()
     {
-        camera.setCameraNearFarPlanes(0.1f, 75.0f);
+        camera.setNearFarPlanes(0.1f, 75.0f);
         frustrum_corners = camera.getFrustumCornersWorldSpace();
-        camera.setCameraNearFarPlanes(0.1f, 1000.0f);
+        camera.setNearFarPlanes(0.1f, 1000.0f);
 
         lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
 
@@ -437,12 +438,6 @@ namespace game
         client.mtx_chunk_data.unlock();
     }
 
-    Chunk *GameScene::createChunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes)
-    {
-        Chunk *chunk = new Chunk(pos, blocktypes);
-        return chunk;
-    }
-
     void GameScene::dda()
     {
         glm::ivec3 mapPos = glm::ivec3(floor(camera.position));
@@ -534,7 +529,6 @@ namespace game
         {
             selected_cube = BlockType::Snow;
         }
-        // scube_shader.setInt("BlockType", selected_cube);
         scube_shader.use();
         glm::ivec3 blocktex = {textures_umap.at(selected_cube).at(0), textures_umap.at(selected_cube).at(1), textures_umap.at(selected_cube).at(2)};
         scube_shader.setVec3i("BlockTextures", blocktex);
