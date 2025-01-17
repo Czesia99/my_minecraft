@@ -529,6 +529,14 @@ namespace game
         {
             selected_cube = BlockType::Snow;
         }
+        if (glfwGetKey(ctx.window, GLFW_KEY_7) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Glass;
+        }
+        if (glfwGetKey(ctx.window, GLFW_KEY_8) == GLFW_PRESS)
+        {
+            selected_cube = BlockType::Oak_leaves;
+        }
         scube_shader.use();
         glm::ivec3 blocktex = {textures_umap.at(selected_cube).at(0), textures_umap.at(selected_cube).at(1), textures_umap.at(selected_cube).at(2)};
         scube_shader.setVec3i("BlockTextures", blocktex);
