@@ -32,6 +32,9 @@ void main()
     }
 
     vec4 color = texture(material.diffuse, NewTexCoord);
+    if (color.a <= 0.5)
+        discard;
+
     FragColor = color;
     // FragColor = vec4((mod(FragPos, 16.0) / 16.0).xz, 0.0, 1.0);
     // if (BlockType == 0) FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red for block type 0

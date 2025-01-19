@@ -63,7 +63,7 @@ void main()
     vec3 NewTexCoord = vec3(fs_in.TexCoords.x, fs_in.TexCoords.y, fs_in.BlockType);
     vec4 color = texture(material.diffuse, NewTexCoord).rgba;
 
-    if (color.a <= 0.5)
+    if (color.a <= 0.65)
         discard;
 
     vec3 normal = normalize(fs_in.Normal);

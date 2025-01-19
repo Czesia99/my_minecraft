@@ -30,7 +30,7 @@ namespace game
         scube_cam.updateCameraVectors();
 
 
-        loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST, GL_NEAREST);
+        loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
         // cube_shader = Shader("cube_shadow.vs", "cube_shadow.fs");
@@ -47,7 +47,7 @@ namespace game
         scube_shader.setVec3i("BlockTextures", blocktex);
 
         client.startThread();
-        client.sendRenderDistance(6);
+        client.sendRenderDistance(16);
 
         cursor_img.transform.scale.x = static_cast<float>(ctx.win_width);
         cursor_img.transform.scale.y = static_cast<float>(ctx.win_height);
@@ -259,7 +259,7 @@ namespace game
 
     glm::mat4 GameScene::computeLightSpaceMatrix()
     {
-        camera.setNearFarPlanes(0.1f, 75.0f);
+        camera.setNearFarPlanes(0.1f, 85.0f);
         frustrum_corners = camera.getFrustumCornersWorldSpace();
         camera.setNearFarPlanes(0.1f, 1000.0f);
 
@@ -290,7 +290,7 @@ namespace game
             minZ = std::min(minZ, trf.z);
             maxZ = std::max(maxZ, trf.z);
         }
-        constexpr float zMult = 1.0f;
+        constexpr float zMult = 5.0f;
         if (minZ < 0)
         {
             minZ *= zMult;
