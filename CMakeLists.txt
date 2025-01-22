@@ -65,6 +65,7 @@ else(
         # -fno-omit-frame-pointer
         # -g3
         -O3
+        -g
     ))
 endif()
 

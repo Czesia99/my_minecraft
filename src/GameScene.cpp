@@ -77,7 +77,13 @@ namespace game
     void GameScene::closeScene()
     {
         tp.stop();
+        client.stopThread();
         clearAllChunks();
+
+        if (!client.data.chunks.empty())
+        {
+            std::cout << "client data chunks not empty" << std::endl;
+        }
     }
 
     void GameScene::update()
@@ -100,16 +106,6 @@ namespace game
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
         }
 
-        // for (auto &c : chunks)
-        // {
-        //     glm::vec3 pos = c.first;
-        //     if (glm::distance(camera.position, pos) >= (16.0f * 16.0f) * 3.0f)
-        //     {
-        //         chunks.erase(c.first);
-        //         c.second->deleteChunk();
-        //         delete(c.second);
-        //     }
-        // }
         updateChunks();
         updateEntities();
         tq.execute();
@@ -407,19 +403,12 @@ namespace game
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
-
-            // glm::vec3 pos = chunk_data.pos;
-            // if (glm::distance(camera.position, pos) >= (16.0 * 16.0) * 2.0f) {
-            //     continue;
-            // }
-
-            tp.enqueue([chunk_data, this] {
+            // tp.enqueue([chunk_data, this] {
                 Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
                 chunk->createChunkVertices();
                 tq.enqueue([chunk, this] {
 
                     chunk->createChunkMesh();
-
 
                     auto it = chunks.find(chunk->chunk_worldpos);
                     if (it != chunks.end())
@@ -432,9 +421,8 @@ namespace game
                         chunks[chunk->chunk_worldpos] = chunk;
                     }
                 });
-            });
+            // });
         }
-        // client.data.chunks.shrink_to_fit();
         client.mtx_chunk_data.unlock();
     }
 
@@ -584,10 +572,10 @@ namespace game
 
     void GameScene::clearAllChunks()
     {
-        for (auto &[key, value] : chunks)
+        for (auto &[pos, chunk] : chunks)
         {
-            value->deleteChunk();
-            delete value;
+            chunk->deleteChunk();
+            delete chunk;
         }
         chunks.clear();
     }
