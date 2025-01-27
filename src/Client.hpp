@@ -7,13 +7,15 @@
 #include <thread>
 #include <mutex>
 #include <asio.hpp>
+#include <atomic>
+#include <map>
 
 namespace game
 {
     struct ChunkData
     {
         glm::ivec3 pos;
-        std::vector<uint8_t>blocktypes;
+        std::vector<uint8_t> blocktypes;
     };
 
     struct EntityData
@@ -65,7 +67,7 @@ namespace game
         uint8_t name[64];
     };
 
-    struct sendChatData
+    struct SendChatData
     {
         uint8_t id;
         char message[4096];
@@ -84,7 +86,7 @@ namespace game
             Client();
             ~Client();
             bool receive();
-            void receiveAll(size_t len);
+            bool receiveAll(size_t len);
             void clientThread();
             void startThread();
             void stopThread();
@@ -107,6 +109,7 @@ namespace game
         private:
             uint8_t buffer[5000] = {0};
             int client_socket;
+            std::atomic<bool> receive_in_progress;
             int entity_id;
 
             asio::io_context io_context;
@@ -119,9 +122,20 @@ namespace game
             char name[64] = "CzesiaLa";
             std::thread client_thread;
             std::atomic<bool> stop_flag;
-            // sockaddr_in server_adress;
+            void cancelCurrentOperations();
 
             void convertToFloat(float &hfloat, uint32_t data);
+
+            std::unordered_map<uint8_t, size_t> packetid = {
+                {0x00, 4},
+                {0x01, sizeof(EntityData)},
+                {0x02, 4},
+                {0x03, 24},
+                {0x04, 12 + 4096},
+                {0x05, 13},
+                {0x06, 4096},
+                {0x07, 68}
+            };
     };
 
 }

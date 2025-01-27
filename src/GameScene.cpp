@@ -76,7 +76,7 @@ namespace game
 
     void GameScene::closeScene()
     {
-        tp.stop();
+        // tp.stop();
         client.stopThread();
         clearAllChunks();
 

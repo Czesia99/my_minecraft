@@ -12,8 +12,8 @@ void print_buffer(const char *title, const unsigned char *buf, size_t buf_len)
 
 namespace game
 {
-    Client::Client() : stop_flag(false), asio_socket(io_context)
-    {
+    Client::Client() : stop_flag(false), receive_in_progress(false),
+        asio_socket(io_context) {
         try {
             asio::ip::tcp::resolver resolver(io_context);
             auto endpoints = resolver.resolve("162.19.137.231", "15000");
@@ -29,9 +29,18 @@ namespace game
     Client::~Client()
     {
         stopThread();
+        cancelCurrentOperations();
         if (client_thread.joinable()) {
             client_thread.join();
-            std::cout << "client thread join" << std::endl;
+        }
+    }
+
+    void Client::cancelCurrentOperations()
+    {
+        if (receive_in_progress) {
+            asio::error_code ec;
+            asio_socket.cancel(ec);
+            receive_in_progress = false;
         }
     }
 
@@ -58,8 +67,15 @@ namespace game
     {
         std::cout << "client stop thread" << std::endl;
         stop_flag = true;
+        cancelCurrentOperations();
+
         if (asio_socket.is_open()) {
-            asio_socket.close();
+            try {
+                asio_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+                asio_socket.close();
+            } catch (const std::exception& e) {
+                std::cerr << "Error during shutdown: " << e.what() << std::endl;
+            }
         }
         io_context.stop();
     }
@@ -67,38 +83,49 @@ namespace game
     bool Client::receive()
     {
         asio::error_code ec;
-        // asio::steady_timer t(io_context, asio::chrono::seconds(1));
+        receive_in_progress = true;
+        std::atomic<bool> operation_completed = false;
+
         asio::steady_timer timer(io_context);
-        timer.expires_after(std::chrono::seconds(1));
-        timer.async_wait([](const asio::error_code& ec) {
-            try {
-                if (ec) {
-                    // Handle the error (if any)
-                }
-                throw std::runtime_error("Something went wrong!");
-            } catch (const std::exception& e) {
-                std::cerr << "Exception in timer callback: " << e.what() << std::endl;
-            }
+        timer.expires_after(std::chrono::seconds(1)); // Set timeout to 1 second
+
+        // Start the timer asynchronously
+        // timer.async_wait([&](const asio::error_code& timer_ec) {
+        //     if (!timer_ec && !operation_completed) {
+        //         cancelCurrentOperations();
+        //         operation_completed = true;
+        //     }
+        // });
+
+        size_t bytes_received = 0;
+        asio_socket.async_receive(asio::buffer(buffer, 1), 0, [&](const asio::error_code& socket_ec, size_t bytes) {
+            receive_in_progress = false;
+            // operation_completed = true;
+            ec = socket_ec;
+            bytes_received = bytes;
+            timer.cancel();
         });
 
-        if (ec && ec != asio::error::operation_aborted) {
-            // Handle timer-related error (e.g., if the timer fails to wait)
-            return false;
-        }
+        io_context.run();
 
-        size_t bytes_received = asio_socket.receive(asio::buffer(buffer, 1), 0, ec);
+        io_context.restart();
 
         if (ec) {
             if (ec == asio::error::operation_aborted) {
-                return false;
+                std::cerr << "Receive operation timed out." << std::endl;
             } else {
                 std::cerr << "Socket receive error: " << ec.message() << std::endl;
-                return false;
             }
+            return false;
         }
 
         if (bytes_received > 0) {
             uint8_t id = buffer[0];
+
+            if (!receiveAll(packetid.at(id)))
+            {
+                return false;
+            }
 
             switch (id)
             {
@@ -134,30 +161,28 @@ namespace game
         return false;
     }
 
-    void Client::receiveAll(size_t len)
+    bool Client::receiveAll(size_t len)
     {
         asio::error_code ec;
-
-        // if (asio_socket.is_open())
-        // {
-            asio::read(asio_socket, asio::buffer(buffer, len), ec);
-            // asio_socket.receive(buffer);
-        // } else { return; }
+        std::cout << "before read" << std::endl;
+        asio::read(asio_socket, asio::buffer(buffer, len), ec);
+        std::cout << "after read" << std::endl;
 
         if (ec) {
+            return false;
+            if (!asio_socket.is_open())
+                std::cerr << "Socket is not open." << std::endl;
+            // throw asio::error::misc_errors::eof;
             throw std::runtime_error("Error receiving data: " + ec.message());
         }
+        return true;
     }
 
     void Client::myEntityID()
     {
         std::cout << "receive my entity id" << std::endl;
         //entityID[int]
-        try {
-            receiveAll(4);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in entity id receiveAll: " << e.what() << std::endl;
-        }
+        // receiveAll(4);
 
         entity_id = be32toh(*(int*)&buffer);
         std::cout << "my entity id == " << entity_id << std::endl;
@@ -172,11 +197,7 @@ namespace game
     void Client::addEntity()
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        try {
-            receiveAll(24 + 64);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in receiveAll: " << e.what() << std::endl;
-        }
+        // receiveAll(24 + 64);
 
         EntityData entity {};
         uint8_t *ptr = &buffer[0];
@@ -213,18 +234,13 @@ namespace game
 
         memcpy(&entity.name, ptr, sizeof(uint8_t) * 64);
 
-
         data.entities.push_back(entity);
     }
 
     void Client::removeEntity()
     {
         //entityID[int]
-        try {
-            receiveAll(4);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in receiveAll: " << e.what() << std::endl;
-        }
+        // receiveAll(4);
 
         int id;
         uint8_t *ptr = &buffer[0];
@@ -236,11 +252,7 @@ namespace game
     void Client::receiveUpdateEntity()
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        try {
-            receiveAll(24);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in update entity receiveAll: " << e.what() << std::endl;
-        }
+        // receiveAll(24);
 
         EntityData entity;
         uint8_t *ptr = &buffer[0];
@@ -280,12 +292,7 @@ namespace game
     void Client::receiveChunk()
     {
         //chunk xpos[int] chunk ypos[int] chunk zpos[int] blocktypes[bytes[4096]]
-        try {
-            receiveAll(12 + 4096);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in receive chunk receiveAll: " << e.what() << std::endl;
-        }
-
+        // receiveAll(12 + 4096);
         ChunkData chunk;
         uint8_t *ptr = &buffer[0];
 
@@ -312,11 +319,7 @@ namespace game
     void Client::receiveMonoTypeChunk()
     {
         //chunk xpos[int] chunk ypos[int] chunk zpos[int] blocktype[byte]
-        try {
-            receiveAll(12 + 1);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in receiveAll: " << e.what() << std::endl;
-        }
+        // receiveAll(12 + 1);
         ChunkData chunk;
         uint8_t *ptr = &buffer[0];
         uint8_t blocktype;
@@ -344,11 +347,7 @@ namespace game
 
     void Client::receiveChat()
     {
-        try {
-            receiveAll(4096);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in receiveAll: " << e.what() << std::endl;
-        }
+        // receiveAll(4096);
 
         ChatData cd;
         uint8_t *ptr = &buffer[0];
@@ -358,11 +357,7 @@ namespace game
 
     void Client::receiveEntityMetaData()
     {
-        try {
-            receiveAll(68);
-        } catch (const std::exception& e) {
-            std::cerr << "Error in receiveAll: " << e.what() << std::endl;
-        }
+        // receiveAll(68);
     }
 
     void Client::sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch)
@@ -421,7 +416,7 @@ namespace game
 
     void Client::sendTextChat(const char *input)
     {
-        sendChatData scd;
+        SendChatData scd;
 
         scd.id = 0x03;
         memcpy(scd.message, input, 4096);
