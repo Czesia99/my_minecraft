@@ -296,9 +296,9 @@ namespace game
         chunk.blocktypes.resize(4096);
         memcpy(&chunk.blocktypes[0], ptr, 4096);
 
-        mtx_chunk_data.lock();
+        data_mtx.lock();
         data.chunks.push_back(chunk); // to lock
-        mtx_chunk_data.unlock();
+        data_mtx.unlock();
     }
 
     void Client::receiveMonoTypeChunk()
@@ -324,9 +324,9 @@ namespace game
         chunk.blocktypes.resize(4096);
         std::fill(std::begin(chunk.blocktypes), std::end(chunk.blocktypes), blocktype);
 
-        mtx_chunk_data.lock();
+        data_mtx.lock();
         data.chunks.push_back(chunk);
-        mtx_chunk_data.unlock();
+        data_mtx.unlock();
     }
 
     void Client::receiveChat()

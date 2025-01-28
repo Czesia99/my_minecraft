@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <map>
 #include <thread>
+#include <shared_mutex>
 
 #include "Chunk.hpp"
 #include "Entity.hpp"
@@ -19,6 +20,8 @@
 #include "Threadpool.hpp"
 #include "glm/gtx/hash.hpp"
 #include "Blocktype.h"
+
+#include "World.hpp"
 
 namespace game
 {
@@ -53,6 +56,7 @@ namespace game
             //dda
             void dda();
             uint8_t getBlockAt(int x, int y, int z);
+            uint8_t getBlockAt(float x, float y, float z);
             //player related
             void selectCube();
             //utils
@@ -64,7 +68,6 @@ namespace game
             Camera3D camera;
             CameraOrtho camera_ortho;
             Camera3D scube_cam = {glm::vec3(0.0f, 0.0f, -5.0f), 200, 200};
-
             Skybox sky;
             Clock clock;
             Shader cube_shader;
@@ -80,6 +83,7 @@ namespace game
             mygl::Rectangle cursor_img;
             Shader cursor_shader;
 
+            std::shared_mutex chunk_mtx;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
             std::unordered_map<int, Entity*> entities;
 
@@ -117,6 +121,5 @@ namespace game
             };
 
             DDA_Data dda_data = {};
-            //EDIT ENUM BLOCKTEXTURES
     };
 }

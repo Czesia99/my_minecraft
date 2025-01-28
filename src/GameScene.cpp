@@ -85,9 +85,10 @@ namespace game
     {
         clock.update();
 
-        renderShadowMap();
+        // renderShadowMap();
         // renderShadowMapQuad();
-        renderWorld();
+        // renderWorld();
+        World::instance().render(camera, ctx.win_width, ctx.win_height);
         renderEntities();
         sky.render(camera);
         renderSCubeQuad();
@@ -358,10 +359,10 @@ namespace game
     {
         while (client.data.entities.size() != 0)
         {
-            client.mtx_chunk_data.lock();
+            client.data_mtx.lock();
             EntityData data = client.data.entities.front();
             client.data.entities.pop_front();
-            client.mtx_chunk_data.unlock();
+            client.data_mtx.unlock();
 
             glm::vec3 pos = {data.pos.x, data.pos.y, data.pos.z};
 
@@ -379,12 +380,12 @@ namespace game
 
         while(client.data.rm_entity.size() != 0)
         {
-            client.mtx_chunk_data.lock();
+            client.data_mtx.lock();
 
             int id = client.data.rm_entity.front();
             client.data.rm_entity.pop_front();
 
-            client.mtx_chunk_data.unlock();
+            client.data_mtx.unlock();
 
             entities.erase(id);
         }
@@ -392,7 +393,7 @@ namespace game
 
     void GameScene::updateChunks()
     {
-        client.mtx_chunk_data.lock();
+        client.data_mtx.lock();
         while (client.data.chunks.size() != 0)
         {
             //lockmutex
@@ -405,7 +406,7 @@ namespace game
                 tq.enqueue([chunk, this] {
 
                     chunk->createChunkMesh();
-
+                    World::instance().chunk_mtx.lock();
                     auto it = chunks.find(chunk->chunk_worldpos);
                     if (it != chunks.end())
                     {
@@ -414,12 +415,13 @@ namespace game
                         old_chunk->deleteChunk();
                         delete(old_chunk);
                     } else {
-                        chunks[chunk->chunk_worldpos] = chunk;
+                        World::instance().chunks[chunk->chunk_worldpos] = chunk;
                     }
+                    World::instance().chunk_mtx.unlock();
                 });
             });
         }
-        client.mtx_chunk_data.unlock();
+        client.data_mtx.unlock();
     }
 
     void GameScene::dda()
@@ -487,6 +489,11 @@ namespace game
             return -1;
     }
 
+    // uint8_t GameScene::getBlockAt(float x, float y, float z)
+    // {
+    //     getBlockAt(int(glm::floor(x)), int(glm::floor(y)), int(glm::floor(z)));
+    // }
+
     void GameScene::selectCube()
     {
         if (glfwGetKey(ctx.window, GLFW_KEY_1) == GLFW_PRESS)
@@ -535,7 +542,7 @@ namespace game
         // ImGui::SetNextWindowSize(ImVec2(400, 300));
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
-        ImGui::Text("Chunks Loaded: %ld", chunks.size());
+        ImGui::Text("Chunks Loaded: %ld", World::instance().chunks.size());
         ImGui::Text("FPS: %f", (1 / clock.delta_time));
         ImGui::Text("PLAYERS CONNECTED :");
         if (entities.size() > 0) {

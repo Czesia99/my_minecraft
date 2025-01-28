@@ -36,6 +36,7 @@ set(SRC_FILES
     ${SRC}/Chunk.cpp
     ${SRC}/Client.cpp
     ${SRC}/Entity.cpp
+    ${SRC}/World.cpp
     ${IMGUI_SOURCES}
 )
 

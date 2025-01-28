@@ -81,7 +81,7 @@ namespace game
             int status;
             int asio_status;
             Data data;
-            std::mutex mtx_chunk_data;
+            std::mutex data_mtx;
         public:
             Client();
             ~Client();

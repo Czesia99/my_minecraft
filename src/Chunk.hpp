@@ -19,12 +19,9 @@ namespace game
     class Chunk
     {
         public:
-            // Transform transform;
-            // std::vector<float> chunk_vertices;
             std::vector<uint32_t> packed_vertices;
             std::vector<uint8_t>blocktypes;
             glm::ivec3 chunk_worldpos;
-            // GLuint diffuse_texture;
         public:
             Chunk(const glm::ivec3 &pos, const std::vector<uint8_t> &blocktypes);
             // ~Chunk() = default;
