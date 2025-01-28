@@ -19,7 +19,7 @@ namespace game
     {
         private:
             World();
-            ~World() = default;
+            ~World();
 
             World(const World&) = delete;
             World& operator=(const World&) = delete;
@@ -35,6 +35,8 @@ namespace game
         public:
             void render(const Camera3D &camera, const int &width, const int &height);
             uint8_t getBlockAt(int xpos, int ypos, int zpos);
+            uint8_t getBlockAt(float xpos, float ypos, float zpos);
+            void clearAllChunks();
 
             std::shared_mutex chunk_mtx;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
@@ -45,6 +47,7 @@ namespace game
 
             void createDepthQuadTexture();
             glm::mat4 computeLightSpaceMatrix(Camera3D &camera);
+
 
         private:
             // Camera3D &cam;

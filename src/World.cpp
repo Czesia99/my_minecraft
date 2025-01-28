@@ -15,6 +15,11 @@ namespace game
         cube_shadow.setInt("shadowMap", 1);
     };
 
+    World::~World()
+    {
+        clearAllChunks();
+    }
+
     void World::renderTerrain(const Shader &shader, const ICamera &camera)
     {
         for (const auto &it : chunks)
@@ -59,6 +64,30 @@ namespace game
         //reset viewport
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    uint8_t World::getBlockAt(int x, int y, int z)
+    {
+        glm::ivec3 chunk_pos = glm::floor(glm::vec3(x,y,z) / 16.0f) * 16.0f;
+        glm::ivec3 local_pos = {x % 16, y % 16, z % 16};
+        if (local_pos.x < 0) local_pos.x += 16;
+        if (local_pos.y < 0) local_pos.y += 16;
+        if (local_pos.z < 0) local_pos.z += 16;
+
+        glm::ivec3 cube_pos = {x, y, z};
+
+        auto it =  chunks.find(chunk_pos);
+        if (it != chunks.end())
+        {
+            uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
+            return blocktype;
+        } else
+            return -1;
+    }
+
+    uint8_t World::getBlockAt(float x, float y, float z)
+    {
+        return getBlockAt(int(glm::floor(x)), int(glm::floor(y)), int(glm::floor(z)));
     }
 
     void World::createDepthQuadTexture()
@@ -140,4 +169,13 @@ namespace game
         return lightSpaceMatrix = lightProjection * lightView;
     }
 
+    void World::clearAllChunks()
+    {
+        for (auto &[pos, chunk] : chunks)
+        {
+            chunk->deleteChunk();
+            delete chunk;
+        }
+        chunks.clear();
+    }
 }
