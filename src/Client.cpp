@@ -19,7 +19,6 @@ namespace game
             auto endpoints = resolver.resolve("162.19.137.231", "15000");
             asio_status = 0;
             asio::connect(asio_socket, endpoints);
-            std::cout << "asio connected" << std::endl;
         } catch (const std::exception& e) {
             asio_status = -1;
             std::cerr << "Error: " << e.what() << std::endl;
@@ -29,20 +28,20 @@ namespace game
     Client::~Client()
     {
         stopThread();
-        cancelCurrentOperations();
+        // cancelCurrentOperations();
         if (client_thread.joinable()) {
             client_thread.join();
         }
     }
 
-    void Client::cancelCurrentOperations()
-    {
-        if (receive_in_progress) {
-            asio::error_code ec;
-            asio_socket.cancel(ec);
-            receive_in_progress = false;
-        }
-    }
+    // void Client::cancelCurrentOperations()
+    // {
+    //     if (receive_in_progress) {
+    //         asio::error_code ec;
+    //         asio_socket.cancel(ec);
+    //         receive_in_progress = false;
+    //     }
+    // }
 
     void Client::clientThread()
     {
@@ -65,13 +64,12 @@ namespace game
 
     void Client::stopThread()
     {
-        std::cout << "client stop thread" << std::endl;
         stop_flag = true;
-        cancelCurrentOperations();
+        // cancelCurrentOperations();
 
         if (asio_socket.is_open()) {
             try {
-                asio_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+                // asio_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
                 asio_socket.close();
             } catch (const std::exception& e) {
                 std::cerr << "Error during shutdown: " << e.what() << std::endl;
@@ -107,7 +105,6 @@ namespace game
         });
 
         io_context.run();
-
         io_context.restart();
 
         if (ec) {
@@ -164,25 +161,17 @@ namespace game
     bool Client::receiveAll(size_t len)
     {
         asio::error_code ec;
-        std::cout << "before read" << std::endl;
         asio::read(asio_socket, asio::buffer(buffer, len), ec);
-        std::cout << "after read" << std::endl;
 
         if (ec) {
             return false;
-            if (!asio_socket.is_open())
-                std::cerr << "Socket is not open." << std::endl;
-            // throw asio::error::misc_errors::eof;
-            throw std::runtime_error("Error receiving data: " + ec.message());
         }
         return true;
     }
 
     void Client::myEntityID()
     {
-        std::cout << "receive my entity id" << std::endl;
         //entityID[int]
-        // receiveAll(4);
 
         entity_id = be32toh(*(int*)&buffer);
         std::cout << "my entity id == " << entity_id << std::endl;
@@ -197,7 +186,6 @@ namespace game
     void Client::addEntity()
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        // receiveAll(24 + 64);
 
         EntityData entity {};
         uint8_t *ptr = &buffer[0];
@@ -240,7 +228,6 @@ namespace game
     void Client::removeEntity()
     {
         //entityID[int]
-        // receiveAll(4);
 
         int id;
         uint8_t *ptr = &buffer[0];
@@ -252,7 +239,6 @@ namespace game
     void Client::receiveUpdateEntity()
     {
         //entityID[int], xpos[float], ypos[float], zpos[float], yaw[float], pitch[float]
-        // receiveAll(24);
 
         EntityData entity;
         uint8_t *ptr = &buffer[0];
@@ -292,7 +278,6 @@ namespace game
     void Client::receiveChunk()
     {
         //chunk xpos[int] chunk ypos[int] chunk zpos[int] blocktypes[bytes[4096]]
-        // receiveAll(12 + 4096);
         ChunkData chunk;
         uint8_t *ptr = &buffer[0];
 
@@ -319,7 +304,6 @@ namespace game
     void Client::receiveMonoTypeChunk()
     {
         //chunk xpos[int] chunk ypos[int] chunk zpos[int] blocktype[byte]
-        // receiveAll(12 + 1);
         ChunkData chunk;
         uint8_t *ptr = &buffer[0];
         uint8_t blocktype;
@@ -347,8 +331,6 @@ namespace game
 
     void Client::receiveChat()
     {
-        // receiveAll(4096);
-
         ChatData cd;
         uint8_t *ptr = &buffer[0];
         cd.text.assign((char*)buffer);
@@ -357,7 +339,6 @@ namespace game
 
     void Client::receiveEntityMetaData()
     {
-        // receiveAll(68);
     }
 
     void Client::sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch)

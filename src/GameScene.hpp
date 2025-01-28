@@ -104,7 +104,7 @@ namespace game
 
             std::vector<glm::vec4> frustrum_corners;
 
-            // ThreadPool tp = {4};
+            ThreadPool tp = {4};
             TaskQueue tq;
 
             struct DDA_Data
@@ -117,22 +117,6 @@ namespace game
             };
 
             DDA_Data dda_data = {};
-
             //EDIT ENUM BLOCKTEXTURES
-            std::vector<std::string>block_textures_path
-            {
-                "../assets/textures/default/undefined.png",
-                "../assets/textures/default/grasstop.jpg",
-                "../assets/textures/default/grass_block_side.png",
-                "../assets/textures/default/dirt.png",
-                "../assets/textures/default/stone.png",
-                "../assets/textures/default/oak_log.png",
-                "../assets/textures/default/oak_log_top.png",
-                "../assets/textures/default/leaves_oak.png",
-                "../assets/textures/default/glass.png",
-                "../assets/textures/default/water.png",
-                "../assets/textures/default/sand.png",
-                "../assets/textures/default/snow.png",
-            };
     };
 }

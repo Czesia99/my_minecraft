@@ -14,6 +14,14 @@ enum BlockType
     Water,
     Sand,
     Snow,
+    OakPlank,
+    StoneBrick,
+    Netherrack,
+    GoldBlock,
+    PackedIce,
+    Lava,
+    Barrel,
+    Bookshelf,
     Undefined,
 };
 
@@ -31,6 +39,16 @@ enum BlockTextures
     WaterTex,
     SandTex,
     SnowTex,
+    OakPlankTex,
+    StoneBrickTex,
+    NetherrackTex,
+    GoldBlockTex,
+    PackedIceTex,
+    LavaTex,
+    BarrelTopTex,
+    BarrelSideTex,
+    BarrelBottomTex,
+    BookshelfTex
 };
 
 enum FaceOrientation
@@ -57,6 +75,14 @@ inline BlockType getBlockType(uint8_t bt)
         case 7: return BlockType::Water;
         case 8: return BlockType::Sand;
         case 9: return BlockType::Snow;
+        case 10: return BlockType::OakPlank;
+        case 11: return BlockType::StoneBrick;
+        case 12: return BlockType::Netherrack;
+        case 13: return BlockType::GoldBlock;
+        case 14: return BlockType::PackedIce;
+        case 15: return BlockType::Lava;
+        case 16: return BlockType::Barrel;
+        case 17: return BlockType::Bookshelf;
         default: return BlockType::Undefined;
     }
 }
@@ -75,6 +101,14 @@ inline uint8_t getBlockByte(BlockType bt)
         case BlockType::Water: return 7;
         case BlockType::Sand: return 8;
         case BlockType::Snow: return 9;
+        case BlockType::OakPlank: return 10;
+        case BlockType::StoneBrick: return 11;
+        case BlockType::Netherrack: return 12;
+        case BlockType::GoldBlock: return 13;
+        case BlockType::PackedIce: return 14;
+        case BlockType::Lava: return 15;
+        case BlockType::Barrel: return 16;
+        case BlockType::Bookshelf: return 17;
         default: return BlockType::Undefined;
     }
 }
@@ -106,4 +140,38 @@ inline std::unordered_map<BlockType, std::array<BlockTextures, 3>> textures_umap
     {BlockType::Water, {BlockTextures::WaterTex, BlockTextures::WaterTex, BlockTextures::WaterTex}},
     {BlockType::Sand, {BlockTextures::SandTex, BlockTextures::SandTex, BlockTextures::SandTex}},
     {BlockType::Snow, {BlockTextures::SnowTex, BlockTextures::SnowTex, BlockTextures::SnowTex}},
+    {BlockType::OakPlank, {BlockTextures::OakPlankTex, BlockTextures::OakPlankTex, BlockTextures::OakPlankTex}},
+    {BlockType::StoneBrick, {BlockTextures::StoneBrickTex, BlockTextures::StoneBrickTex, BlockTextures::StoneBrickTex}},
+    {BlockType::Netherrack, {BlockTextures::NetherrackTex, BlockTextures::NetherrackTex, BlockTextures::NetherrackTex}},
+    {BlockType::GoldBlock, {BlockTextures::GoldBlockTex, BlockTextures::GoldBlockTex, BlockTextures::GoldBlockTex}},
+    {BlockType::PackedIce, {BlockTextures::PackedIceTex, BlockTextures::PackedIceTex, BlockTextures::PackedIceTex}},
+    {BlockType::Lava, {BlockTextures::LavaTex, BlockTextures::LavaTex, BlockTextures::LavaTex}},
+    {BlockType::Barrel, {BlockTextures::BarrelTopTex, BlockTextures::BarrelSideTex, BlockTextures::BarrelBottomTex}},
+    {BlockType::Bookshelf, {BlockTextures::OakPlankTex, BlockTextures::BookshelfTex, BlockTextures::OakPlankTex}},
+};
+
+inline std::vector<std::string>block_textures_path
+{
+    "../assets/textures/default/undefined.png",
+    "../assets/textures/default/grasstop.jpg",
+    "../assets/textures/default/grass_block_side.png",
+    "../assets/textures/default/dirt.png",
+    "../assets/textures/default/stone.png",
+    "../assets/textures/default/oak_log.png",
+    "../assets/textures/default/oak_log_top.png",
+    "../assets/textures/default/leaves_oak.png",
+    "../assets/textures/default/glass.png",
+    "../assets/textures/default/water.png",
+    "../assets/textures/default/sand.png",
+    "../assets/textures/default/snow.png",
+    "../assets/textures/default/planks_oak.png",
+    "../assets/textures/default/stonebrick.png",
+    "../assets/textures/default/netherrack.png",
+    "../assets/textures/default/gold_block.png",
+    "../assets/textures/default/ice_packed.png",
+    "../assets/textures/default/lava.png",
+    "../assets/textures/default/barrel_top.png",
+    "../assets/textures/default/barrel_side.png",
+    "../assets/textures/default/barrel_bottom.png",
+    "../assets/textures/default/bookshelf.png",
 };

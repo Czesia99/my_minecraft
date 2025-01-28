@@ -76,14 +76,9 @@ namespace game
 
     void GameScene::closeScene()
     {
-        // tp.stop();
+        tp.stop();
         client.stopThread();
         clearAllChunks();
-
-        if (!client.data.chunks.empty())
-        {
-            std::cout << "client data chunks not empty" << std::endl;
-        }
     }
 
     void GameScene::update()
@@ -313,6 +308,7 @@ namespace game
     {
         depth_shader.use();
 
+        glBindTextureUnit(0, block_textures);
         lightSpaceMatrix = computeLightSpaceMatrix(); //to fit in camera frustrum
         depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
@@ -403,7 +399,7 @@ namespace game
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
-            // tp.enqueue([chunk_data, this] {
+            tp.enqueue([chunk_data, this] {
                 Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
                 chunk->createChunkVertices();
                 tq.enqueue([chunk, this] {
@@ -421,7 +417,7 @@ namespace game
                         chunks[chunk->chunk_worldpos] = chunk;
                     }
                 });
-            // });
+            });
         }
         client.mtx_chunk_data.unlock();
     }
