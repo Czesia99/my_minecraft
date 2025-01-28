@@ -107,8 +107,9 @@ namespace game
 
     void GameScene::processInput()
     {
-        if (glfwGetKey(ctx.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(ctx.window, true);
+        if (cursor_input_mode == GLFW_CURSOR_NORMAL) {
+            return;
+        }
 
         if (glfwGetKey(ctx.window, GLFW_KEY_W) == GLFW_PRESS)
         {
@@ -134,12 +135,17 @@ namespace game
         {
             camera.processKeyboardMovement(DOWN, clock.delta_time);
         }
+    }
 
-        selectCube();
+    void GameScene::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(ctx.window, true);
+        }
 
-        if (glfwGetKey(ctx.window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+        if (key == GLFW_KEY_LEFT_ALT && action == GLFW_PRESS)
         {
-            if (cursor_input_mode == GLFW_CURSOR_DISABLED)
+           if (cursor_input_mode == GLFW_CURSOR_DISABLED)
             {
                 camera.setLock(true);
                 cursor_input_mode = GLFW_CURSOR_NORMAL;
@@ -150,6 +156,24 @@ namespace game
                 glfwSetInputMode(ctx.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             }
         }
+
+        if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+            if (selected_cube + 1 > textures_umap.size() - 1) {
+                selected_cube = (BlockType)1;
+            } else {
+                selected_cube = (BlockType)(selected_cube + 1);
+            }
+            selectCubeUpdate();
+        }
+
+        if (key == GLFW_KEY_X && action == GLFW_PRESS) {
+            if (selected_cube - 1 < 1) {
+                selected_cube = (BlockType)(textures_umap.size() - 1);
+            } else {
+                selected_cube = (BlockType)(selected_cube - 1);
+            }
+            selectCubeUpdate();
+        }
     }
 
     void GameScene::mouseCallback(GLFWwindow* window, int x, int y, float dx, float dy)
@@ -159,6 +183,10 @@ namespace game
 
     void GameScene::leftClickCallback(GLFWwindow* window, int button, int action, int mods)
     {
+        if (cursor_input_mode == GLFW_CURSOR_NORMAL) {
+            return;
+        }
+
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         if (button == GLFW_MOUSE_BUTTON_LEFT && action==GLFW_PRESS)
@@ -347,40 +375,8 @@ namespace game
         }
     }
 
-    void GameScene::selectCube()
+    void GameScene::selectCubeUpdate()
     {
-        if (glfwGetKey(ctx.window, GLFW_KEY_1) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Stone;
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_2) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Grass;
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_3) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Dirt;
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_4) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Oak_log;
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_5) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Sand;
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_6) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Snow;
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_7) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Glass;
-        }
-        if (glfwGetKey(ctx.window, GLFW_KEY_8) == GLFW_PRESS)
-        {
-            selected_cube = BlockType::Oak_leaves;
-        }
         scube_shader.use();
         glm::ivec3 blocktex = {textures_umap.at(selected_cube).at(0), textures_umap.at(selected_cube).at(1), textures_umap.at(selected_cube).at(2)};
         scube_shader.setVec3i("BlockTextures", blocktex);

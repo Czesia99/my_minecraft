@@ -37,6 +37,7 @@ namespace game
             void update() override;
             void sceneClear() override;
             void processInput() override;
+            void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
             void mouseCallback(GLFWwindow* window, int x, int y, float dx, float dy);
             void leftClickCallback(GLFWwindow* window, int button, int action, int mods) override;
             void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) override;
@@ -58,7 +59,7 @@ namespace game
             uint8_t getBlockAt(int x, int y, int z);
             uint8_t getBlockAt(float x, float y, float z);
             //player related
-            void selectCube();
+            void selectCubeUpdate();
             //utils
             void imguiConfig();
             void clearAllChunks();
