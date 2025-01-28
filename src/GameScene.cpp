@@ -321,11 +321,13 @@ namespace game
 
     void GameScene::dda()
     {
+        //https://www.shadertoy.com/view/4dX3zl
+
         glm::ivec3 mapPos = glm::ivec3(floor(camera.position));
         glm::vec3 deltaDist = abs(length(camera.front) / camera.front);
-        glm::ivec3 rayStep = glm::ivec3(sign(camera.front));
-        glm::vec3 sideDist = (sign(camera.front) * (glm::vec3(mapPos) - camera.position) + (sign(camera.front) * glm::vec3(0.5)) + glm::vec3(0.5)) * deltaDist;
-        glm::ivec3 mask;
+        glm::vec3 rayStep = glm::ivec3(sign(camera.front));
+        glm::vec3 sideDist = (sign(camera.front) * (glm::vec3(mapPos) - camera.position) + (sign(camera.front) * 0.5f) + 0.5f) * deltaDist;
+        glm::vec3 mask;
 
         for (int i = 0; i < 100; i++) {
             uint8_t bt = World::instance().getBlockAt(mapPos.x, mapPos.y, mapPos.z);
@@ -335,33 +337,13 @@ namespace game
                 dda_data.xpos = mapPos.x;
                 dda_data.ypos = mapPos.y;
                 dda_data.zpos = mapPos.z;
-                dda_data.face = mask;
+                dda_data.face = -mask * rayStep;
                 return;
             }
-            if (sideDist.x < sideDist.y) {
-                if (sideDist.x < sideDist.z) {
-                    sideDist.x += deltaDist.x;
-                    mapPos.x += rayStep.x;
-                    mask = glm::ivec3(-rayStep.x, 0, 0);
-                }
-                else {
-                    sideDist.z += deltaDist.z;
-                    mapPos.z += rayStep.z;
-                    mask = glm::ivec3(0, 0, -rayStep.z);
-                }
-            }
-            else {
-                if (sideDist.y < sideDist.z) {
-                    sideDist.y += deltaDist.y;
-                    mapPos.y += rayStep.y;
-                    mask = glm::ivec3(0, -rayStep.y, 0);
-                }
-                else {
-                    sideDist.z += deltaDist.z;
-                    mapPos.z += rayStep.z;
-                    mask = glm::ivec3(0, 0, -rayStep.z);
-                }
-            }
+
+            mask = glm::step(sideDist, glm::vec3(sideDist.y, sideDist.z, sideDist.x)) * glm::step(sideDist, glm::vec3(sideDist.z, sideDist.x, sideDist.y));
+            sideDist += (mask) * deltaDist;
+            mapPos += mask * rayStep;
         }
     }
 

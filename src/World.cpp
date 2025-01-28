@@ -82,7 +82,7 @@ namespace game
             uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
             return blocktype;
         } else
-            return -1;
+            return 0;
     }
 
     uint8_t World::getBlockAt(float x, float y, float z)
