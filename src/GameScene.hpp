@@ -61,17 +61,15 @@ namespace game
             //player related
             void selectCubeUpdate();
             //utils
-            void imguiConfig();
+            void imguiLayout();
             void clearAllChunks();
-            void createDepthQuadTexture();
-            glm::mat4 computeLightSpaceMatrix();
+            // void createDepthQuadTexture();
         private:
             Camera3D camera;
             CameraOrtho camera_ortho;
             Camera3D scube_cam = {glm::vec3(0.0f, 0.0f, -5.0f), 200, 200};
             Skybox sky;
             Clock clock;
-            Shader cube_shader;
             Client client;
             GLuint block_textures;
             BlockType selected_cube = BlockType::Grass;
@@ -89,25 +87,14 @@ namespace game
             std::unordered_map<int, Entity*> entities;
 
             double request_interval = 0.0;
-            // float peak_rss;
-            // float current_rss;
+
             int cursor_input_mode;
-            unsigned int depthMapFBO;
-            unsigned int depthMap;
-            const unsigned int shadow_width = 4096, shadow_height = 4096;
+
             float near_plane = -40.0f;
             float far_plane = 40.0f;
-            glm::vec3 lightDir = glm::normalize(glm::vec3(- 0.3, -1.0, 0.2));
-            glm::mat4 lightProjection = glm::ortho(-64.0f, 64.0f, -64.0f, 64.0f, near_plane, far_plane);
-            glm::mat4 lightView = glm::lookAt(-lightDir, glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
-            glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-            Shader cube_shadow;
-            Shader depth_shader;
-            Shader quad_depth_shader;
-            mygl::Rectangle depth_quad;
-
-            std::vector<glm::vec4> frustrum_corners;
+            // Shader quad_depth_shader;
+            // mygl::Rectangle depth_quad;
 
             ThreadPool tp = {4};
             TaskQueue tq;

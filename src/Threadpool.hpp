@@ -33,62 +33,62 @@ class TaskQueue {
 };
 
 class ThreadPool {
-public:
-    ThreadPool(size_t num_threads = thread::hardware_concurrency())
-    {
-        std::cout << "NUM THREADS == " << num_threads << std::endl;
-        for (size_t i = 0; i < num_threads; ++i) {
-            threads_.emplace_back([this] {
-                while (true) {
-                    function<void()> task;
-                    {
-                        unique_lock<mutex> lock(queue_mutex_);
-
-                        cv_.wait(lock, [this] {
-                            return !tasks_.empty() || stop_;
-                        });
-                        if (stop_ && tasks_.empty()) {
-                            return;
-                        }
-
-                        task = move(tasks_.front());
-                        tasks_.pop();
-                    }
-                    task();
-                }
-            });
-        }
-    }
-
-    void stop() {
+    public:
+        ThreadPool(size_t num_threads = thread::hardware_concurrency())
         {
-            unique_lock<mutex> lock(queue_mutex_);
-            stop_ = true;
-        }
+            std::cout << "NUM THREADS == " << num_threads << std::endl;
+            for (size_t i = 0; i < num_threads; ++i) {
+                threads_.emplace_back([this] {
+                    while (true) {
+                        function<void()> task;
+                        {
+                            unique_lock<mutex> lock(queue_mutex_);
 
-        cv_.notify_all();
+                            cv_.wait(lock, [this] {
+                                return !tasks_.empty() || stop_;
+                            });
+                            if (stop_ && tasks_.empty()) {
+                                return;
+                            }
 
-        for (auto& thread : threads_) {
-            if (thread.joinable()) {
-                thread.join();
+                            task = move(tasks_.front());
+                            tasks_.pop();
+                        }
+                        task();
+                    }
+                });
             }
         }
-    }
 
-    void enqueue(function<void()> task)
-    {
-        {
-            unique_lock<std::mutex> lock(queue_mutex_);
-            tasks_.emplace(move(task));
+        void stop() {
+            {
+                unique_lock<mutex> lock(queue_mutex_);
+                stop_ = true;
+            }
+
+            cv_.notify_all();
+
+            for (auto& thread : threads_) {
+                if (thread.joinable()) {
+                    thread.join();
+                }
+            }
         }
-        cv_.notify_one();
-    }
 
-private:
-    vector<thread> threads_;
+        void enqueue(function<void()> task)
+        {
+            {
+                unique_lock<std::mutex> lock(queue_mutex_);
+                tasks_.emplace(move(task));
+            }
+            cv_.notify_one();
+        }
 
-    queue<function<void()>> tasks_;
-    mutex queue_mutex_;
-    condition_variable cv_;
-    bool stop_ = false;
+    private:
+        vector<thread> threads_;
+
+        queue<function<void()>> tasks_;
+        mutex queue_mutex_;
+        condition_variable cv_;
+        bool stop_ = false;
 };

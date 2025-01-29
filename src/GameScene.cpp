@@ -87,7 +87,7 @@ namespace game
         renderSCubeQuad();
         renderCursorQuad();
 
-        imguiConfig();
+        imguiLayout();
 
         request_interval += clock.delta_time;
         if (request_interval >= 1.0f/20.0f) {
@@ -382,7 +382,7 @@ namespace game
         scube_shader.setVec3i("BlockTextures", blocktex);
     }
 
-    void GameScene::imguiConfig()
+    void GameScene::imguiLayout()
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -420,15 +420,5 @@ namespace game
         ImGui::End();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
-
-    void GameScene::clearAllChunks()
-    {
-        for (auto &[pos, chunk] : chunks)
-        {
-            chunk->deleteChunk();
-            delete chunk;
-        }
-        chunks.clear();
     }
 }
