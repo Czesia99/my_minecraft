@@ -158,10 +158,10 @@ namespace game
         }
 
         if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-            if (selected_cube + 1 > textures_umap.size() - 1) {
+            if (selected_cube + 1 > textures_umap.size() - 1u) {
                 selected_cube = (BlockType)1;
             } else {
-                selected_cube = (BlockType)(selected_cube + 1);
+                selected_cube = (BlockType)(selected_cube + 1u);
             }
             selectCubeUpdate();
         }
@@ -214,29 +214,6 @@ namespace game
         camera.height = height;
     }
 
-    // void GameScene::createDepthQuadTexture()
-    // {
-    //     glCreateFramebuffers(1, &depthMapFBO);
-    //     glCreateTextures(GL_TEXTURE_2D, 1, &depthMap);
-
-    //     glTextureParameteri(depthMap, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //     glTextureParameteri(depthMap, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //     glTextureParameteri(depthMap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    //     glTextureParameteri(depthMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-    //     glTextureStorage2D(depthMap, 1, GL_DEPTH_COMPONENT24, shadow_width, shadow_height);
-
-    //     glNamedFramebufferTexture(depthMapFBO, GL_DEPTH_ATTACHMENT, depthMap, 0);
-    //     glNamedFramebufferDrawBuffer(depthMapFBO, GL_NONE);
-    //     glNamedFramebufferReadBuffer(depthMapFBO, GL_NONE);
-
-    //     float border_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    //     glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, border_color);
-
-    //     quad_depth_shader.use();
-    //     quad_depth_shader.setInt("texture0", 0);
-    // }
-
     void GameScene::renderCursorQuad()
     {
         glDisable(GL_DEPTH_TEST);
@@ -259,16 +236,6 @@ namespace game
         glViewport(0, 0, ctx.win_width, ctx.win_height);
         glEnable(GL_DEPTH_TEST);
     }
-
-    // void GameScene::renderShadowMapQuad()
-    // {
-    //     quad_depth_shader.use();
-    //     quad_depth_shader.setFloat("near_plane", near_plane);
-    //     quad_depth_shader.setFloat("far_plane", far_plane);
-
-    //     glBindTextureUnit(0, depthMap);
-    //     depth_quad.render(quad_depth_shader, camera_ortho);
-    // }
 
     void GameScene::renderEntities()
     {
@@ -319,17 +286,15 @@ namespace game
         client.data_mtx.lock();
         while (client.data.chunks.size() != 0)
         {
-            //lockmutex
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
-            tp.enqueue([chunk_data, this] {
+            // tp.enqueue([chunk_data, this] {
                 Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
                 chunk->createChunkVertices();
-                tq.enqueue([chunk, this] {
-
+                // tq.enqueue([chunk, this] {
                     chunk->createChunkMesh();
-                    World::instance().chunk_mtx.lock();
+                    // World::instance().chunk_mtx.lock();
                     auto it = chunks.find(chunk->chunk_worldpos);
                     if (it != chunks.end())
                     {
@@ -340,9 +305,9 @@ namespace game
                     } else {
                         World::instance().chunks[chunk->chunk_worldpos] = chunk;
                     }
-                    World::instance().chunk_mtx.unlock();
-                });
-            });
+                    // World::instance().chunk_mtx.unlock();
+                //});
+            // });
         }
         client.data_mtx.unlock();
     }

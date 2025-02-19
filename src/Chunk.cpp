@@ -29,15 +29,13 @@ namespace game
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, packed_vertices.size() * sizeof(uint32_t), packed_vertices.data(), GL_STATIC_DRAW);
-        packed_vertices.shrink_to_fit();
+        // packed_vertices.shrink_to_fit();
     }
 
     void Chunk::createChunkVertices()
     {
         vertex_count = 0;
-        // chunk_vertices.clear();
         packed_vertices.clear();
-
 
         for (int z = 0; z < size; z++) {
         for (int y = 0; y < size; y++) {
@@ -71,13 +69,6 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    // uint32_t Chunk::packVerticesData(uint8_t x, uint8_t y, uint8_t z, uint8_t tx, )
-    // {
-    //     uint32_t packed;
-
-
-    // }
-
     void Chunk::loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
     {
         const glm::ivec3 direction = getFaceOrientationVector(orientation);
@@ -101,7 +92,6 @@ namespace game
                          ((vertices[i + 5]) & 0b111) << 17                  |
                          (block_texture & 0b11111) << 20;
 
-                // std::cout << "Packed value: " << packed << std::endl;
                 packed_vertices.push_back(packed);
                 vertex_count += 1;
             }
