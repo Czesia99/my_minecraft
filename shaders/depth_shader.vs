@@ -10,9 +10,6 @@ out flat int BlockType;
 
 vec3 unpackPosition()
 {
-
-
-
     int x = int((aPackedData >> 0) & 31u);
     int y = int((aPackedData >> 5) & 31u);
     int z = int((aPackedData >> 10) & 31u);

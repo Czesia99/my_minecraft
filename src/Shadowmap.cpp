@@ -1,96 +1,41 @@
+#include "Shadowmap.hpp"
 #include "World.hpp"
 
 namespace game
 {
-    World::World()
+    Shadowmap::Shadowmap()
     {
-        cube_shadow = Shader("cube_shadow.vs", "cube_shadow.fs");
         depth_shader = Shader("depth_shader.vs", "depth_shader.fs");
         quad_depth_shader = Shader("debug_depth.vs", "debug_depth.fs");
 
-        loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
-        createDepthQuadTexture();
-
-        cube_shadow.use();
-        cube_shadow.setInt("shadowMap", 1);
-    };
-
-    World::~World()
-    {
-        clearAllChunks();
+        createShadowMap();
     }
 
-    void World::renderTerrain(const Shader &shader, const ICamera &camera)
+    void Shadowmap::renderShadowmap(const Camera3D &cam)
     {
-        for (const auto &it : chunks)
-        {
-            it.second->render(shader, camera);
-        }
-    }
+        GLint m_viewport[4];
+        glGetIntegerv( GL_VIEWPORT, m_viewport);
 
-    void World::render(const Camera3D &camera, const int &width, const int &height)
-    {
-        // renderShadowMap(camera, width, height);
-        shadowmap.renderShadowmap(camera);
-
-        glEnable(GL_CULL_FACE);
-        cube_shadow.use();
-        cube_shadow.setMat4("lightSpaceMatrix", shadowmap.lightSpaceMatrix);
-        cube_shadow.setVec3("lightDir", shadowmap.lightDir);
-        cube_shadow.setVec3("viewPos", camera.position);
-        cube_shadow.setMat4("projection", camera.getProjectionMatrix());
-        cube_shadow.setMat4("view", camera.getViewMatrix());
-        glBindTextureUnit(1, shadowmap.depthMap);
-        glBindTextureUnit(0, block_textures);
-
-        renderTerrain(cube_shadow, camera);
-    }
-
-    void World::renderShadowMap(const Camera3D &cam, const int &width, const int &height)
-    {
         Camera3D camera(cam);
 
         depth_shader.use();
 
+        // glBindTextureUnit(0, block_textures);
         lightSpaceMatrix = computeLightSpaceMatrix(camera); //to fit in camera frustrum
         depth_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         glViewport(0, 0, shadow_width, shadow_height);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        renderTerrain(depth_shader, camera);
+        World::instance().renderTerrain(depth_shader, camera);
         glBindFramebuffer(GL_FRAMEBUFFER, 0); //unbind
 
         //reset viewport
-        glViewport(0, 0, width, height);
+        glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    uint8_t World::getBlockAt(int x, int y, int z)
-    {
-        glm::ivec3 chunk_pos = glm::floor(glm::vec3(x,y,z) / 16.0f) * 16.0f;
-        glm::ivec3 local_pos = {x % 16, y % 16, z % 16};
-        if (local_pos.x < 0) local_pos.x += 16;
-        if (local_pos.y < 0) local_pos.y += 16;
-        if (local_pos.z < 0) local_pos.z += 16;
-
-        glm::ivec3 cube_pos = {x, y, z};
-
-        auto it =  chunks.find(chunk_pos);
-        if (it != chunks.end())
-        {
-            uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
-            return blocktype;
-        } else
-            return 0;
-    }
-
-    uint8_t World::getBlockAt(float x, float y, float z)
-    {
-        return getBlockAt(int(glm::floor(x)), int(glm::floor(y)), int(glm::floor(z)));
-    }
-
-    void World::createDepthQuadTexture()
+    void Shadowmap::createShadowMap()
     {
         glCreateFramebuffers(1, &depthMapFBO);
         glCreateTextures(GL_TEXTURE_2D, 1, &depthMap);
@@ -113,7 +58,12 @@ namespace game
         quad_depth_shader.setInt("texture0", 0);
     }
 
-    glm::mat4 World::computeLightSpaceMatrix(Camera3D &camera)
+    void Shadowmap::createShadowQuad()
+    {
+
+    }
+
+    glm::mat4 Shadowmap::computeLightSpaceMatrix(Camera3D &camera)
     {
         camera.setNearFarPlanes(0.1f, 85.0f);
         frustrum_corners = camera.getFrustumCornersWorldSpace();
@@ -167,15 +117,5 @@ namespace game
         lightProjection = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
 
         return lightSpaceMatrix = lightProjection * lightView;
-    }
-
-    void World::clearAllChunks()
-    {
-        for (auto &[pos, chunk] : chunks)
-        {
-            chunk->deleteChunk();
-            delete chunk;
-        }
-        chunks.clear();
     }
 }

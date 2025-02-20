@@ -33,7 +33,6 @@ namespace game
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
-        // cube_shader = Shader("cube_shadow.vs", "cube_shadow.fs");
         cursor_shader = Shader("cursor.vs", "cursor.fs");
 
         //show selected cube
@@ -48,8 +47,6 @@ namespace game
 
         cursor_img.transform.scale.x = static_cast<float>(ctx.win_width);
         cursor_img.transform.scale.y = static_cast<float>(ctx.win_height);
-
-        // createDepthQuadTexture();
 
         cursor_shader.use();
         cursor_shader.setInt("texture0", 0);
@@ -81,6 +78,8 @@ namespace game
         clock.update();
 
         // renderShadowMapQuad();
+        // glBindTextureUnit(0, block_textures);
+        // shadowmap.renderShadowmap(camera);
         World::instance().render(camera, ctx.win_width, ctx.win_height);
         renderEntities();
         sky.render(camera);
@@ -214,6 +213,29 @@ namespace game
         camera.height = height;
     }
 
+    // void GameScene::createDepthQuadTexture()
+    // {
+    //     glCreateFramebuffers(1, &depthMapFBO);
+    //     glCreateTextures(GL_TEXTURE_2D, 1, &depthMap);
+
+    //     glTextureParameteri(depthMap, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //     glTextureParameteri(depthMap, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //     glTextureParameteri(depthMap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    //     glTextureParameteri(depthMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+    //     glTextureStorage2D(depthMap, 1, GL_DEPTH_COMPONENT24, shadow_width, shadow_height);
+
+    //     glNamedFramebufferTexture(depthMapFBO, GL_DEPTH_ATTACHMENT, depthMap, 0);
+    //     glNamedFramebufferDrawBuffer(depthMapFBO, GL_NONE);
+    //     glNamedFramebufferReadBuffer(depthMapFBO, GL_NONE);
+
+    //     float border_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    //     glTextureParameterfv(depthMap, GL_TEXTURE_BORDER_COLOR, border_color);
+
+    //     quad_depth_shader.use();
+    //     quad_depth_shader.setInt("texture0", 0);
+    // }
+
     void GameScene::renderCursorQuad()
     {
         glDisable(GL_DEPTH_TEST);
@@ -236,6 +258,16 @@ namespace game
         glViewport(0, 0, ctx.win_width, ctx.win_height);
         glEnable(GL_DEPTH_TEST);
     }
+
+    // void GameScene::renderShadowMapQuad()
+    // {
+    //     quad_depth_shader.use();
+    //     quad_depth_shader.setFloat("near_plane", near_plane);
+    //     quad_depth_shader.setFloat("far_plane", far_plane);
+
+    //     glBindTextureUnit(0, depthMap);
+    //     depth_quad.render(quad_depth_shader, camera_ortho);
+    // }
 
     void GameScene::renderEntities()
     {

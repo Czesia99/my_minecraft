@@ -73,7 +73,6 @@ namespace game
             Client client;
             GLuint block_textures;
             BlockType selected_cube = BlockType::Grass;
-
             Cube scube;
             float scube_rotspeed = 1.0f;
             Shader scube_shader;

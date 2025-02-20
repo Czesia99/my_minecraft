@@ -37,6 +37,7 @@ set(SRC_FILES
     ${SRC}/Client.cpp
     ${SRC}/Entity.cpp
     ${SRC}/World.cpp
+    ${SRC}/Shadowmap.cpp
     ${IMGUI_SOURCES}
 )
 
@@ -73,6 +74,5 @@ endif()
 
 # target_compile_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address)
 # target_link_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address)
-
 target_link_libraries(${PROJECT_MINECRAFT} ${LINK_LIB})
 target_include_directories(${PROJECT_MINECRAFT} PRIVATE ${IMGUI_DIR} ${IMGUI_DIR_BACK})

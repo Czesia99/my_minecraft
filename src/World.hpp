@@ -10,6 +10,7 @@
 #include "Chunk.hpp"
 
 #include "Blocktype.h"
+#include "Shadowmap.hpp"
 
 namespace game
 {
@@ -34,15 +35,17 @@ namespace game
 
         public:
             void render(const Camera3D &camera, const int &width, const int &height);
+            void renderTerrain(const Shader &shader, const ICamera &cam);
+
             uint8_t getBlockAt(int xpos, int ypos, int zpos);
             uint8_t getBlockAt(float xpos, float ypos, float zpos);
             void clearAllChunks();
 
+            Shader cube_shadow;
             std::shared_mutex chunk_mtx;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
 
         private:
-            void renderTerrain(const Shader &shader, const ICamera &cam);
             void renderShadowMap(const Camera3D &camera, const int &width, const int &height);
 
             void createDepthQuadTexture();
@@ -53,13 +56,12 @@ namespace game
             // Camera3D &cam;
 
             Shader cube_shader;
-            Shader cube_shadow;
             Shader depth_shader;
             Shader quad_depth_shader;
 
             GLuint block_textures;
+            Shadowmap shadowmap;
 
-            //shadowmap
             unsigned int depthMapFBO;
             unsigned int depthMap;
             const unsigned int shadow_width = 4096, shadow_height = 4096;
