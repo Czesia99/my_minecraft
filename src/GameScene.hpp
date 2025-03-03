@@ -46,6 +46,7 @@ namespace game
         private:
             void updateChunks();
             void updateEntities();
+            void updateClient();
             //rendering
             void renderCursorQuad();
             void renderSCubeQuad();

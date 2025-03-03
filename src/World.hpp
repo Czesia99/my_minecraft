@@ -43,11 +43,12 @@ namespace game
 
             std::shared_mutex chunk_mtx;
             std::unordered_map<glm::ivec3, Chunk*> chunks;
-
+            float fog_maxdist = 8.0f;
+            float fog_mindist = 0.1f;
+            glm::vec4 fog_color = glm::vec4(0.9, 0.9, 0.9, 1.0);
         private:
             Shader cube_shadow;
             GLuint block_textures;
-
             Shadowmap shadowmap;
     };
 }

@@ -31,6 +31,9 @@ namespace game
 
         glEnable(GL_CULL_FACE);
         cube_shadow.use();
+        cube_shadow.setVec4("fogColor", fog_color);
+        cube_shadow.setFloat("fogMaxDist", fog_maxdist);
+        cube_shadow.setFloat("fogMinDist", fog_mindist);
         cube_shadow.setMat4("lightSpaceMatrix", shadowmap.lightSpaceMatrix);
         cube_shadow.setVec3("lightDir", shadowmap.lightDir);
         cube_shadow.setVec3("viewPos", camera.position);
@@ -39,6 +42,8 @@ namespace game
         glBindTextureUnit(1, shadowmap.depthMap);
         glBindTextureUnit(0, block_textures);
 
+        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // glEnable(GL_BLEND);
         renderTerrain(cube_shadow, camera);
     }
 

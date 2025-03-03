@@ -20,6 +20,11 @@ layout(binding = 1) uniform sampler2D shadowMap;
 uniform vec3 lightDir;
 uniform vec3 viewPos;
 
+uniform vec4 fogColor;
+uniform float fogMaxDist;
+uniform float fogMinDist;
+
+
 float rand(vec2 co){
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
@@ -56,6 +61,14 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     return shadow;
 }
 
+float fog()
+{
+    float dist = distance(viewPos, fs_in.FragPos);
+    float fog_factor = (fogMaxDist - dist) / (fogMaxDist - fogMinDist);
+    fog_factor = clamp(fog_factor, 0.0, 1.0);
+    return fog_factor;
+}
+
 void main()
 {
     vec3 NewTexCoord = vec3(fs_in.TexCoords.x, fs_in.TexCoords.y, fs_in.BlockType);
@@ -89,7 +102,7 @@ void main()
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse /* + specular*/)) * color.rgb;
     // vec3 lighting = (1.0 - shadow) * color;
 
-    FragColor = vec4(lighting, 1.0);
+    FragColor = mix(fogColor, vec4(lighting, 1.0), fog());
     // FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     // FragColor = vec4(fs_in.FragPos / 50.0, 1.0);
 }

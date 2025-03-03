@@ -29,7 +29,6 @@ namespace game
         scube_cam.pitch -= 25.0f;
         scube_cam.updateCameraVectors();
 
-
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
@@ -77,9 +76,6 @@ namespace game
     {
         clock.update();
 
-        // renderShadowMapQuad();
-        // glBindTextureUnit(0, block_textures);
-        // shadowmap.renderShadowmap(camera);
         World::instance().render(camera, ctx.win_width, ctx.win_height);
         renderEntities();
         sky.render(camera);
@@ -93,7 +89,7 @@ namespace game
             request_interval = 0;
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
         }
-
+        // updateClient();
         updateChunks();
         updateEntities();
         tq.execute();
@@ -344,6 +340,15 @@ namespace game
         client.data_mtx.unlock();
     }
 
+    void GameScene::updateClient()
+    {
+        request_interval += clock.delta_time;
+        if (request_interval >= 1.0f/20.0f) {
+            request_interval = 0;
+            client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
+        }
+    }
+
     void GameScene::dda()
     {
         //https://www.shadertoy.com/view/4dX3zl
@@ -390,6 +395,8 @@ namespace game
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
         ImGui::Text("Chunks Loaded: %ld", World::instance().chunks.size());
         ImGui::Text("FPS: %f", (1 / clock.delta_time));
+        ImGui::SliderFloat("Fog Min Distance", &World::instance().fog_mindist, 0.0f, 800.0f);
+        ImGui::SliderFloat("Fog Max Distance", &World::instance().fog_maxdist, 0.0f, 800.0f);
         ImGui::Text("PLAYERS CONNECTED :");
         if (entities.size() > 0) {
             // std::cout << "entitiy name = " << entities[0]->name << std::endl;
