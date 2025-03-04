@@ -1,4 +1,5 @@
 #include "World.hpp"
+#include "MYGL/Toolbox.hpp"
 
 namespace game
 {
@@ -19,9 +20,16 @@ namespace game
 
     void World::renderTerrain(const Shader &shader, const ICamera &camera)
     {
-        for (const auto &it : chunks)
+        glm::vec4 planes[6] = {};
+        extractPlanesFromProjectionViewMatrix(camera.getProjectionMatrix() * camera.getViewMatrix(), planes);
+
+        for (const auto &[pos, chunk] : chunks)
         {
-            it.second->render(shader, camera);
+            if (boxInFrustum(planes, getChunkAABB(chunk)))
+            {
+                chunk->render(shader, camera);
+            }
+            //(extractPlanesFromProjectionViewMatrix(camera.getProjectionMatrix()))
         }
     }
 
@@ -31,11 +39,12 @@ namespace game
 
         glEnable(GL_CULL_FACE);
         cube_shadow.use();
+        cube_shadow.setBool("fogDisplay", fog_display);
         cube_shadow.setVec4("fogColor", fog_color);
         cube_shadow.setFloat("fogMaxDist", fog_maxdist);
         cube_shadow.setFloat("fogMinDist", fog_mindist);
         cube_shadow.setMat4("lightSpaceMatrix", shadowmap.lightSpaceMatrix);
-        cube_shadow.setVec3("lightDir", shadowmap.lightDir);
+        cube_shadow.setVec3("lightDir", shadowmap.light_dir);
         cube_shadow.setVec3("viewPos", camera.position);
         cube_shadow.setMat4("projection", camera.getProjectionMatrix());
         cube_shadow.setMat4("view", camera.getViewMatrix());
@@ -69,6 +78,43 @@ namespace game
     uint8_t World::getBlockAt(float x, float y, float z)
     {
         return getBlockAt(int(glm::floor(x)), int(glm::floor(y)), int(glm::floor(z)));
+    }
+
+    World::ChunkAABB World::getChunkAABB(const Chunk *chunk)
+    {
+        ChunkAABB aabb = {};
+        aabb.min = chunk->chunk_worldpos;
+        aabb.max = chunk->chunk_worldpos + 16;
+        return aabb;
+    }
+
+    bool World::boxInFrustum( const glm::vec4 planes[6], ChunkAABB const &box)
+    {
+        // check box outside/inside of frustum
+        for( int i=0; i<6; i++ )
+        {
+            int out = 0;
+            out += ((glm::dot( planes[i], glm::vec4(box.min.x, box.min.y, box.min.z, 1.0f) ) < 0.0 )?1:0);
+            out += ((glm::dot( planes[i], glm::vec4(box.max.x, box.min.y, box.min.z, 1.0f) ) < 0.0 )?1:0);
+            out += ((glm::dot( planes[i], glm::vec4(box.min.x, box.max.y, box.min.z, 1.0f) ) < 0.0 )?1:0);
+            out += ((glm::dot( planes[i], glm::vec4(box.max.x, box.max.y, box.min.z, 1.0f) ) < 0.0 )?1:0);
+            out += ((glm::dot( planes[i], glm::vec4(box.min.x, box.min.y, box.max.z, 1.0f) ) < 0.0 )?1:0);
+            out += ((glm::dot( planes[i], glm::vec4(box.max.x, box.min.y, box.max.z, 1.0f) ) < 0.0 )?1:0);
+            out += ((glm::dot( planes[i], glm::vec4(box.min.x, box.max.y, box.max.z, 1.0f) ) < 0.0 )?1:0);
+            out += ((glm::dot( planes[i], glm::vec4(box.max.x, box.max.y, box.max.z, 1.0f) ) < 0.0 )?1:0);
+            if( out==8 ) return false;
+        }
+
+        // check frustum outside/inside box
+        // int out;
+        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].x > box.max.x)?1:0); if( out==8 ) return false;
+        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].x < box.min.x)?1:0); if( out==8 ) return false;
+        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].y > box.max.y)?1:0); if( out==8 ) return false;
+        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].y < box.min.y)?1:0); if( out==8 ) return false;
+        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].z > box.max.z)?1:0); if( out==8 ) return false;
+        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].z < box.min.z)?1:0); if( out==8 ) return false;
+
+        return true;
     }
 
     void World::clearAllChunks()

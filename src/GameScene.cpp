@@ -395,6 +395,12 @@ namespace game
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
         ImGui::Text("Chunks Loaded: %ld", World::instance().chunks.size());
         ImGui::Text("FPS: %f", (1 / clock.delta_time));
+        ImGui::Text("///LIGHTDIR///");
+        ImGui::SliderFloat("x:", &World::instance().shadowmap.lightdir_x, -100.0f, 100.0f);
+        ImGui::SliderFloat("y:", &World::instance().shadowmap.lightdir_y, -100.0f, 100.0f);
+        ImGui::SliderFloat("z:", &World::instance().shadowmap.lightdir_z, -100.0f, 100.0f);
+        ImGui::NewLine(); ImGui::Separator();
+        ImGui::Checkbox("Fog", &World::instance().fog_display);
         ImGui::SliderFloat("Fog Min Distance", &World::instance().fog_mindist, 0.0f, 800.0f);
         ImGui::SliderFloat("Fog Max Distance", &World::instance().fog_maxdist, 0.0f, 800.0f);
         ImGui::Text("PLAYERS CONNECTED :");
@@ -404,7 +410,10 @@ namespace game
             {
                 ImGui::Text("%s\n", it.second->name.c_str());
             }
+        } else {
+            ImGui::Text("no other player connected");
         }
+        ImGui::Text("CHAT:");
         ImGui::InputText("##chat", input_chat, 4096);
         ImGui::SameLine();
         if (ImGui::Button("send"))

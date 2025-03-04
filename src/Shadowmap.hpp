@@ -16,7 +16,11 @@ namespace game
             void renderShadowmap(const Camera3D &camera);
             unsigned int depthMap;
             //void renderShadowmapQuad(const CameraOrto &camera);
-            glm::vec3 lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
+            float lightdir_x = -0.3f;
+            float lightdir_y = -1.0f;
+            float lightdir_z = 0.2f;
+
+            glm::vec3 light_dir = glm::normalize(glm::vec3(lightdir_x, lightdir_y, lightdir_z));
             glm::mat4 lightSpaceMatrix = lightProjection * lightView;
         private:
             Shader depth_shader;
@@ -26,9 +30,8 @@ namespace game
             const unsigned int shadow_width = 4096, shadow_height = 4096;
             float near_plane = -40.0f;
             float far_plane = 40.0f;
-            glm::mat4 lightProjection = glm::ortho(-64.0f, 64.0f, -64.0f, 64.0f, near_plane, far_plane);
-            glm::mat4 lightView = glm::lookAt(-lightDir, glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
-
+            glm::mat4 lightProjection = glm::ortho(-128.0f, 128.0f, -128.0f, 128.0f, near_plane, far_plane);
+            glm::mat4 lightView = glm::lookAt(-light_dir, glm::vec3( 0.0f, 0.0f,  0.0f), glm::vec3( 0.0f, 1.0f,  0.0f));
 
         private:
             void createShadowMap();

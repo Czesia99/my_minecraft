@@ -69,7 +69,7 @@ namespace game
         frustrum_corners = camera.getFrustumCornersWorldSpace();
         camera.setNearFarPlanes(0.1f, 1000.0f);
 
-        lightDir = glm::normalize(glm::vec3(-0.3, -1.0, 0.2));
+        light_dir = glm::normalize(glm::vec3(lightdir_x, lightdir_y, lightdir_z));
 
         glm::vec3 center = glm::vec3(0, 0, 0);
         for (const auto& v : frustrum_corners)
@@ -78,7 +78,7 @@ namespace game
         }
         center /= frustrum_corners.size();
 
-        const auto lightView = glm::lookAt(center - lightDir, center, glm::vec3(0.0f, 1.0f, 0.0f));
+        const auto lightView = glm::lookAt(center - light_dir, center, glm::vec3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::lowest();

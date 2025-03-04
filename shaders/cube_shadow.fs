@@ -20,6 +20,7 @@ layout(binding = 1) uniform sampler2D shadowMap;
 uniform vec3 lightDir;
 uniform vec3 viewPos;
 
+uniform bool fogDisplay;
 uniform vec4 fogColor;
 uniform float fogMaxDist;
 uniform float fogMinDist;
@@ -102,7 +103,11 @@ void main()
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse /* + specular*/)) * color.rgb;
     // vec3 lighting = (1.0 - shadow) * color;
 
-    FragColor = mix(fogColor, vec4(lighting, 1.0), fog());
+    if (fogDisplay) {
+        FragColor = mix(fogColor, vec4(lighting, 1.0), fog());
+    } else {
+        FragColor = vec4(lighting, 1.0);
+    }
     // FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     // FragColor = vec4(fs_in.FragPos / 50.0, 1.0);
 }
