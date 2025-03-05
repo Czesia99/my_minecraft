@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "glm/gtx/hash.hpp"
 #include <vector>
 #include <thread>
 #include <unordered_map>
@@ -44,6 +45,17 @@ namespace game
             int vertex_count = 0;
 
             std::thread thread_chunk_vertices;
+
+            std::unordered_map<glm::ivec3, std::vector<uint8_t>> neighbor_chunks;
+            glm::ivec3 neighbor_chunkpos[6] =
+            {
+                {0, 0, -1},
+                {0, 0, 1},
+                {-1, 0, 0},
+                {1, 0, 0},
+                {0, 1, 0},
+                {0, -1, 0},
+            };
 
             std::vector<uint8_t> front_face_vertices {
                 //front face -Z

@@ -38,10 +38,12 @@ namespace game
 
         // for (int i = 0; i < 6; i++)
         // {
-        //     auto it = World::instance().chunks.find(chunk_worldpos + World::instance().neighbor_chunkpos[i]);
+        //     auto it = World::instance().chunks.find(chunk_worldpos + neighbor_chunkpos[i]);
         //     if (it != World::instance().chunks.end()) {
-        //         Chunk n = *(World::instance().chunks[chunk_worldpos + World::instance().neighbor_chunkpos[i]]);
-        //         World::instance().neighbor_chunks.push_back(n);
+        //         glm::ivec3 pos = neighbor_chunkpos[i];
+        //         std::vector<uint8_t> bt = it->second->blocktypes;
+        //         // Chunk n = *(World::instance().chunks[chunk_worldpos + neighbor_chunkpos[i]]);
+        //         neighbor_chunks[pos] = bt;
         //     }
         // }
 
@@ -57,30 +59,30 @@ namespace game
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + chunk_worldpos;
 
-            if (World::instance().getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1) == 0)
-            {
+            // if (neighbor_chunks.at(neighbor_chunkpos[0])[index] == 0)
+            // {
                 loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
-            }
-            if (World::instance().getBlockAt(world_pos.x, world_pos.y, world_pos.z + 1) == 0)
-            {
+            // }
+            // if (neighbor_chunks.at(neighbor_chunkpos[1])[index] == 0)
+            // {
                 loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
-            }
-            if (World::instance().getBlockAt(world_pos.x - 1, world_pos.y, world_pos.z) == 0)
-            {
+            // }
+            // if (neighbor_chunks.at(neighbor_chunkpos[2])[index] == 0)
+            // {
                 loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);
-            }
-            if (World::instance().getBlockAt(world_pos.x + 1, world_pos.y, world_pos.z) == 0)
-            {
+            // }
+            // if (neighbor_chunks.at(neighbor_chunkpos[3])[index] == 0)
+            // {
                 loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, index);
-            }
-            if (World::instance().getBlockAt(world_pos.x, world_pos.y + 1, world_pos.z) == 0)
-            {
+            // }
+            // if (neighbor_chunks.at(neighbor_chunkpos[4])[index] == 0)
+            // {
                 loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, index);
-            }
-            if (World::instance().getBlockAt(world_pos.x, world_pos.y - 1, world_pos.z) == 0)
-            {
+            // }
+            // if (neighbor_chunks.at(neighbor_chunkpos[5])[index] == 0)
+            // {
                 loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, index);
-            }
+            // }
         }}}
     }
 
