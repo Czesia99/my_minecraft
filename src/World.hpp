@@ -49,6 +49,16 @@ namespace game
             float fog_maxdist = 600.0f;
             float fog_mindist = 150.0f;
             glm::vec4 fog_color = glm::vec4(0.9, 0.9, 0.9, 1.0);
+            std::vector<Chunk*> neighbor_chunks;
+            glm::ivec3 neighbor_chunkpos[6] =
+            {
+                {1, 0, 0},
+                {-1, 0, 0},
+                {0, 1, 0},
+                {0, -1, 0},
+                {0, 0, 1},
+                {0, 0, -1},
+            };
         private:
             struct ChunkAABB
             {
@@ -60,5 +70,7 @@ namespace game
             GLuint block_textures;
             ChunkAABB getChunkAABB(const Chunk *chunk);
             bool boxInFrustum(const glm::vec4 planes[6], ChunkAABB const &box);
+
+
     };
 }

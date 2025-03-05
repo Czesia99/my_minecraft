@@ -109,5 +109,17 @@ namespace game
             };
 
             DDA_Data dda_data = {};
+
+            std::vector<Chunk> neighbor_chunks;
+            glm::ivec3 neighbor_chunkpos[7] =
+            {
+                {1, 0, 0},
+                {-1, 0, 0},
+                {0, 1, 0},
+                {0, -1, 0},
+                {0, 0, 1},
+                {0, 0, -1},
+                {0, 0, 0},
+            };
     };
 }

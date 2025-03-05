@@ -1,6 +1,5 @@
 #include "Chunk.hpp"
-#include <cstring>
-#include "Blocktype.h"
+#include "World.hpp"
 
 namespace game
 {
@@ -37,6 +36,15 @@ namespace game
         vertex_count = 0;
         packed_vertices.clear();
 
+        // for (int i = 0; i < 6; i++)
+        // {
+        //     auto it = World::instance().chunks.find(chunk_worldpos + World::instance().neighbor_chunkpos[i]);
+        //     if (it != World::instance().chunks.end()) {
+        //         Chunk n = *(World::instance().chunks[chunk_worldpos + World::instance().neighbor_chunkpos[i]]);
+        //         World::instance().neighbor_chunks.push_back(n);
+        //     }
+        // }
+
         for (int z = 0; z < size; z++) {
         for (int y = 0; y < size; y++) {
         for (int x = 0; x < size; x++) {
@@ -49,12 +57,30 @@ namespace game
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + chunk_worldpos;
 
-            loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
-            loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
-            loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);
-            loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, index);
-            loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, index);
-            loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, index);
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1) == 0)
+            {
+                loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
+            }
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y, world_pos.z + 1) == 0)
+            {
+                loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
+            }
+            if (World::instance().getBlockAt(world_pos.x - 1, world_pos.y, world_pos.z) == 0)
+            {
+                loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);
+            }
+            if (World::instance().getBlockAt(world_pos.x + 1, world_pos.y, world_pos.z) == 0)
+            {
+                loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, index);
+            }
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y + 1, world_pos.z) == 0)
+            {
+                loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, index);
+            }
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y - 1, world_pos.z) == 0)
+            {
+                loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, index);
+            }
         }}}
     }
 

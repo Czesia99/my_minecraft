@@ -29,7 +29,6 @@ namespace game
             {
                 chunk->render(shader, camera);
             }
-            //(extractPlanesFromProjectionViewMatrix(camera.getProjectionMatrix()))
         }
     }
 

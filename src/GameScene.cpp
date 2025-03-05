@@ -317,25 +317,46 @@ namespace game
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
-            // tp.enqueue([chunk_data, this] {
-                Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
+            Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
+            auto it = World::instance().chunks.find(chunk->chunk_worldpos);
+            if (it != World::instance().chunks.end())
+            {
+                auto old_chunk = it->second;
+                it->second = chunk;
+                old_chunk->deleteChunk();
+                delete(old_chunk);
+            } else {
+                World::instance().chunks[chunk->chunk_worldpos] = chunk;
+            }
+
+            // for (int i = 0; i < 5; i++)
+            // {
+            //     auto it = World::instance().chunks.find(chunk->chunk_worldpos + neighbor_chunkpos[i]);
+            //     if (it != World::instance().chunks.end()) {
+            //         Chunk *n = World::instance().chunks[chunk->chunk_worldpos + neighbor_chunkpos[i]];
+            //         neighbor_chunks.push_back(n);
+            //     }
+            // }
+
+            // World::instance().chunk_mtx.lock();
+            // tp.enqueue([chunk, this] {
                 chunk->createChunkVertices();
-                // tq.enqueue([chunk, this] {
+                // for (auto &i : neighbor_chunks)
+                // {
+                //     i->createChunkVertices();
+                // }
+                //find chunks in all direction
+                //recreate mesh
+                tq.enqueue([chunk, this] {
                     chunk->createChunkMesh();
-                    // World::instance().chunk_mtx.lock();
-                    auto it = chunks.find(chunk->chunk_worldpos);
-                    if (it != chunks.end())
-                    {
-                        auto old_chunk = it->second;
-                        it->second = chunk;
-                        old_chunk->deleteChunk();
-                        delete(old_chunk);
-                    } else {
-                        World::instance().chunks[chunk->chunk_worldpos] = chunk;
-                    }
+                    // for (auto &i : neighbor_chunks)
+                    // {
+                    //     i->createChunkMesh();
+                    // }
+                    // neighbor_chunks.clear();
                     // World::instance().chunk_mtx.unlock();
-                //});
-            // });
+                // });
+            });
         }
         client.data_mtx.unlock();
     }
