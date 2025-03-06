@@ -3,7 +3,7 @@
 
 namespace game
 {
-    ChunkMesh::ChunkMesh(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes) {}
+    ChunkMesh::ChunkMesh(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : worldpos(pos), blocktypes(blocktypes) {}
 
     void ChunkMesh::createChunkMesh()
     {
@@ -31,11 +31,11 @@ namespace game
 
         // for (int i = 0; i < 6; i++)
         // {
-        //     auto it = World::instance().chunks.find(chunk_worldpos + neighbor_chunkpos[i] * 16);
+        //     auto it = World::instance().chunks.find(worldpos + neighbor_chunkpos[i] * 16);
         //     glm::ivec3 pos = neighbor_chunkpos[i];
         //     if (it != World::instance().chunks.end()) {
         //         std::vector<uint8_t> bt = it->second->blocktypes;
-        //         // Chunk n = *(World::instance().chunks[chunk_worldpos + neighbor_chunkpos[i]]);
+        //         // Chunk n = *(World::instance().chunks[worldpos + neighbor_chunkpos[i]]);
         //         neighbor_chunks[pos] = bt;
         //     } else {
         //         neighbor_chunks[pos] = std::vector<uint8_t>(4096, 0);
@@ -52,7 +52,7 @@ namespace game
             bool display = false;
 
             glm::ivec3 local_pos = {x, y, z};
-            glm::ivec3 world_pos = local_pos + chunk_worldpos;
+            glm::ivec3 world_pos = local_pos + worldpos;
 
             if (World::instance().getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1) == 0)
             {
@@ -86,7 +86,7 @@ namespace game
         if (vertex_count == 0)
             return;
 
-        shader.setVec3i("chunkpos", chunk_worldpos);
+        shader.setVec3i("chunkpos", worldpos);
 
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);

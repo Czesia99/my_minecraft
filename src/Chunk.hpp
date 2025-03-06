@@ -10,7 +10,6 @@ namespace game
     struct Chunk
     {
         std::vector<uint8_t>blocktypes;
-        glm::ivec3 chunk_worldpos;
-        ChunkMesh *mesh;
+        glm::ivec3 worldpos;
     };
 }

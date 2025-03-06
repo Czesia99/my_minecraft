@@ -44,6 +44,7 @@ namespace game
 
             std::shared_mutex chunk_mtx;
             std::unordered_map<glm::ivec3, Chunk> chunks;
+            std::unordered_map<glm::ivec3, ChunkMesh*> chunkMeshes;
             Shadowmap shadowmap;
 
             bool fog_display = false;

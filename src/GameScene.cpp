@@ -319,19 +319,20 @@ namespace game
 
             // ChunkMesh *chunk = new ChunkMesh(chunk_data.pos, chunk_data.blocktypes);
             Chunk chunk;
-            chunk.chunk_worldpos = chunk_data.pos;
+            chunk.worldpos = chunk_data.pos;
             chunk.blocktypes = chunk_data.blocktypes;
-            chunk.mesh = new ChunkMesh(chunk.chunk_worldpos, chunk.blocktypes);
+            ChunkMesh *chunkmesh = new ChunkMesh(chunk.worldpos, chunk.blocktypes);
 
-            auto it = World::instance().chunks.find(chunk.chunk_worldpos);
-            if (it != World::instance().chunks.end())
+            auto it = World::instance().chunkMeshes.find(chunk.worldpos);
+            if (it != World::instance().chunkMeshes.end())
             {
-                auto old_chunk = it->second;
-                it->second = chunk;
-                old_chunk.mesh->deleteChunk();
-                delete(old_chunk.mesh);
+                auto old_chunk_mesh = it->second;
+                it->second = chunkmesh;
+                old_chunk_mesh->deleteChunk();
+                delete(old_chunk_mesh);
             } else {
-                World::instance().chunks[chunk.chunk_worldpos] = chunk;
+                World::instance().chunks[chunk.worldpos] = chunk;
+                World::instance().chunkMeshes[chunk.worldpos] = chunkmesh;
             }
 
             // World::instance().chunk_mtx.lock();
@@ -339,10 +340,10 @@ namespace game
                 // chunk->createChunkVertices();
                 for (auto &offsetpos : neighbor_chunkpos)
                 {
-                    auto it = World::instance().chunks.find(chunk.chunk_worldpos + offsetpos * 16);
-                    if (it != World::instance().chunks.end())
+                    auto it = World::instance().chunkMeshes.find(chunk.worldpos + offsetpos * 16);
+                    if (it != World::instance().chunkMeshes.end())
                     {
-                        it->second.mesh->createChunkVertices();
+                        it->second->createChunkVertices();
                     }
 
                     // i->createChunkVertices();
@@ -353,10 +354,10 @@ namespace game
                     // chunk->createChunkMesh();
                     for (auto &offsetpos : neighbor_chunkpos)
                     {
-                        auto it = World::instance().chunks.find(chunk.chunk_worldpos + offsetpos * 16);
-                        if (it != World::instance().chunks.end())
+                        auto it = World::instance().chunkMeshes.find(chunk.worldpos + offsetpos * 16);
+                        if (it != World::instance().chunkMeshes.end())
                         {
-                            it->second.mesh->createChunkMesh();
+                            it->second->createChunkMesh();
                         }
                     }
                     // neighbor_chunks.clear();

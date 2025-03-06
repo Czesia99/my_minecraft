@@ -49,7 +49,7 @@ namespace game
             GLuint vao = 0;
             GLuint vbo = 0;
 
-            glm::ivec3 chunk_worldpos;
+            glm::ivec3 worldpos;
             std::vector<uint8_t> blocktypes;
 
             int size = 16;

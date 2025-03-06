@@ -23,11 +23,15 @@ namespace game
         glm::vec4 planes[6] = {};
         extractPlanesFromProjectionViewMatrix(camera.getProjectionMatrix() * camera.getViewMatrix(), planes);
 
-        for (const auto &[pos, chunk] : chunks)
+        for (const auto &[pos, chunk] : chunkMeshes)
         {
-            if (boxInFrustum(planes, getChunkAABB(chunk)))
+            auto it = chunks.find(pos);
+            if (it != chunks.end())
             {
-                chunk.mesh->render(shader, camera);
+                if (boxInFrustum(planes, getChunkAABB(it->second)))
+                {
+                    chunk->render(shader, camera);
+                }
             }
         }
     }
@@ -82,8 +86,8 @@ namespace game
     World::ChunkAABB World::getChunkAABB(const Chunk chunk)
     {
         ChunkAABB aabb = {};
-        aabb.min = chunk.chunk_worldpos;
-        aabb.max = chunk.chunk_worldpos + 16;
+        aabb.min = chunk.worldpos;
+        aabb.max = chunk.worldpos + 16;
         return aabb;
     }
 
@@ -125,10 +129,10 @@ namespace game
 
     void World::clearAllChunks()
     {
-        for (auto &[pos, chunk] : chunks)
+        for (auto &[pos, chunk] : chunkMeshes)
         {
-            chunk.mesh->deleteChunk();
-            delete chunk.mesh;
+            chunk->deleteChunk();
+            delete chunk;
         }
         chunks.clear();
     }
