@@ -3,6 +3,67 @@
 
 namespace game
 {
+    const uint8_t front_face_vertices[] {
+        //front face -Z
+        //normal : 0.0, 0.0, -1.0
+        0, 0, 0,    1, 0,   0,
+        1, 1, 0,    0, 1,   0,
+        1, 0, 0,    0, 0,   0,
+        1, 1, 0,    0, 1,   0,
+        0, 0, 0,    1, 0,   0,
+        0, 1, 0,    1, 1,   0,
+    };
+    const uint8_t back_face_vertices[] {
+        //back face +Z
+        //normal : 0.0, 0.0, 1.0
+        0, 0, 1,    0, 0,    1,
+        1, 0, 1,    1, 0,    1,
+        1, 1, 1,    1, 1,    1,
+        1, 1, 1,    1, 1,    1,
+        0, 1, 1,    0, 1,    1,
+        0, 0, 1,    0, 0,    1,
+    };
+    const uint8_t left_face_vertices[] {
+        //left face -X
+        //normal : -1.0, 0.0, 0.0
+        0, 1, 1,    1, 1,    2,
+        0, 1, 0,    0, 1,    2,
+        0, 0, 0,    0, 0,    2,
+        0, 0, 0,    0, 0,    2,
+        0, 0, 1,    1, 0,    2,
+        0, 1, 1,    1, 1,    2,
+    };
+    const uint8_t right_face_vertices[] {
+        //right face +X
+        //normal: 1.0, 0.0, 0.0
+        1, 1, 1,    0, 1,    3,
+        1, 0, 0,    1, 0,    3,
+        1, 1, 0,    1, 1,    3,
+        1, 0, 0,    1, 0,    3,
+        1, 1, 1,    0, 1,    3,
+        1, 0, 1,    0, 0,    3,
+    };
+    const uint8_t bottom_face_vertices[] {
+        // bottom face -Y
+        //normal: 0.0, -1.0, 0.0
+        0, 0, 0,    1, 1,    4,
+        1, 0, 0,    0, 1,    4,
+        1, 0, 1,    0, 0,    4,
+        1, 0, 1,    0, 0,    4,
+        0, 0, 1,    1, 0,    4,
+        0, 0, 0,    1, 1,    4,
+    };
+    const uint8_t top_face_vertices[] {
+        //top face +Y
+        //normal: 0.0, 1.0, 0.0
+        0, 1, 0,    1, 0,    5,
+        1, 1, 1,    0, 1,    5,
+        1, 1, 0,    0, 0,    5,
+        0, 1, 1,    1, 1,    5,
+        1, 1, 1,    0, 1,    5,
+        0, 1, 0,    1, 0,    5,
+    };
+
     uint8_t getBlockAt(int x, int y, int z, std::unordered_map<glm::ivec3, Chunk> &nchunks)
     {
         glm::ivec3 chunk_pos = glm::floor(glm::vec3(x,y,z) / 16.0f) * 16.0f;
@@ -81,13 +142,13 @@ namespace game
         return chunk_vertices;
     }
 
-    void ChunkVertices::loadFaceVertices(const std::vector<uint8_t> &face_vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, uint8_t bt, std::vector<uint32_t> &vertices)
+    void ChunkVertices::loadFaceVertices(const uint8_t *face_vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, uint8_t bt, std::vector<uint32_t> &vertices)
     {
         const glm::ivec3 direction = getFaceOrientationVector(orientation);
         const glm::ivec3 ndir = direction + local_pos;
         int neighbor = World::instance().positionToIndex(ndir);
 
-        for (int i = 0; i < face_vertices.size(); i+= 6)
+        for (int i = 0; i < 36; i+= 6)
         {
             uint32_t packed;
             uint8_t block_texture = findBlockTextures(getBlockType(bt), orientation);
