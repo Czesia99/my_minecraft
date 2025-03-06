@@ -9,6 +9,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+
+
 namespace game
 {
     GameScene::GameScene(Context &ctx) : Scene(ctx)
@@ -335,38 +337,40 @@ namespace game
 
             // World::instance().chunk_mtx.lock();
 
-            // tp.enqueue([chunk, this] {
-                for (auto &offsetpos : neighbor_chunkpos)
-                {
-                    glm::ivec3 pos = chunk.worldpos + offsetpos * 16;
-                    auto it = World::instance().chunkMeshes.find(pos);
-                    if (it != World::instance().chunkMeshes.end())
-                    {
-                        it->second->createChunkVertices();
-                        //lock that shit
-                        chunks_to_update.insert(pos);
-                    }
-                }
-            // });
+            for (auto &offsetpos : neighbor_chunkpos)
+            {
+                glm::ivec3 pos = chunk.worldpos + offsetpos * 16;
+                chunks_to_update.insert(pos);
+            }
         }
         client.data_mtx.unlock();
 
-        chunks_to_update_mtx.lock();
         for (auto &ctu : chunks_to_update)
         {
-            auto it = World::instance().chunkMeshes.find(ctu);
-            if (it != World::instance().chunkMeshes.end())
-            {
-                it->second->createChunkMesh();
-            } else
-            {
-                // ChunkMesh *chunkmesh = new ChunkMesh(ctu);
-                // chunkmesh->createChunkMesh();
-                // World::instance().chunkMeshes[ctu] = chunkmesh;
-            }
+            tp.enqueue([ctu, this] {
+                    ChunkVertices chunk_vertices;
+                    chunk_vertices.createChunkVertices(ctu);
+                    //create chunk vertices
+
+                    //lock and insert to chunk_vertices_tomesh
+                    chunks_vertices_to_mesh_mtx.lock();
+                    chunks_vertices_to_mesh[ctu] = chunk_vertices;
+                    chunks_vertices_to_mesh_mtx.unlock();
+            });
         }
         chunks_to_update.clear();
-        chunks_to_update_mtx.unlock();
+
+        chunks_vertices_to_mesh_mtx.lock();
+        for (auto &[pos, vertices] : chunks_vertices_to_mesh)
+        {
+            auto it = World::instance().chunkMeshes.find(pos);
+            if (it != World::instance().chunkMeshes.end())
+            {
+                it->second->createChunkMesh(vertices.chunk_vertices);
+            }
+        }
+        chunks_vertices_to_mesh.clear();
+        chunks_vertices_to_mesh_mtx.unlock();
     }
 
     void GameScene::updateClient()

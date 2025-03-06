@@ -9,7 +9,7 @@
 #include "glm/gtx/hash.hpp"
 #include "Chunk.hpp"
 
-#include "Blocktype.h"
+
 #include "Shadowmap.hpp"
 #include <vector>
 #include "ChunkMesh.hpp"

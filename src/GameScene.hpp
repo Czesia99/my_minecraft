@@ -21,7 +21,7 @@
 #include "Threadpool.hpp"
 #include "glm/gtx/hash.hpp"
 #include "Blocktype.h"
-
+#include "ChunkVertices.hpp"
 #include "World.hpp"
 
 namespace game
@@ -111,7 +111,9 @@ namespace game
 
             DDA_Data dda_data = {};
             std::unordered_set<glm::ivec3> chunks_to_update;
-            std::mutex chunks_to_update_mtx;
+
+            std::unordered_map<glm::ivec3, ChunkVertices> chunks_vertices_to_mesh;
+            std::mutex chunks_vertices_to_mesh_mtx;
             std::vector<ChunkMesh> neighbor_chunks;
             glm::ivec3 neighbor_chunkpos[7] =
             {

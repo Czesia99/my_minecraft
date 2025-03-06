@@ -33,6 +33,7 @@ set(IMGUI_SOURCES
 set(SRC_FILES
     ${SRC}/main.cpp
     ${SRC}/GameScene.cpp
+    ${SRC}/ChunkVertices.cpp
     ${SRC}/ChunkMesh.cpp
     ${SRC}/Client.cpp
     ${SRC}/Entity.cpp

@@ -1,6 +1,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "glm/gtx/hash.hpp"
+#include <unordered_map>
+#include <string>
+#include <vector>
 
 enum BlockType
 {
