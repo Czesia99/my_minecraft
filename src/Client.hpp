@@ -15,7 +15,7 @@ namespace game
     struct ChunkData
     {
         glm::ivec3 pos;
-        std::vector<uint8_t> blocktypes;
+        std::array<uint8_t, 4096> blocktypes;
     };
 
     struct EntityData

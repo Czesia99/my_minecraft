@@ -23,7 +23,7 @@ namespace game
             return 0;
     }
 
-    ChunkMesh::ChunkMesh(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : worldpos(pos), blocktypes(blocktypes) {}
+    ChunkMesh::ChunkMesh(const glm::ivec3 &pos) : worldpos(pos) {}
 
     void ChunkMesh::createChunkMesh()
     {
@@ -49,16 +49,17 @@ namespace game
         vertex_count = 0;
         packed_vertices.clear();
 
-        const glm::ivec3 neighbor_chunkpos[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1},};
+        const glm::ivec3 neighbor_chunkpos[7] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}, {0, 0, 0}};
         std::unordered_map<glm::ivec3, Chunk> neighbor_chunks;
         //lock mtx
-        for (int i = 0; i < 6; i++)
+        World::instance().chunk_mtx.lock();
+        for (int i = 0; i < 7; i++)
         {
             auto it = World::instance().chunks.find(worldpos + neighbor_chunkpos[i] * 16);
             if (it != World::instance().chunks.end())
                 neighbor_chunks[worldpos + neighbor_chunkpos[i] * 16] = it->second;
         }
-        //unlock mtx
+        World::instance().chunk_mtx.unlock();
 
         for (int z = 0; z < size; z++) {
         for (int y = 0; y < size; y++) {
@@ -66,35 +67,37 @@ namespace game
 
             int index = x + y*16 + z*16*16;
 
-            if (blocktypes[index] == 0) continue;
             bool display = false;
 
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + worldpos;
+            uint8_t blocktype = getBlockAt(world_pos.x, world_pos.y, world_pos.z, neighbor_chunks);
+
+            if (blocktype == 0) continue;
 
             if (getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1, neighbor_chunks) == 0)
             {
-                loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
+                loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, blocktype);
             }
             if (getBlockAt(world_pos.x, world_pos.y, world_pos.z + 1, neighbor_chunks) == 0)
             {
-                loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
+                loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, blocktype);
             }
             if (getBlockAt(world_pos.x - 1, world_pos.y, world_pos.z, neighbor_chunks) == 0)
             {
-                loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);
+                loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, blocktype);
             }
             if (getBlockAt(world_pos.x + 1, world_pos.y, world_pos.z, neighbor_chunks) == 0)
             {
-                loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, index);
+                loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, blocktype);
             }
             if (getBlockAt(world_pos.x, world_pos.y + 1, world_pos.z, neighbor_chunks) == 0)
             {
-                loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, index);
+                loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, blocktype);
             }
             if (getBlockAt(world_pos.x, world_pos.y - 1, world_pos.z, neighbor_chunks) == 0)
             {
-                loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, index);
+                loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, blocktype);
             }
         }}}
     }
@@ -110,32 +113,26 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    void ChunkMesh::loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
+    void ChunkMesh::loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, uint8_t bt)
     {
         const glm::ivec3 direction = getFaceOrientationVector(orientation);
         const glm::ivec3 ndir = direction + local_pos;
         int neighbor = World::instance().positionToIndex(ndir);
 
-        if (neighbor == -1
-        || blocktypes[neighbor] == BlockType::Air
-        || blocktypes[neighbor] == BlockType::Oak_leaves
-        || blocktypes[neighbor] == BlockType::Glass
-        ) {
-            for (int i = 0; i < vertices.size(); i+= 6)
-            {
-                uint32_t packed;
-                uint8_t block_texture = findBlockTextures(getBlockType(blocktypes[index]), orientation);
-                packed = ((vertices[i] + local_pos.x) & 0b11111) << 0       |
-                         ((vertices[i + 1] + local_pos.y) & 0b11111) << 5   |
-                         ((vertices[i + 2] + local_pos.z) & 0b11111) << 10  |
-                         ((vertices[i + 3]) & 0b1) << 15                    |
-                         ((vertices[i + 4]) & 0b1) << 16                    |
-                         ((vertices[i + 5]) & 0b111) << 17                  |
-                         (block_texture & 0b11111) << 20;
+        for (int i = 0; i < vertices.size(); i+= 6)
+        {
+            uint32_t packed;
+            uint8_t block_texture = findBlockTextures(getBlockType(bt), orientation);
+            packed = ((vertices[i] + local_pos.x) & 0b11111) << 0       |
+                        ((vertices[i + 1] + local_pos.y) & 0b11111) << 5   |
+                        ((vertices[i + 2] + local_pos.z) & 0b11111) << 10  |
+                        ((vertices[i + 3]) & 0b1) << 15                    |
+                        ((vertices[i + 4]) & 0b1) << 16                    |
+                        ((vertices[i + 5]) & 0b111) << 17                  |
+                        (block_texture & 0b11111) << 20;
 
-                packed_vertices.push_back(packed);
-                vertex_count += 1;
-            }
+            packed_vertices.push_back(packed);
+            vertex_count += 1;
         }
     }
 

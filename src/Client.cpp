@@ -293,7 +293,7 @@ namespace game
         chunk.pos.z = be32toh(chunk.pos.z);
         ptr += sizeof(int);
 
-        chunk.blocktypes.resize(4096);
+        // chunk.blocktypes.resize(4096);
         memcpy(&chunk.blocktypes[0], ptr, 4096);
 
         data_mtx.lock();
@@ -321,7 +321,7 @@ namespace game
         ptr += sizeof(int);
 
         memcpy(&blocktype, ptr, sizeof(uint8_t));
-        chunk.blocktypes.resize(4096);
+        // chunk.blocktypes.resize(4096);
         std::fill(std::begin(chunk.blocktypes), std::end(chunk.blocktypes), blocktype);
 
         data_mtx.lock();

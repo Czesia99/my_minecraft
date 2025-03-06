@@ -11,6 +11,8 @@
 
 #include "Blocktype.h"
 #include "Shadowmap.hpp"
+#include <vector>
+#include "ChunkMesh.hpp"
 
 namespace game
 {
@@ -51,16 +53,7 @@ namespace game
             float fog_maxdist = 600.0f;
             float fog_mindist = 150.0f;
             glm::vec4 fog_color = glm::vec4(0.9, 0.9, 0.9, 1.0);
-            std::vector<ChunkMesh> neighbor_chunks;
-            glm::ivec3 neighbor_chunkpos[6] =
-            {
-                {1, 0, 0},
-                {-1, 0, 0},
-                {0, 1, 0},
-                {0, -1, 0},
-                {0, 0, 1},
-                {0, 0, -1},
-            };
+
         private:
             struct ChunkAABB
             {

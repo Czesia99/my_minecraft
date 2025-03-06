@@ -13,6 +13,7 @@
 #include <map>
 #include <thread>
 #include <shared_mutex>
+#include <unordered_set>
 
 #include "ChunkMesh.hpp"
 #include "Entity.hpp"
@@ -109,7 +110,8 @@ namespace game
             };
 
             DDA_Data dda_data = {};
-
+            std::unordered_set<glm::ivec3> chunks_to_update;
+            std::mutex chunks_to_update_mtx;
             std::vector<ChunkMesh> neighbor_chunks;
             glm::ivec3 neighbor_chunkpos[7] =
             {

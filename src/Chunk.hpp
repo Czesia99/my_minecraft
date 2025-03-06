@@ -1,15 +1,13 @@
 #pragma once
 
-#include <vector>
 #include <glm/glm.hpp>
-
-#include "ChunkMesh.hpp"
+#include <array>
 
 namespace game
 {
     struct Chunk
     {
-        std::vector<uint8_t>blocktypes;
+        std::array<uint8_t, 4096>blocktypes;
         glm::ivec3 worldpos;
     };
 }

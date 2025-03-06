@@ -32,7 +32,7 @@ namespace game
             //     {0, -1, 0},
             // };
         public:
-            ChunkMesh(const glm::ivec3 &pos, const std::vector<uint8_t> &blocktypes);
+            ChunkMesh(const glm::ivec3 &pos);
             // ~Chunk() = default;
             void createChunkVertices();
             void createChunkMesh();
@@ -41,7 +41,7 @@ namespace game
             int positionToIndex(glm::ivec3 pos);
 
         private:
-            void loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index);
+            void loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, uint8_t bt);
             uint32_t packVerticesData();
             uint8_t findBlockTextures(BlockType type, FaceOrientation orientation);
             //uint8_t getBlockAt(int x, int y, int z, std::unordered_map<glm::ivec3, Chunk> nchunks);
@@ -51,7 +51,6 @@ namespace game
             GLuint vbo = 0;
 
             glm::ivec3 worldpos;
-            std::vector<uint8_t> blocktypes;
 
             int size = 16;
             int vertex_count = 0;
