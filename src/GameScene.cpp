@@ -317,7 +317,6 @@ namespace game
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
-            // ChunkMesh *chunk = new ChunkMesh(chunk_data.pos, chunk_data.blocktypes);
             Chunk chunk;
             chunk.worldpos = chunk_data.pos;
             chunk.blocktypes = chunk_data.blocktypes;
@@ -345,7 +344,6 @@ namespace game
                     {
                         it->second->createChunkVertices();
                     }
-
                     // i->createChunkVertices();
                 }
                 //find chunks in all direction
