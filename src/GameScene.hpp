@@ -14,7 +14,7 @@
 #include <thread>
 #include <shared_mutex>
 
-#include "Chunk.hpp"
+#include "ChunkMesh.hpp"
 #include "Entity.hpp"
 #include "Client.hpp"
 #include "Threadpool.hpp"
@@ -83,7 +83,7 @@ namespace game
             Shader cursor_shader;
 
             std::shared_mutex chunk_mtx;
-            std::unordered_map<glm::ivec3, Chunk*> chunks;
+            // std::unordered_map<glm::ivec3, ChunkMesh*> chunks;
             std::unordered_map<int, Entity*> entities;
 
             double request_interval = 0.0;
@@ -110,16 +110,16 @@ namespace game
 
             DDA_Data dda_data = {};
 
-            std::vector<Chunk> neighbor_chunks;
+            std::vector<ChunkMesh> neighbor_chunks;
             glm::ivec3 neighbor_chunkpos[7] =
             {
-                {1, 0, 0},
+                {0, 0, -1},
+                {0, 0, 1},
                 {-1, 0, 0},
+                {1, 0, 0},
                 {0, 1, 0},
                 {0, -1, 0},
-                {0, 0, 1},
-                {0, 0, -1},
-                {0, 0, 0},
+                {0, 0, 0}
             };
     };
 }

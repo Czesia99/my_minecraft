@@ -27,7 +27,7 @@ namespace game
         {
             if (boxInFrustum(planes, getChunkAABB(chunk)))
             {
-                chunk->render(shader, camera);
+                chunk.mesh->render(shader, camera);
             }
         }
     }
@@ -68,7 +68,7 @@ namespace game
         auto it =  chunks.find(chunk_pos);
         if (it != chunks.end())
         {
-            uint8_t blocktype = it->second->blocktypes[it->second->positionToIndex(local_pos)];
+            uint8_t blocktype = it->second.blocktypes[positionToIndex(local_pos)];
             return blocktype;
         } else
             return 0;
@@ -79,11 +79,11 @@ namespace game
         return getBlockAt(int(glm::floor(x)), int(glm::floor(y)), int(glm::floor(z)));
     }
 
-    World::ChunkAABB World::getChunkAABB(const Chunk *chunk)
+    World::ChunkAABB World::getChunkAABB(const Chunk chunk)
     {
         ChunkAABB aabb = {};
-        aabb.min = chunk->chunk_worldpos;
-        aabb.max = chunk->chunk_worldpos + 16;
+        aabb.min = chunk.chunk_worldpos;
+        aabb.max = chunk.chunk_worldpos + 16;
         return aabb;
     }
 
@@ -116,12 +116,19 @@ namespace game
         return true;
     }
 
+    int World::positionToIndex(glm::ivec3 pos)
+    {
+        if (pos.x < 0 || pos.x > 15 || pos.y < 0 || pos.y > 15 || pos.z < 0 || pos.z > 15)
+            return -1;
+        return pos.x + pos.y * 16 + pos.z*16*16;
+    }
+
     void World::clearAllChunks()
     {
         for (auto &[pos, chunk] : chunks)
         {
-            chunk->deleteChunk();
-            delete chunk;
+            chunk.mesh->deleteChunk();
+            delete chunk.mesh;
         }
         chunks.clear();
     }

@@ -1,18 +1,11 @@
-#include "Chunk.hpp"
+#include "ChunkMesh.hpp"
 #include "World.hpp"
 
 namespace game
 {
-    int Chunk::positionToIndex(glm::ivec3 pos)
-    {
-        if (pos.x < 0 || pos.x > 15 || pos.y < 0 || pos.y > 15 || pos.z < 0 || pos.z > 15)
-            return -1;
-        return pos.x + pos.y * 16 + pos.z*16*16;
-    }
+    ChunkMesh::ChunkMesh(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes) {}
 
-    Chunk::Chunk(const glm::ivec3 &pos, const std::vector<uint8_t>&blocktypes) : chunk_worldpos(pos), blocktypes(blocktypes) {}
-
-    void Chunk::createChunkMesh()
+    void ChunkMesh::createChunkMesh()
     {
         if (vao == 0) {
             glGenVertexArrays(1, &vao);
@@ -31,19 +24,21 @@ namespace game
         // packed_vertices.shrink_to_fit();
     }
 
-    void Chunk::createChunkVertices()
+    void ChunkMesh::createChunkVertices()
     {
         vertex_count = 0;
         packed_vertices.clear();
 
         // for (int i = 0; i < 6; i++)
         // {
-        //     auto it = World::instance().chunks.find(chunk_worldpos + neighbor_chunkpos[i]);
+        //     auto it = World::instance().chunks.find(chunk_worldpos + neighbor_chunkpos[i] * 16);
+        //     glm::ivec3 pos = neighbor_chunkpos[i];
         //     if (it != World::instance().chunks.end()) {
-        //         glm::ivec3 pos = neighbor_chunkpos[i];
         //         std::vector<uint8_t> bt = it->second->blocktypes;
         //         // Chunk n = *(World::instance().chunks[chunk_worldpos + neighbor_chunkpos[i]]);
         //         neighbor_chunks[pos] = bt;
+        //     } else {
+        //         neighbor_chunks[pos] = std::vector<uint8_t>(4096, 0);
         //     }
         // }
 
@@ -59,34 +54,34 @@ namespace game
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + chunk_worldpos;
 
-            // if (neighbor_chunks.at(neighbor_chunkpos[0])[index] == 0)
-            // {
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1) == 0)
+            {
                 loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, index);
-            // }
-            // if (neighbor_chunks.at(neighbor_chunkpos[1])[index] == 0)
-            // {
+            }
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y, world_pos.z + 1) == 0)
+            {
                 loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, index);
-            // }
-            // if (neighbor_chunks.at(neighbor_chunkpos[2])[index] == 0)
-            // {
+            }
+            if (World::instance().getBlockAt(world_pos.x - 1, world_pos.y, world_pos.z) == 0)
+            {
                 loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, index);
-            // }
-            // if (neighbor_chunks.at(neighbor_chunkpos[3])[index] == 0)
-            // {
+            }
+            if (World::instance().getBlockAt(world_pos.x + 1, world_pos.y, world_pos.z) == 0)
+            {
                 loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, index);
-            // }
-            // if (neighbor_chunks.at(neighbor_chunkpos[4])[index] == 0)
-            // {
+            }
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y + 1, world_pos.z) == 0)
+            {
                 loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, index);
-            // }
-            // if (neighbor_chunks.at(neighbor_chunkpos[5])[index] == 0)
-            // {
+            }
+            if (World::instance().getBlockAt(world_pos.x, world_pos.y - 1, world_pos.z) == 0)
+            {
                 loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, index);
-            // }
+            }
         }}}
     }
 
-    void Chunk::render(const Shader &shader, const ICamera &camera)
+    void ChunkMesh::render(const Shader &shader, const ICamera &camera)
     {
         if (vertex_count == 0)
             return;
@@ -97,11 +92,11 @@ namespace game
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
-    void Chunk::loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
+    void ChunkMesh::loadFaceVertices(const std::vector<uint8_t> &vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, int index)
     {
         const glm::ivec3 direction = getFaceOrientationVector(orientation);
         const glm::ivec3 ndir = direction + local_pos;
-        int neighbor = positionToIndex(ndir);
+        int neighbor = World::instance().positionToIndex(ndir);
 
         if (neighbor == -1
         || blocktypes[neighbor] == BlockType::Air
@@ -126,7 +121,7 @@ namespace game
         }
     }
 
-    uint8_t Chunk::findBlockTextures(BlockType type, FaceOrientation orientation)
+    uint8_t ChunkMesh::findBlockTextures(BlockType type, FaceOrientation orientation)
     {
         if (orientation == FaceOrientation::Front || orientation == FaceOrientation::Back || orientation == FaceOrientation::Left || orientation == FaceOrientation::Right)
         {
@@ -145,7 +140,7 @@ namespace game
         return 0;
     }
 
-    void Chunk::deleteChunk()
+    void ChunkMesh::deleteChunk()
     {
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);

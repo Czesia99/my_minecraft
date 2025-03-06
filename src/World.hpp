@@ -39,17 +39,18 @@ namespace game
 
             uint8_t getBlockAt(int xpos, int ypos, int zpos);
             uint8_t getBlockAt(float xpos, float ypos, float zpos);
+            int positionToIndex(glm::ivec3 pos);
             void clearAllChunks();
 
             std::shared_mutex chunk_mtx;
-            std::unordered_map<glm::ivec3, Chunk*> chunks;
+            std::unordered_map<glm::ivec3, Chunk> chunks;
             Shadowmap shadowmap;
 
             bool fog_display = false;
             float fog_maxdist = 600.0f;
             float fog_mindist = 150.0f;
             glm::vec4 fog_color = glm::vec4(0.9, 0.9, 0.9, 1.0);
-            std::vector<Chunk*> neighbor_chunks;
+            std::vector<ChunkMesh> neighbor_chunks;
             glm::ivec3 neighbor_chunkpos[6] =
             {
                 {1, 0, 0},
@@ -68,7 +69,7 @@ namespace game
 
             Shader cube_shadow;
             GLuint block_textures;
-            ChunkAABB getChunkAABB(const Chunk *chunk);
+            ChunkAABB getChunkAABB(const Chunk chunk);
             bool boxInFrustum(const glm::vec4 planes[6], ChunkAABB const &box);
 
 

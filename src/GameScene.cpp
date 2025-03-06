@@ -317,46 +317,52 @@ namespace game
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
-            Chunk *chunk = new Chunk(chunk_data.pos, chunk_data.blocktypes);
-            auto it = World::instance().chunks.find(chunk->chunk_worldpos);
+            // ChunkMesh *chunk = new ChunkMesh(chunk_data.pos, chunk_data.blocktypes);
+            Chunk chunk;
+            chunk.chunk_worldpos = chunk_data.pos;
+            chunk.blocktypes = chunk_data.blocktypes;
+            chunk.mesh = new ChunkMesh(chunk.chunk_worldpos, chunk.blocktypes);
+
+            auto it = World::instance().chunks.find(chunk.chunk_worldpos);
             if (it != World::instance().chunks.end())
             {
                 auto old_chunk = it->second;
                 it->second = chunk;
-                old_chunk->deleteChunk();
-                delete(old_chunk);
+                old_chunk.mesh->deleteChunk();
+                delete(old_chunk.mesh);
             } else {
-                World::instance().chunks[chunk->chunk_worldpos] = chunk;
+                World::instance().chunks[chunk.chunk_worldpos] = chunk;
             }
-
-            // for (int i = 0; i < 5; i++)
-            // {
-            //     auto it = World::instance().chunks.find(chunk->chunk_worldpos + neighbor_chunkpos[i]);
-            //     if (it != World::instance().chunks.end()) {
-            //         Chunk *n = World::instance().chunks[chunk->chunk_worldpos + neighbor_chunkpos[i]];
-            //         neighbor_chunks.push_back(n);
-            //     }
-            // }
 
             // World::instance().chunk_mtx.lock();
             // tp.enqueue([chunk, this] {
-                chunk->createChunkVertices();
-                // for (auto &i : neighbor_chunks)
-                // {
-                //     i->createChunkVertices();
-                // }
+                // chunk->createChunkVertices();
+                for (auto &offsetpos : neighbor_chunkpos)
+                {
+                    auto it = World::instance().chunks.find(chunk.chunk_worldpos + offsetpos * 16);
+                    if (it != World::instance().chunks.end())
+                    {
+                        it->second.mesh->createChunkVertices();
+                    }
+
+                    // i->createChunkVertices();
+                }
                 //find chunks in all direction
                 //recreate mesh
-                tq.enqueue([chunk, this] {
-                    chunk->createChunkMesh();
-                    // for (auto &i : neighbor_chunks)
-                    // {
-                    //     i->createChunkMesh();
-                    // }
+                // tq.enqueue([chunk, this] {
+                    // chunk->createChunkMesh();
+                    for (auto &offsetpos : neighbor_chunkpos)
+                    {
+                        auto it = World::instance().chunks.find(chunk.chunk_worldpos + offsetpos * 16);
+                        if (it != World::instance().chunks.end())
+                        {
+                            it->second.mesh->createChunkMesh();
+                        }
+                    }
                     // neighbor_chunks.clear();
                     // World::instance().chunk_mtx.unlock();
                 // });
-            });
+            // });
         }
         client.data_mtx.unlock();
     }
