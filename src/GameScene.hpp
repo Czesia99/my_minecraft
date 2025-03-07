@@ -93,7 +93,7 @@ namespace game
 
             float near_plane = -40.0f;
             float far_plane = 40.0f;
-
+            bool update_chunk = true;
             // Shader quad_depth_shader;
             // mygl::Rectangle depth_quad;
 

@@ -85,19 +85,19 @@ namespace game
 
     ChunkVertices::ChunkVertices() {};
 
-    std::vector<uint32_t> ChunkVertices::createChunkVertices(glm::ivec3 worldpos)
+    void ChunkVertices::createChunkVertices(glm::ivec3 worldpos)
     {
         const glm::ivec3 neighbor_chunkpos[7] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}, {0, 0, 0}};
         std::unordered_map<glm::ivec3, Chunk> neighbor_chunks;
         //lock mtx
-        World::instance().chunk_mtx.lock();
+        World::instance().chunk_mtx.lock_shared();
         for (int i = 0; i < 7; i++)
         {
             auto it = World::instance().chunks.find(worldpos + neighbor_chunkpos[i] * 16);
             if (it != World::instance().chunks.end())
                 neighbor_chunks[worldpos + neighbor_chunkpos[i] * 16] = it->second;
         }
-        World::instance().chunk_mtx.unlock();
+        World::instance().chunk_mtx.unlock_shared();
 
         for (int z = 0; z < 16; z++) {
         for (int y = 0; y < 16; y++) {
@@ -138,8 +138,6 @@ namespace game
                 loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, blocktype, chunk_vertices);
             }
         }}}
-
-        return chunk_vertices;
     }
 
     void ChunkVertices::loadFaceVertices(const uint8_t *face_vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, uint8_t bt, std::vector<uint32_t> &vertices)

@@ -92,7 +92,8 @@ namespace game
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
         }
         // updateClient();
-        updateChunks();
+        if (update_chunk == true)
+            updateChunks();
         updateEntities();
         tq.execute();
     }
@@ -427,6 +428,7 @@ namespace game
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Camera Speed", &camera.movement_speed, 10.0f, 300.0f);
         ImGui::Text("Chunks Loaded: %ld", World::instance().chunks.size());
+        ImGui::Text("Chunks Mesh: %ld", World::instance().chunkMeshes.size());
         ImGui::Text("FPS: %f", (1 / clock.delta_time));
         ImGui::Text("///LIGHTDIR///");
         ImGui::SliderFloat("x:", &World::instance().shadowmap.lightdir_x, -100.0f, 100.0f);
@@ -436,6 +438,7 @@ namespace game
         ImGui::Checkbox("Fog", &World::instance().fog_display);
         ImGui::SliderFloat("Fog Min Distance", &World::instance().fog_mindist, 0.0f, 800.0f);
         ImGui::SliderFloat("Fog Max Distance", &World::instance().fog_maxdist, 0.0f, 800.0f);
+        ImGui::Checkbox("UPDATE CHUNK", &update_chunk);
         ImGui::Text("PLAYERS CONNECTED :");
         if (entities.size() > 0) {
             // std::cout << "entitiy name = " << entities[0]->name << std::endl;
