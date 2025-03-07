@@ -85,11 +85,11 @@ namespace game
 
     ChunkVertices::ChunkVertices() {};
 
-    void ChunkVertices::createChunkVertices(glm::ivec3 worldpos)
+    void ChunkVertices::createChunkVertices(const glm::ivec3 &worldpos)
     {
         const glm::ivec3 neighbor_chunkpos[7] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}, {0, 0, 0}};
         std::unordered_map<glm::ivec3, Chunk> neighbor_chunks;
-        //lock mtx
+
         World::instance().chunk_mtx.lock_shared();
         for (int i = 0; i < 7; i++)
         {

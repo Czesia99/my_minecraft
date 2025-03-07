@@ -14,7 +14,7 @@ namespace game
     {
         public:
             ChunkVertices();
-            void createChunkVertices(glm::ivec3 worldpos);
+            void createChunkVertices(const glm::ivec3 &worldpos);
             std::vector<uint32_t> chunk_vertices;
         private:
             void loadFaceVertices(const uint8_t *face_vertices, FaceOrientation orientation, const glm::ivec3 &local_pos, const glm::ivec3 &world_pos, uint8_t bt, std::vector<uint32_t> &vertices);

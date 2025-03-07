@@ -9,7 +9,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-
+#include "MYGL/Toolbox.hpp"
 
 namespace game
 {
@@ -77,7 +77,6 @@ namespace game
     void GameScene::update()
     {
         clock.update();
-
         World::instance().render(camera, ctx.win_width, ctx.win_height);
         renderEntities();
         sky.render(camera);
@@ -91,9 +90,10 @@ namespace game
             request_interval = 0;
             client.sendUpdateEntity(camera.position.x, camera.position.y, camera.position.z, glm::radians(camera.yaw), glm::radians(camera.pitch));
         }
-        // updateClient();
-        if (update_chunk == true)
+
+        if (update_chunk == true) {
             updateChunks();
+        }
         updateEntities();
         tq.execute();
     }

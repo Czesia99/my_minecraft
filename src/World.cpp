@@ -26,13 +26,9 @@ namespace game
 
         for (const auto &[pos, chunk] : chunkMeshes)
         {
-            auto it = chunks.find(pos);
-            if (it != chunks.end())
+            if (boxInFrustum(planes, getChunkAABB(pos)))
             {
-                if (boxInFrustum(planes, getChunkAABB(it->second)))
-                {
-                    chunk->render(shader, camera);
-                }
+                chunk->render(shader, camera);
             }
         }
     }
@@ -84,11 +80,11 @@ namespace game
         return getBlockAt(int(glm::floor(x)), int(glm::floor(y)), int(glm::floor(z)));
     }
 
-    World::ChunkAABB World::getChunkAABB(const Chunk chunk)
+    World::ChunkAABB World::getChunkAABB(const glm::ivec3 &pos)
     {
         ChunkAABB aabb = {};
-        aabb.min = chunk.worldpos;
-        aabb.max = chunk.worldpos + 16;
+        aabb.min = pos;
+        aabb.max = pos + 16;
         return aabb;
     }
 
