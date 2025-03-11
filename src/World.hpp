@@ -65,7 +65,5 @@ namespace game
             GLuint block_textures;
             ChunkAABB getChunkAABB(const glm::ivec3 &pos);
             bool boxInFrustum(const glm::vec4 planes[6], ChunkAABB const &box);
-
-
     };
 }

@@ -113,27 +113,38 @@ namespace game
 
             if (blocktype == 0) continue;
 
-            if (getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1, neighbor_chunks) == 0)
+            int bt = getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1, neighbor_chunks);
+            if ( bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, blocktype, chunk_vertices);
             }
-            if (getBlockAt(world_pos.x, world_pos.y, world_pos.z + 1, neighbor_chunks) == 0)
+
+            bt = getBlockAt(world_pos.x, world_pos.y, world_pos.z + 1, neighbor_chunks);
+            if ( bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, blocktype, chunk_vertices);
             }
-            if (getBlockAt(world_pos.x - 1, world_pos.y, world_pos.z, neighbor_chunks) == 0)
+
+            bt = getBlockAt(world_pos.x - 1, world_pos.y, world_pos.z, neighbor_chunks);
+            if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, blocktype, chunk_vertices);
             }
-            if (getBlockAt(world_pos.x + 1, world_pos.y, world_pos.z, neighbor_chunks) == 0)
+
+            bt = getBlockAt(world_pos.x + 1, world_pos.y, world_pos.z, neighbor_chunks);
+            if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, blocktype, chunk_vertices);
             }
-            if (getBlockAt(world_pos.x, world_pos.y + 1, world_pos.z, neighbor_chunks) == 0)
+
+            bt = getBlockAt(world_pos.x, world_pos.y + 1, world_pos.z, neighbor_chunks);
+            if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, blocktype, chunk_vertices);
             }
-            if (getBlockAt(world_pos.x, world_pos.y - 1, world_pos.z, neighbor_chunks) == 0)
+
+            bt = getBlockAt(world_pos.x, world_pos.y - 1, world_pos.z, neighbor_chunks);
+            if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, blocktype, chunk_vertices);
             }
