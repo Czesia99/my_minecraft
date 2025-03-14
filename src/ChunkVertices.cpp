@@ -64,15 +64,15 @@ namespace game
         0, 1, 0,    1, 0,    5,
     };
 
-    uint8_t getBlockAt(int x, int y, int z, std::unordered_map<glm::ivec3, Chunk> &nchunks)
+    uint8_t getBlockAt(glm::ivec3 pos, std::unordered_map<glm::ivec3, Chunk> &nchunks)
     {
-        glm::ivec3 chunk_pos = glm::floor(glm::vec3(x,y,z) / 16.0f) * 16.0f;
-        glm::ivec3 local_pos = {x % 16, y % 16, z % 16};
+        glm::ivec3 chunk_pos = glm::floor(glm::vec3(pos.x,pos.y,pos.z) / 16.0f) * 16.0f;
+        glm::ivec3 local_pos = {pos.x % 16, pos.y % 16, pos.z % 16};
         if (local_pos.x < 0) local_pos.x += 16;
         if (local_pos.y < 0) local_pos.y += 16;
         if (local_pos.z < 0) local_pos.z += 16;
 
-        glm::ivec3 cube_pos = {x, y, z};
+        glm::ivec3 cube_pos = {pos.x, pos.y, pos.z};
 
         auto it =  nchunks.find(chunk_pos);
         if (it != nchunks.end())
@@ -109,41 +109,41 @@ namespace game
 
             glm::ivec3 local_pos = {x, y, z};
             glm::ivec3 world_pos = local_pos + worldpos;
-            uint8_t blocktype = getBlockAt(world_pos.x, world_pos.y, world_pos.z, neighbor_chunks);
+            uint8_t blocktype = getBlockAt(world_pos, neighbor_chunks);
 
             if (blocktype == 0) continue;
 
-            int bt = getBlockAt(world_pos.x, world_pos.y, world_pos.z - 1, neighbor_chunks);
+            int bt = getBlockAt(world_pos + neighbor_chunkpos[5], neighbor_chunks);
             if ( bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(front_face_vertices, FaceOrientation::Front, local_pos, world_pos, blocktype, chunk_vertices);
             }
 
-            bt = getBlockAt(world_pos.x, world_pos.y, world_pos.z + 1, neighbor_chunks);
+            bt = getBlockAt(world_pos + neighbor_chunkpos[4], neighbor_chunks);
             if ( bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(back_face_vertices, FaceOrientation::Back, local_pos, world_pos, blocktype, chunk_vertices);
             }
 
-            bt = getBlockAt(world_pos.x - 1, world_pos.y, world_pos.z, neighbor_chunks);
+            bt = getBlockAt(world_pos + neighbor_chunkpos[1], neighbor_chunks);
             if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(left_face_vertices, FaceOrientation::Left, local_pos, world_pos, blocktype, chunk_vertices);
             }
 
-            bt = getBlockAt(world_pos.x + 1, world_pos.y, world_pos.z, neighbor_chunks);
+            bt = getBlockAt(world_pos + neighbor_chunkpos[0], neighbor_chunks);
             if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(right_face_vertices, FaceOrientation::Right, local_pos, world_pos, blocktype, chunk_vertices);
             }
 
-            bt = getBlockAt(world_pos.x, world_pos.y + 1, world_pos.z, neighbor_chunks);
+            bt = getBlockAt(world_pos + neighbor_chunkpos[2], neighbor_chunks);
             if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(top_face_vertices, FaceOrientation::Top, local_pos, world_pos, blocktype, chunk_vertices);
             }
 
-            bt = getBlockAt(world_pos.x, world_pos.y - 1, world_pos.z, neighbor_chunks);
+            bt = getBlockAt(world_pos + neighbor_chunkpos[3], neighbor_chunks);
             if (bt == BlockType::Air || bt == BlockType::Oak_leaves ||bt == BlockType::Glass)
             {
                 loadFaceVertices(bottom_face_vertices, FaceOrientation::Bottom, local_pos, world_pos, blocktype, chunk_vertices);
