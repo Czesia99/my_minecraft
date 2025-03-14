@@ -69,7 +69,7 @@ namespace game
 
     void GameScene::closeScene()
     {
-        tp.stop();
+        // tp.stop();
         client.stopThread();
         World::instance().clearAllChunks();
     }
@@ -95,7 +95,6 @@ namespace game
             updateChunks();
         }
         updateEntities();
-        tq.execute();
     }
 
     void GameScene::sceneClear()

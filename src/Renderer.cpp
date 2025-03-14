@@ -9,6 +9,7 @@ namespace game
     {
         createChunksVertices();
         createChunksMesh();
+        tq.execute();
     }
 
     void Renderer::addChunk(const glm::ivec3 &pos)

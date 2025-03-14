@@ -89,19 +89,14 @@ namespace game
             mygl::Rectangle cursor_img;
             Shader cursor_shader;
 
-            std::shared_mutex chunk_mtx;
             std::unordered_map<int, Entity*> entities;
 
-            double request_interval = 0.0;
-
             int cursor_input_mode;
-
             bool update_chunk = true;
+
+            double request_interval = 0.0;
             // Shader quad_depth_shader;
             // mygl::Rectangle depth_quad;
-
-            ThreadPool tp = {4};
-            TaskQueue tq;
 
             struct DDA_Data
             {
@@ -111,20 +106,6 @@ namespace game
                 int zpos;
                 glm::ivec3 face;
             };
-
             DDA_Data dda_data = {};
-            std::unordered_set<glm::ivec3> chunks_to_update;
-            std::unordered_map<glm::ivec3, ChunkVertices> chunks_vertices_to_mesh;
-            std::mutex chunks_vertices_to_mesh_mtx;
-            glm::ivec3 neighbor_chunkpos[7] =
-            {
-                {0, 0, -1},
-                {0, 0, 1},
-                {-1, 0, 0},
-                {1, 0, 0},
-                {0, 1, 0},
-                {0, -1, 0},
-                {0, 0, 0}
-            };
     };
 }
