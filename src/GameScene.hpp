@@ -69,30 +69,31 @@ namespace game
         private:
             Camera3D camera;
             CameraOrtho camera_ortho;
-            Camera3D scube_cam = {glm::vec3(0.0f, 0.0f, -5.0f), 200, 200};
             Skybox sky;
             Clock clock;
             Client client;
             GLuint block_textures;
+
+            //Selected Cube
+            Camera3D scube_cam = {glm::vec3(0.0f, 0.0f, -5.0f), 200, 200};
             BlockType selected_cube = BlockType::Grass;
             Cube scube;
             float scube_rotspeed = 1.0f;
             Shader scube_shader;
 
             char input_chat[4096] = {};
+
+            //cursor
             mygl::Rectangle cursor_img;
             Shader cursor_shader;
 
             std::shared_mutex chunk_mtx;
-            // std::unordered_map<glm::ivec3, ChunkMesh*> chunks;
             std::unordered_map<int, Entity*> entities;
 
             double request_interval = 0.0;
 
             int cursor_input_mode;
 
-            float near_plane = -40.0f;
-            float far_plane = 40.0f;
             bool update_chunk = true;
             // Shader quad_depth_shader;
             // mygl::Rectangle depth_quad;
@@ -111,7 +112,6 @@ namespace game
 
             DDA_Data dda_data = {};
             std::unordered_set<glm::ivec3> chunks_to_update;
-
             std::unordered_map<glm::ivec3, ChunkVertices> chunks_vertices_to_mesh;
             std::mutex chunks_vertices_to_mesh_mtx;
             std::vector<ChunkMesh> neighbor_chunks;

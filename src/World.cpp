@@ -12,7 +12,6 @@ namespace game
         glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // glBindVertexArray(0);
         cube_shadow = Shader("cube_shadow.vs", "cube_shadow.fs");
 
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
@@ -25,6 +24,7 @@ namespace game
     World::~World()
     {
         clearAllChunks();
+        glDeleteVertexArrays(1, &chunk_vao);
     }
 
     void World::renderTerrain(const Shader &shader, const ICamera &camera)
@@ -35,10 +35,13 @@ namespace game
         glBindVertexArray(chunk_vao);
         for (const auto &[pos, chunk] : chunkMeshes)
         {
-            if (boxInFrustum(planes, getChunkAABB(pos)))
+            if (chunk.vbo != 0)
             {
-                glBindVertexBuffer(0, chunk->vbo, 0, 4);
-                chunk->render(shader, camera);
+                if (boxInFrustum(planes, getChunkAABB(pos)))
+                {
+                    glBindVertexBuffer(0, chunk.vbo, 0, 4);
+                    chunk.render(shader, camera);
+                }
             }
         }
     }
@@ -61,9 +64,26 @@ namespace game
         glBindTextureUnit(1, shadowmap.depthMap);
         glBindTextureUnit(0, block_textures);
 
-        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // glEnable(GL_BLEND);
         renderTerrain(cube_shadow, camera);
+    }
+
+    void World::createOrReplaceChunk(const glm::ivec3 &pos, const std::array<uint8_t, 4096> &blocktypes)
+    {
+        Chunk chunk;
+        chunk.worldpos = pos;
+        chunk.blocktypes = blocktypes;
+
+        chunk_mtx.lock();
+        auto it = chunks.find(chunk.worldpos);
+        if (it != chunks.end())
+        {
+            it->second = chunk;
+        } else {
+            chunks[chunk.worldpos] = chunk;
+            ChunkMesh chunkmesh{chunk.worldpos};
+            chunkMeshes[chunk.worldpos] = chunkmesh;
+        }
+        chunk_mtx.unlock();
     }
 
     uint8_t World::getBlockAt(int x, int y, int z)
@@ -115,15 +135,6 @@ namespace game
             if( out==8 ) return false;
         }
 
-        // check frustum outside/inside box
-        // int out;
-        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].x > box.max.x)?1:0); if( out==8 ) return false;
-        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].x < box.min.x)?1:0); if( out==8 ) return false;
-        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].y > box.max.y)?1:0); if( out==8 ) return false;
-        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].y < box.min.y)?1:0); if( out==8 ) return false;
-        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].z > box.max.z)?1:0); if( out==8 ) return false;
-        // out=0; for( int i=0; i<8; i++ ) out += ((fru.mPoints[i].z < box.min.z)?1:0); if( out==8 ) return false;
-
         return true;
     }
 
@@ -138,8 +149,7 @@ namespace game
     {
         for (auto &[pos, chunk] : chunkMeshes)
         {
-            chunk->deleteChunk();
-            delete chunk;
+            chunk.deleteChunk();
         }
         chunks.clear();
     }

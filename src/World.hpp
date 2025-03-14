@@ -38,15 +38,16 @@ namespace game
         public:
             void render(const Camera3D &camera, const int &width, const int &height);
             void renderTerrain(const Shader &shader, const ICamera &cam);
-
+            void createOrReplaceChunk(const glm::ivec3 &pos, const std::array<uint8_t, 4096> &blocktypes);
             uint8_t getBlockAt(int xpos, int ypos, int zpos);
             uint8_t getBlockAt(float xpos, float ypos, float zpos);
             int positionToIndex(glm::ivec3 pos);
             void clearAllChunks();
 
+
             std::shared_mutex chunk_mtx;
             std::unordered_map<glm::ivec3, Chunk> chunks;
-            std::unordered_map<glm::ivec3, ChunkMesh*> chunkMeshes;
+            std::unordered_map<glm::ivec3, ChunkMesh> chunkMeshes;
             Shadowmap shadowmap;
 
             bool fog_display = false;

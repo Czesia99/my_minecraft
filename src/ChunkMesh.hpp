@@ -19,10 +19,11 @@ namespace game
     class ChunkMesh
     {
         public:
+            ChunkMesh() = default;
             ChunkMesh(const glm::ivec3 &pos);
             // ~Chunk() = default;
             void createChunkMesh(const std::vector<uint32_t> &vertices);
-            void render(const Shader &shader, const ICamera &camera);
+            void render(const Shader &shader, const ICamera &camera) const;
             // int positionToIndex(glm::ivec3 pos);
             void deleteChunk();
             GLuint vbo = 0;

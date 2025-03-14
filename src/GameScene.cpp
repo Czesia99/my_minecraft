@@ -320,40 +320,22 @@ namespace game
             ChunkData chunk_data = client.data.chunks.front();
             client.data.chunks.pop_front();
 
-            Chunk chunk;
-            chunk.worldpos = chunk_data.pos;
-            chunk.blocktypes = chunk_data.blocktypes;
-
-            World::instance().chunk_mtx.lock();
-            auto it = World::instance().chunks.find(chunk.worldpos);
-            if (it != World::instance().chunks.end())
-            {
-                it->second = chunk;
-            } else {
-                World::instance().chunks[chunk.worldpos] = chunk;
-                ChunkMesh *chunkmesh = new ChunkMesh(chunk.worldpos);
-                World::instance().chunkMeshes[chunk.worldpos] = chunkmesh;
-            }
-            World::instance().chunk_mtx.unlock();
-
-            // World::instance().chunk_mtx.lock();
+            World::instance().createOrReplaceChunk(chunk_data.pos, chunk_data.blocktypes);
 
             for (auto &offsetpos : neighbor_chunkpos)
             {
-                glm::ivec3 pos = chunk.worldpos + offsetpos * 16;
+                glm::ivec3 pos = chunk_data.pos + offsetpos * 16;
                 chunks_to_update.insert(pos);
             }
         }
-        client.data_mtx.unlock();
 
+        client.data_mtx.unlock();
         for (auto &ctu : chunks_to_update)
         {
             tp.enqueue([ctu, this] {
                     ChunkVertices chunk_vertices;
                     chunk_vertices.createChunkVertices(ctu);
-                    //create chunk vertices
 
-                    //lock and insert to chunk_vertices_tomesh
                     chunks_vertices_to_mesh_mtx.lock();
                     chunks_vertices_to_mesh[ctu] = chunk_vertices;
                     chunks_vertices_to_mesh_mtx.unlock();
@@ -367,7 +349,7 @@ namespace game
             auto it = World::instance().chunkMeshes.find(pos);
             if (it != World::instance().chunkMeshes.end())
             {
-                it->second->createChunkMesh(vertices.chunk_vertices);
+                it->second.createChunkMesh(vertices.chunk_vertices);
             }
         }
         chunks_vertices_to_mesh.clear();

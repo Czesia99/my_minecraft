@@ -15,7 +15,6 @@ class TaskQueue {
         void enqueue(function<void()> task) {
             const lock_guard<std::mutex> lock(queue_mutex_);
             tasks_.emplace_back(move(task));
-            // tasks_.emplace(move(task));
         }
 
         void execute()
@@ -30,7 +29,6 @@ class TaskQueue {
     private:
         deque<function<void()>> tasks_;
         mutex queue_mutex_;
-
 };
 
 class ThreadPool {

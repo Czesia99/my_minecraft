@@ -17,20 +17,18 @@ namespace game
         vertex_count = vertices.size();
     }
 
-    void ChunkMesh::render(const Shader &shader, const ICamera &camera)
+    void ChunkMesh::render(const Shader &shader, const ICamera &camera) const
     {
         if (vertex_count == 0)
             return;
 
         shader.setVec3i("chunkpos", worldpos);
 
-        // glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertex_count);
     }
 
     void ChunkMesh::deleteChunk()
     {
         glDeleteBuffers(1, &vbo);
-        // glDeleteVertexArrays(1, &vao);
     }
 }
