@@ -35,6 +35,7 @@ set(SRC_FILES
     ${SRC}/GameScene.cpp
     ${SRC}/ChunkVertices.cpp
     ${SRC}/ChunkMesh.cpp
+    ${SRC}/Renderer.cpp
     ${SRC}/Client.cpp
     ${SRC}/Entity.cpp
     ${SRC}/World.cpp

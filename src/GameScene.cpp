@@ -322,38 +322,11 @@ namespace game
 
             World::instance().createOrReplaceChunk(chunk_data.pos, chunk_data.blocktypes);
 
-            for (auto &offsetpos : neighbor_chunkpos)
-            {
-                glm::ivec3 pos = chunk_data.pos + offsetpos * 16;
-                chunks_to_update.insert(pos);
-            }
+            renderer.addChunk(chunk_data.pos);
         }
-
         client.data_mtx.unlock();
-        for (auto &ctu : chunks_to_update)
-        {
-            tp.enqueue([ctu, this] {
-                    ChunkVertices chunk_vertices;
-                    chunk_vertices.createChunkVertices(ctu);
 
-                    chunks_vertices_to_mesh_mtx.lock();
-                    chunks_vertices_to_mesh[ctu] = chunk_vertices;
-                    chunks_vertices_to_mesh_mtx.unlock();
-            });
-        }
-        chunks_to_update.clear();
-
-        chunks_vertices_to_mesh_mtx.lock();
-        for (auto &[pos, vertices] : chunks_vertices_to_mesh)
-        {
-            auto it = World::instance().chunkMeshes.find(pos);
-            if (it != World::instance().chunkMeshes.end())
-            {
-                it->second.createChunkMesh(vertices.chunk_vertices);
-            }
-        }
-        chunks_vertices_to_mesh.clear();
-        chunks_vertices_to_mesh_mtx.unlock();
+        renderer.update();
     }
 
     void GameScene::updateClient()

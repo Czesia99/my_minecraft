@@ -16,6 +16,7 @@
 #include <unordered_set>
 
 #include "ChunkMesh.hpp"
+#include "Renderer.hpp"
 #include "Entity.hpp"
 #include "Client.hpp"
 #include "Threadpool.hpp"
@@ -73,6 +74,7 @@ namespace game
             Clock clock;
             Client client;
             GLuint block_textures;
+            Renderer renderer;
 
             //Selected Cube
             Camera3D scube_cam = {glm::vec3(0.0f, 0.0f, -5.0f), 200, 200};
@@ -114,7 +116,6 @@ namespace game
             std::unordered_set<glm::ivec3> chunks_to_update;
             std::unordered_map<glm::ivec3, ChunkVertices> chunks_vertices_to_mesh;
             std::mutex chunks_vertices_to_mesh_mtx;
-            std::vector<ChunkMesh> neighbor_chunks;
             glm::ivec3 neighbor_chunkpos[7] =
             {
                 {0, 0, -1},
