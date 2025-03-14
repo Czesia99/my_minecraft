@@ -25,10 +25,10 @@ namespace game
             void render(const Shader &shader, const ICamera &camera);
             // int positionToIndex(glm::ivec3 pos);
             void deleteChunk();
-
-        private:
-            GLuint vao = 0;
             GLuint vbo = 0;
+        private:
+            // GLuint vao = 0;
+
 
             glm::ivec3 worldpos;
             size_t vertex_count;

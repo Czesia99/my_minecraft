@@ -61,6 +61,7 @@ namespace game
                 glm::vec3 max;
             };
 
+            GLuint chunk_vao = 0;
             Shader cube_shadow;
             GLuint block_textures;
             ChunkAABB getChunkAABB(const glm::ivec3 &pos);

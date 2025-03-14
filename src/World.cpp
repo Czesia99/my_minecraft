@@ -6,12 +6,20 @@ namespace game
 {
     World::World()
     {
+        glGenVertexArrays(1, &chunk_vao);
+        glBindVertexArray(chunk_vao);
+
+        glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // glBindVertexArray(0);
         cube_shadow = Shader("cube_shadow.vs", "cube_shadow.fs");
 
         loadTextureArray(block_textures_path, block_textures, 16, 16, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST);
 
         cube_shadow.use();
         cube_shadow.setInt("shadowMap", 1);
+
     };
 
     World::~World()
@@ -24,10 +32,12 @@ namespace game
         glm::vec4 planes[6] = {};
         extractPlanesFromProjectionViewMatrix(camera.getProjectionMatrix() * camera.getViewMatrix(), planes);
 
+        glBindVertexArray(chunk_vao);
         for (const auto &[pos, chunk] : chunkMeshes)
         {
             if (boxInFrustum(planes, getChunkAABB(pos)))
             {
+                glBindVertexBuffer(0, chunk->vbo, 0, 4);
                 chunk->render(shader, camera);
             }
         }

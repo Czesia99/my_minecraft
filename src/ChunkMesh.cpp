@@ -8,18 +8,10 @@ namespace game
 
     void ChunkMesh::createChunkMesh(const std::vector<uint32_t> &vertices)
     {
-        if (vao == 0) {
-            glGenVertexArrays(1, &vao);
-            glBindVertexArray(vao);
+        if (vbo == 0)
+        {
             glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-            glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(uint32_t), (void*)0);
-            glEnableVertexAttribArray(0);
-
-            // glBindVertexArray(0);
         }
-        glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(uint32_t), vertices.data(), GL_STATIC_DRAW);
         vertex_count = vertices.size();
@@ -32,13 +24,13 @@ namespace game
 
         shader.setVec3i("chunkpos", worldpos);
 
-        glBindVertexArray(vao);
+        // glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, vertex_count);
     }
 
     void ChunkMesh::deleteChunk()
     {
         glDeleteBuffers(1, &vbo);
-        glDeleteVertexArrays(1, &vao);
+        // glDeleteVertexArrays(1, &vao);
     }
 }
