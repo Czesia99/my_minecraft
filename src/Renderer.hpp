@@ -11,8 +11,22 @@ namespace game
 {
     class Renderer
     {
-        public:
+        private:
             Renderer();
+            ~Renderer();
+
+            Renderer(const Renderer&) = delete;
+            Renderer& operator=(const Renderer&) = delete;
+            Renderer(Renderer&&) = delete;
+            Renderer& operator=(Renderer&&) = delete;
+
+        public:
+            static Renderer& instance() {
+                static Renderer instance;
+                return instance;
+            }
+
+        public:
             void update();
             void addChunk(const glm::ivec3 &pos);
             void createChunksMesh();

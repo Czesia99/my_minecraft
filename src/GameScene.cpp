@@ -10,6 +10,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include "MYGL/Toolbox.hpp"
+#include "Renderer.hpp"
 
 namespace game
 {
@@ -321,11 +322,11 @@ namespace game
 
             World::instance().createOrReplaceChunk(chunk_data.pos, chunk_data.blocktypes);
 
-            renderer.addChunk(chunk_data.pos);
+            Renderer::instance().addChunk(chunk_data.pos);
         }
         client.data_mtx.unlock();
 
-        renderer.update();
+        Renderer::instance().update();
     }
 
     void GameScene::updateClient()

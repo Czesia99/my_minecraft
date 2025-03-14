@@ -16,7 +16,6 @@
 #include <unordered_set>
 
 #include "ChunkMesh.hpp"
-#include "Renderer.hpp"
 #include "Entity.hpp"
 #include "Client.hpp"
 #include "Threadpool.hpp"
@@ -74,7 +73,6 @@ namespace game
             Clock clock;
             Client client;
             GLuint block_textures;
-            Renderer renderer;
 
             //Selected Cube
             Camera3D scube_cam = {glm::vec3(0.0f, 0.0f, -5.0f), 200, 200};

@@ -4,6 +4,7 @@
 namespace game
 {
     Renderer::Renderer() {}
+    Renderer::~Renderer() {}
 
     void Renderer::update()
     {
