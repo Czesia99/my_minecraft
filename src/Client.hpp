@@ -1,6 +1,6 @@
 #pragma once
+
 #include <iostream>
-#include <stdio.h>
 #include <vector>
 #include <deque>
 #include <glm/glm.hpp>
@@ -8,7 +8,7 @@
 #include <mutex>
 #include <asio.hpp>
 #include <atomic>
-#include <map>
+#include <unordered_map>
 
 namespace game
 {

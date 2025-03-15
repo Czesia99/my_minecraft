@@ -1,15 +1,10 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <vector>
-#include <thread>
-#include <unordered_map>
-#include <array>
-
 #include "MYGL/Shape.hpp"
 #include "MYGL/Transform.hpp"
 #include "MYGL/ICamera.hpp"
+
+#include <glm/glm.hpp>
 
 namespace game
 {

@@ -1,6 +1,6 @@
 #include "GameScene.hpp"
 #include "MYGL/Texture.hpp"
-#include "memory.hpp"
+#include "MYGL/Toolbox.hpp"
 
 #include <algorithm>
 #include <string>
@@ -9,7 +9,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include "MYGL/Toolbox.hpp"
+#include "memory.hpp"
+#include "World.hpp"
 #include "Renderer.hpp"
 
 namespace game

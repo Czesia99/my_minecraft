@@ -8,21 +8,12 @@
 #include "MYGL/Skybox.hpp"
 #include "MYGL/Shape.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
 #include <unordered_map>
-#include <map>
-#include <thread>
-#include <shared_mutex>
 #include <unordered_set>
 
-#include "ChunkMesh.hpp"
 #include "Entity.hpp"
 #include "Client.hpp"
-#include "Threadpool.hpp"
-#include "glm/gtx/hash.hpp"
 #include "Blocktype.h"
-#include "ChunkVertices.hpp"
-#include "World.hpp"
 
 namespace game
 {

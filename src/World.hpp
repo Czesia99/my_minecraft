@@ -3,16 +3,14 @@
 #include "MYGL/Camera3D.hpp"
 #include "MYGL/Texture.hpp"
 
+#include "glm/gtx/hash.hpp"
+
 #include <unordered_map>
 #include <shared_mutex>
 
-#include "glm/gtx/hash.hpp"
 #include "Chunk.hpp"
-
-
-#include "Shadowmap.hpp"
-#include <vector>
 #include "ChunkMesh.hpp"
+#include "Shadowmap.hpp"
 
 namespace game
 {
