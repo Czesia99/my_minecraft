@@ -17,8 +17,8 @@ namespace game
     {
         for (auto &offsetpos : neighbor_chunkpos)
         {
-            glm::ivec3 pos = pos + offsetpos * 16;
-            chunks_to_update.insert(pos);
+            glm::ivec3 cpos = pos + offsetpos * 16;
+            chunks_to_update.insert(cpos);
         }
     }
 

@@ -61,6 +61,7 @@ if (MSVC)
     # -Wno-unused-parameter
     # -Wno-strict-aliasing
     #-fno-omit-frame-pointer
+    /Wall
     /W3
     )
 else(
