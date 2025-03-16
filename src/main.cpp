@@ -12,7 +12,7 @@ int main()
 {
 
     mygl::Context ctx(1920, 1080, "MY_MINECRAFT");
-    // glfwSwapInterval(1); //vsync
+    glfwSwapInterval(1); //vsync
 
     // IMGUI
     IMGUI_CHECKVERSION();

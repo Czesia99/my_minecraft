@@ -71,12 +71,17 @@ namespace game
             Cube scube;
             float scube_rotspeed = 1.0f;
             Shader scube_shader;
+            Shader skybox_shader;
 
             char input_chat[4096] = {};
 
             //cursor
             mygl::Rectangle cursor_img;
             Shader cursor_shader;
+
+            //Sky
+            mygl::Rectangle sky_img;
+            Shader sky_shader;
 
             std::unordered_map<int, Entity*> entities;
 

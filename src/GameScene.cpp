@@ -37,6 +37,8 @@ namespace game
         loadTexture("../assets/cursor.png", cursor_img.texture);
 
         cursor_shader = Shader("cursor.vs", "cursor.fs");
+        sky_shader = Shader("sky.vs", "sky.fs");
+        skybox_shader = Shader("sky2.vs", "sky2.fs");
 
         //show selected cube
         scube_shader = Shader("cube.vs", "cube.fs");
@@ -53,6 +55,13 @@ namespace game
 
         cursor_shader.use();
         cursor_shader.setInt("texture0", 0);
+
+        sky_img.transform.scale.x = static_cast<float>(ctx.win_width);
+        sky_img.transform.scale.y = static_cast<float>(ctx.win_height);
+        sky_shader.use();
+        glm::ivec2 res {ctx.win_width, ctx.win_height};
+        sky_shader.setVec2i("resolution", res);
+
     }
 
     GameScene::~GameScene() {}
@@ -78,10 +87,18 @@ namespace game
 
     void GameScene::update()
     {
+        sceneClear();
         clock.update();
+
+        // glDisable(GL_DEPTH_TEST);
+        // sky_img.render(sky_shader, camera);
+        // glEnable(GL_DEPTH_TEST);
+
         World::instance().render(camera, ctx.win_width, ctx.win_height);
         renderEntities();
-        sky.render(camera);
+
+        sky.render(camera, skybox_shader);
+
         renderSCubeQuad();
         renderCursorQuad();
 
