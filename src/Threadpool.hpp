@@ -59,6 +59,11 @@ class ThreadPool {
             }
         }
 
+        ~ThreadPool()
+        {
+            stop();
+        }
+
         void stop() {
             {
                 unique_lock<mutex> lock(queue_mutex_);

@@ -151,6 +151,6 @@ namespace game
         {
             chunk.deleteChunk();
         }
-        chunks.clear();
+        chunkMeshes.clear();
     }
 }

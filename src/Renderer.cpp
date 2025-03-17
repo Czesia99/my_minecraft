@@ -4,13 +4,15 @@
 namespace game
 {
     Renderer::Renderer() {}
-    Renderer::~Renderer() {}
+    Renderer::~Renderer()
+    {
+        tp.stop();
+    }
 
     void Renderer::update()
     {
         createChunksVertices();
         createChunksMesh();
-        tq.execute();
     }
 
     void Renderer::addChunk(const glm::ivec3 &pos)

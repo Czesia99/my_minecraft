@@ -68,14 +68,15 @@ else(
     target_compile_options(${PROJECT_MINECRAFT} PRIVATE
         # -fsanitize=address
         # -fno-omit-frame-pointer
+        #-g
+        # -static-libasan
         # -g3
         -O3
-        -g
     ))
 endif()
 
 
-# target_compile_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address)
-# target_link_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address)
+# target_compile_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address -g3 -fno-omit-frame-pointer)
+# target_link_options(${PROJECT_MINECRAFT} PUBLIC -fsanitize=address -g3 -fno-omit-frame-pointer)
 target_link_libraries(${PROJECT_MINECRAFT} ${LINK_LIB})
 target_include_directories(${PROJECT_MINECRAFT} PRIVATE ${IMGUI_DIR} ${IMGUI_DIR_BACK})
