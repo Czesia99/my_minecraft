@@ -191,7 +191,6 @@ namespace game
         uint8_t *ptr = &buffer[0];
 
         memcpy(&entity.id, ptr, sizeof(int));
-        // std::cout << "ID without conversion: " << entity.id << std::endl;
         entity.id = be32toh(entity.id);
         ptr += sizeof(int);
 
@@ -244,7 +243,6 @@ namespace game
         uint8_t *ptr = &buffer[0];
 
         memcpy(&entity.id, ptr, sizeof(int));
-        // std::cout << "ID without conversion: " << entity.id << std::endl;
         entity.id = be32toh(entity.id);
         ptr += sizeof(int);
 
@@ -339,6 +337,17 @@ namespace game
 
     void Client::receiveEntityMetaData()
     {
+        EntityMetaData emd;
+        uint8_t *ptr = &buffer[0];
+
+        memcpy(&emd.id, ptr, sizeof(int));
+        // std::cout << "ID without conversion: " << entity.id << std::endl;
+        emd.id = be32toh(emd.id);
+        ptr += sizeof(int);
+
+        memcpy(emd.name, ptr, sizeof(64));
+
+        data.entities_metadata.push_back(emd);
     }
 
     void Client::sendUpdateEntity(float xpos, float ypos, float zpos, float yaw, float pitch)

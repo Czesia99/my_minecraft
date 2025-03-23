@@ -27,6 +27,12 @@ namespace game
         char name[64] = {};
     };
 
+    struct EntityMetaData
+    {
+        int id;
+        char name[64] = {};
+    };
+
     struct ChatData
     {
         std::string text;
@@ -36,6 +42,7 @@ namespace game
     {
         std::deque<ChunkData> chunks;
         std::deque<EntityData> entities;
+        std::deque<EntityMetaData> entities_metadata;
         std::deque<ChatData> chat_history;
         std::deque<int> rm_entity;
     };
@@ -119,7 +126,7 @@ namespace game
             UpdateBlockData ubd = {};
             UpdateMetaData umd = {};
 
-            char name[64] = "CzesiaLa";
+            char name[64] = "Czesia";
             std::thread client_thread;
             std::atomic<bool> stop_flag;
             void cancelCurrentOperations();

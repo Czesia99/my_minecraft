@@ -328,6 +328,20 @@ namespace game
 
             entities.erase(id);
         }
+
+        while(client.data.entities_metadata.size() != 0)
+        {
+            client.data_mtx.lock();
+            EntityMetaData emd = client.data.entities_metadata.front();
+            client.data.entities_metadata.pop_front();
+            client.data_mtx.unlock();
+
+            auto it = entities.find(emd.id);
+            if (it != entities.end()) {
+                it->second->name = emd.name;
+            }
+
+        }
     }
 
     void GameScene::updateChunks()
